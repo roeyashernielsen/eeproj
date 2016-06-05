@@ -28,7 +28,7 @@ def get_stocks_symbols(create_files=True):
     for each market.
     """
     all_symbols = []
-
+    print "Starting to pull stocks symbols"
     for market in markets:
         symbols = []
         request = urllib2.Request(market.soruce)
