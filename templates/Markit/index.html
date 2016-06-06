@@ -1,4 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>My name is {{ name }}</h1>
+<form action="#" method="get">
+ <input type="text" value="8" name="mytextbox" size="1"/>
+ <input type="submit" class="btn" value="GetData" name="get.data">
+ <input type="submit" class="btn" value="DelData" name="del.data">
+</form>
 {% endblock content %}
