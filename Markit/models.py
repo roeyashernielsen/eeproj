@@ -9,4 +9,3 @@ class Stock(models.Model):
     name = models.CharField(max_length=256, null=False, blank=False)
     symbol = models.CharField(max_length=256, null=False, blank=False)
     file = models.FileField(default="tmp",upload_to='files/%Y/%m/%d')
-    print("t")
