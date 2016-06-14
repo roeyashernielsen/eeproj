@@ -1,51 +1,49 @@
-
-##############
-#  OPTION A  #
-##############
-import time
-
 from pandas.io.data import DataReader
 from datetime import datetime, timedelta
-from symbols_list import get_stocks_symbols, make_filepath
-print "Global scope stocks_data_puller.py"
-symbols = get_stocks_symbols(create_files=True)
+from symbols_list import make_filepath, get_stocks_symbols
+from logbook import Logger, StreamHandler
+import sys
+from symbols_list import DATA_PATH
 
-#TODO add smart way to get stock symbols
+StreamHandler(sys.stdout).push_application()
+log = Logger(__name__)
 
-def pull_stocks_data(retries=3, start_date=None, end_date=None):
+
+def pull_stocks_data(retries=2, start_date=None, end_date=None):
     """
     Pulling stocks raw data, of the stocks in the symbol list.
     :param retries: number of retries for getting each stock's data
     :param start_date: the first day of the data (datetime format), default value is 2 years before end_date.
     :param end_date: the last day of the data (datetime format), default value is today
     """
-    print "Starting to pull stocks data"
+    symbols = get_stocks_symbols(write_to_files=False)
+    log.notice("Starting to pull stocks data")
     end_date = datetime.today() if end_date is None else end_date
-    start_date = end_date - timedelta(365*2)
+    start_date = end_date - timedelta(365*2)  # take as a default 2 years backwards
 
-    for symbol in symbols:
-        filepath = make_filepath(symbol, 'data/symbols', 'csv')  # optimize by avoiding calling this function every time
-        try:
-            data = DataReader(symbol,  'yahoo', start_date, end_date)
-        except IOError as e:
-            print "IOError for data query of symbol: {}.\nError msg: {}".format(symbol, e)
-            continue
-        data.to_csv(filepath)
-        symbols.pop(symbols.index(symbol))
-    end = time.time()
+    for retry in range(retries):
+        for symbol in symbols:
+            filepath = make_filepath(DATA_PATH+"symbols", symbol, 'csv')  # optimize by avoiding calling this function every time
+            try:
+                data = DataReader(symbol,  'yahoo', start_date, end_date, retry_count=1)
+            except IOError as e:
+                log.error("IOError for data query of symbol: {}\n\tError msg: {}".format(symbol, e))
+                continue
+            data.to_csv(filepath)
+            symbols.pop(symbols.index(symbol))
+        log.warning("Unable to get {} symbols on try #{}".format(len(symbols), retry+1))
 
-    print "Unable to get {} symbols:\n{}".format(len(symbols), symbols)
+    log.error("Unable to get {} symbols after {} retries:\n{}".format(len(symbols), retries, symbols))
 
 
 
 if __name__ == '__main__':
-    import timeit
-    print ("Pulled stocks data.\n This took {} seconds".format(pull_stocks_data()))
+    pull_stocks_data()
 
 
 
 ##############
-#  OPTION B  #
+##  PLAN B  ##
 ##############
 
 # import urllib
