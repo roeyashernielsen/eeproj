@@ -13,3 +13,7 @@ def index(request):
     return render(request, 'Markit/index.html', {
         'name': i,
     })
+
+def form(request):
+    return render(request, 'Markit/form.html', {
+    })

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+<body id="main_body">
+	<div id="form_container">
+	
+		<h1><a>Markit</a></h1>
+		<form id="form_1139967" class="appnitro"  method="post" action="">
+					<div class="form_description">
+			<h2>Markit</h2>
+			<p>This is your form description. Click here to edit.</p>
+		</div>						
+<ul>
+    <li id="li_1" >
+        <label class="description" for="element_1">System Name </label>
+        <div>
+            <input id="element_1" name="element_1" class="element text medium" type="text" maxlength="255" value=""/>
+        </div>
+        <p class="guidelines" id="guide_1"><small>Please enter your system name</small></p>
+    </li>
+
+    <li id="li_2" >
+        <label class="description" for="element_2">Market </label>
+        <div>
+            <select class="element select medium" id="element_2" name="element_2">
+                <option value="" selected="selected"></option>
+                <option value="1" >Market 1</option>
+                <option value="2" >Market 2</option>
+                <option value="3" >Market 3</option>
+            </select>
+        </div>
+        <p class="guidelines" id="guide_2"><small>Please select market</small></p>
+    </li>
+
+    <li id="li_3" >
+        <label class="description" for="element_3">Open Rules - Term #1 </label>
+        <div>
+            <select class="element select medium" id="element_3" name="element_3">
+                <option value="" selected="selected"></option>
+                <option value="1" >First option</option>
+                <option value="2" >Second option</option>
+                <option value="3" >Third option</option>
+            </select>
+        </div>
+        <p class="guidelines" id="guide_3"><small>Please select open rule</small></p>
+    </li>
+
+    <li id="li_4" >
+        <label class="description" for="element_4">Close Rules - Term #2 </label>
+        <div>
+            <select class="element select medium" id="element_4" name="element_4">
+                <option value="" selected="selected"></option>
+                <option value="1" >First option</option>
+                <option value="2" >Second option</option>
+                <option value="3" >Third option</option>
+            </select>
+        </div>
+        <p class="guidelines" id="guide_4"><small>Please select close rule</small></p>
+    </li>
+
+    <li id="li_5" >
+        <label class="description" for="element_5">System Type </label>
+        <span>
+            <input id="element_5_1" name="element_5" class="element radio" type="radio" value="1" />
+            <label class="choice" for="element_5_1">Long</label>
+            <input id="element_5_2" name="element_5" class="element radio" type="radio" value="2" />
+            <label class="choice" for="element_5_2">Short</label>
+        </span>
+        <p class="guidelines" id="guide_5"><small>Please select system type</small></p>
+    </li>
+
+    <li class="buttons">
+        <input type="hidden" name="form_id" value="1139967" />
+        <input id="saveForm" class="button_text" type="submit" name="submit" value="Submit" />
+    </li>
+
+</ul>
+</form>
+</div>
+</body>
+{% endblock content %}
