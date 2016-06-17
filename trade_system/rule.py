@@ -1,9 +1,9 @@
-from utils.general_general import type_checking
+from utils.general_utils import type_checking
 import term
 """
-rule (trading rule) is represented by boolean formula of products of sums (POS). Means that the formula is built of
-clauses with AND operator between 2 clauses, and evey clauses is built of predicates with OR operator between.
-e.g: (p1 OR p2) AND (p3 OR p4 OR p5) AND (p6)
+rule (trading rule) is represented by boolean formula of sum of products (SOP). Means that the formula is built of
+clauses with OR operator between 2 clauses, and evey clauses is built of predicates with AND operator between.
+e.g: (p1 AND p2) OR (p3 AND p4 AND p5) OR (p6)
 
 Implementation: Predicate is instance of Term class object. Clause is list of terms and Rule is list of clauses.
 So the example from above will look as: [[t1, t2], [t3, t4, t5] [t6]].
@@ -19,6 +19,9 @@ class Rule:
         type_checking(Clause, *clauses)
         self.clauses = clauses  # this is list of clauses
 
+    def get_clauses(self):
+        return self.clauses
+
 
 class Clause:
     """
@@ -27,4 +30,7 @@ class Clause:
     def __init__(self, *terms):
         type_checking(term.Term, *terms)
         self.terms = terms
+
+    def get_terms(self):
+        return self.terms
 
