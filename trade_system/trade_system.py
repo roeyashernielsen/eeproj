@@ -1,4 +1,4 @@
-from utils.general_general import *
+from utils.general_utils import *
 import rule
 """
 This Module defines trade-system.
@@ -12,5 +12,10 @@ class TradeSystem:
         self.open_rule = open_rule
         self.close_rule = close_rule
 
+    def get_open_rule(self):
+        return self.open_rule
+
+    def get_close_rule(self):
+        return self.close_rule
 
 
