@@ -26,6 +26,8 @@ class TradeSystem:
         self.open_rule = open_rule
         self.close_rule = close_rule
         self.direction = direction
+        self.stop_loss = stop_loss
+        self.moving_stop_loss = moving_stop_loss
 
     def get_open_rule(self):
         return self.open_rule
@@ -35,6 +37,12 @@ class TradeSystem:
 
     def get_direction(self):
         return self.direction
+
+    def get_stop_loss(self):
+        return self.stop_loss
+
+    def get_moving_stop_loss(self):
+        return self.moving_stop_loss
 
 
 
