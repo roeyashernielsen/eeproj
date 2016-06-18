@@ -75,6 +75,7 @@ STOCK_DATA_COLUMNS = EnumDict(date='Date') + RAW_PARAMETERS + _STOCK_DATA_ADDED_
 TECHNICAL_PARAMETER = RAW_PARAMETERS + SUPPORTED_INDICATORS
 NUMERIC_VALUE = EnumDict(numeric_value='NUMERIC_VALUE')  # for technical param that is pure value (float)
 
+TRADE_DIRECTIONS = EnumDict(long='LONG', short='SHORT')
 
 """
 The next Enum class contains all the order relations between indicators.
