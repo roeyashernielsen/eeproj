@@ -1,19 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-<body id="main_body">
-	<div id="form_container">
+<div id="form_container">
 	
-		<h1><a>Markit</a></h1>
-		<form id="form_1139967" class="appnitro"  method="post" action="">
-					<div class="form_description">
-			<h2>Markit</h2>
-			<p>This is your form description. Click here to edit.</p>
-		</div>						
+    <h1><a>Markit</a></h1>
+    <form id="form_1139967" class="appnitro"  method="post" action="">
+                <div class="form_description">
+        <h2>Markit</h2>
+        <p>This is your form description. Click here to edit.</p>
+</div>
 <ul>
     <li id="li_1" >
         <label class="description" for="element_1">System Name </label>
         <div>
-            <input id="element_1" name="element_1" class="element text medium" type="text" maxlength="255" value=""/>
+            vv
         </div>
         <p class="guidelines" id="guide_1"><small>Please enter your system name</small></p>
     </li>
@@ -34,13 +33,18 @@
     <li id="li_3" >
         <label class="description" for="element_3">Open Rules - Term #1 </label>
         <div>
+            <span>
             <select class="element select medium" id="element_3" name="element_3">
                 <option value="" selected="selected"></option>
                 <option value="1" >First option</option>
                 <option value="2" >Second option</option>
                 <option value="3" >Third option</option>
             </select>
+            </span>
+            <span>Period: </span>
+            <span><input id="element_3" name="element_3" class="element text medium" type="text" maxlength="255" value=""/></span>
         </div>
+        <span class="add">Add</span>
         <p class="guidelines" id="guide_3"><small>Please select open rule</small></p>
     </li>
 
@@ -76,5 +80,4 @@
 </ul>
 </form>
 </div>
-</body>
 {% endblock content %}
