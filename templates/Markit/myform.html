@@ -1,27 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-	<div class="row">
-		<input type="hidden" name="count" value="1" />
-        <div class="control-group" id="fields">
-            <label class="control-label" for="field1">Nice Multiple Form Fields</label>
-            <div class="controls" id="profs">
-                <form class="input-append">
-                    <div id="field">
-                        <select class="element select medium" id="element_1" name="element_1">
-                            <option value="" selected="selected"></option>
-                            <option value="1" >First option</option>
-                            <option value="2" >Second option</option>
-                            <option value="3" >Third option</option>
-                        </select>
-                        <input autocomplete="off" class="input" id="field1" name="prof1" type="text" placeholder="Type something" data-items="8"/>
-                        <button id="b1" class="btn add-more" type="button">+</button>
-                    </div>
-                </form>
-            <br>
-            <small>Press + to add another form field :)</small>
-            </div>
+<input type="hidden" name="count" value="1" />
+<div class="control-group" id="fields">
+    <form>
+        <div>
+            <select class="element select medium" id="element_1" name="element_1">
+                <option value="" selected="selected"></option>
+                <option value="1">First option</option>
+                <option value="2">Second option</option>
+                <option value="3">Third option</option>
+            </select>
+            <input autocomplete="off" class="input" id="field1" name="prof1" type="text"/>
+            <button id="b1" class="btn add-more" type="button">+</button>
         </div>
-	</div>
+    </form>
 </div>
 {% endblock content %}

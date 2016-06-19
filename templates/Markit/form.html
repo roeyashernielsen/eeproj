@@ -1,82 +1,163 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 {% block content %}
-<div id="form_container">
-	
-    <h1><a>Markit</a></h1>
-    <form id="form_1139967" class="appnitro"  method="post" action="">
-                <div class="form_description">
-        <h2>Markit</h2>
-        <p>This is your form description. Click here to edit.</p>
-</div>
-<ul>
-    <li id="li_3" >
-        <label class="description" for="element_3">System Name </label>
-        <div>
-            vv
-        </div>
-        <p class="guidelines" id="guide_3"><small>Please enter your system name</small></p>
-    </li>
+    <img id="top" src="{% static 'Markit/pic/top.png' %}" alt="">
+	<div id="form_container">
+		<h1><a>Markit</a></h1>
+		<form id="form_1139967" class="appnitro"  method="post" action="">
+            <div class="form_description">
+			    <h2>Markit</h2>
+			    <p>This is your form description. Click here to edit.</p>
+		    </div>
+            <ul >
+                <li id="li_1" >
+		            <div>
+                        <span>
+                            <label class="description" for="element_1">System Name </label>
+                            <input id="element_1" name="element_1" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="element_5">System Type </label>
+                            <span>
+                                <input id="element_5_1" name="element_5" class="element radio" type="radio" value="1" />
+                                <label class="choice" for="element_5_1">Long</label>
+                            </span>
+                            <span>
+                                <input id="element_5_2" name="element_5" class="element radio" type="radio" value="2" />
+                                <label class="choice" for="element_5_2">Short</label>
+                            </span>
+                        </span>
+		            </div>
+		        </li>
 
-    <li id="li_2" >
-        <label class="description" for="element_2">Market </label>
-        <div>
-            <select class="element select medium" id="element_2" name="element_2">
-                <option value="" selected="selected"></option>
-                <option value="1" >Market 1</option>
-                <option value="2" >Market 2</option>
-                <option value="3" >Market 3</option>
-            </select>
-        </div>
-        <p class="guidelines" id="guide_2"><small>Please select market</small></p>
-    </li>
+                <li id="li_2" >
+		            <label class="description" for="element_2">Market </label>
+		            <div>
+		                <select class="element select medium" id="element_2" name="element_2">
+			                <option value="" selected="selected"></option>
+                            <option value="1" >NYCE</option>
+                            <option value="2" >NASDAQ</option>
+                            <option value="3" >ALL</option>
+		                </select>
+                    </div>
+		        </li>
 
-    <li id="li_1" >
-        <label class="description" for="element_1">Open Rules - Term #1 </label>
-        <div id="field">
-            <span>
-            <select class="element select medium" id="element_1" name="element_1">
-                <option value="" selected="selected"></option>
-                <option value="1" >First option</option>
-                <option value="2" >Second option</option>
-                <option value="3" >Third option</option>
-            </select>
-            </span>
-            <span><input id="field1" name="field1" class="element text medium" type="text" maxlength="255" value=""/></span>
-            <button id="b1" class="btn add-more" type="button">+</button>
-        </div>
-        <p class="guidelines" id="guide_1"><small>Please select open rule</small></p>
-    </li>
+                <h2>Open Rule</h2>
 
-    <li id="li_4" >
-        <label class="description" for="element_4">Close Rules - Term #2 </label>
-        <div>
-            <select class="element select medium" id="element_4" name="element_4">
-                <option value="" selected="selected"></option>
-                <option value="1" >First option</option>
-                <option value="2" >Second option</option>
-                <option value="3" >Third option</option>
-            </select>
-        </div>
-        <p class="guidelines" id="guide_4"><small>Please select close rule</small></p>
-    </li>
+                <p id="st1">Start term</p>
+                <li id="li_3_1" >
+		            <div>
+                        <span>
+                            <label class="description" for="element_3">Name</label>
+                            <select class="element select medium" id="element_3" name="element_3">
+                                <option value="" selected="selected"></option>
+                                <option value="1" >First option</option>
+                                <option value="2" >Second option</option>
+                                <option value="3" >Third option</option>
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="element_6">Period </label>
+			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="element_6">Shifting </label>
+			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <li id="li_4_1" >
+		            <div>
+                        <span>
+                            <label class="description" for="element_3">Name</label>
+                            <select class="element select medium" id="element_3" name="element_3">
+                                <option value="" selected="selected"></option>
+                                <option value="1" >First option</option>
+                                <option value="2" >Second option</option>
+                                <option value="3" >Third option</option>
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="element_6">Period </label>
+			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="element_6">Shifting </label>
+			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="element_6">Value</label>
+			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <p id="et1">End term </p>
 
-    <li id="li_5" >
-        <label class="description" for="element_5">System Type </label>
-        <span>
-            <input id="element_5_1" name="element_5" class="element radio" type="radio" value="1" />
-            <label class="choice" for="element_5_1">Long</label>
-            <input id="element_5_2" name="element_5" class="element radio" type="radio" value="2" />
-            <label class="choice" for="element_5_2">Short</label>
-        </span>
-        <p class="guidelines" id="guide_5"><small>Please select system type</small></p>
-    </li>
+                 <li id="li_5" >
+                    <button id="open1" class="btn add-more-open-terms" type="button">Add term</button>
+                 </li>
 
-    <li class="buttons">
-        <input type="hidden" name="form_id" value="1139967" />
-        <input id="saveForm" class="button_text" type="submit" name="submit" value="Submit" />
-    </li>
+                <h2>Close Rule</h2>
 
-</ul>
-</form>
-</div>
+                <p id="cst1">Start term</p>
+                <li id="li_6_1" >
+		            <div>
+                        <span>
+                            <label class="description" for="element_3">Name</label>
+                            <select class="element select medium" id="element_3" name="element_3">
+                                <option value="" selected="selected"></option>
+                                <option value="1" >First option</option>
+                                <option value="2" >Second option</option>
+                                <option value="3" >Third option</option>
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="element_6">Period </label>
+			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="element_6">Shifting </label>
+			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <li id="li_7_1" >
+		            <div>
+                        <span>
+                            <label class="description" for="element_3">Name</label>
+                            <select class="element select medium" id="element_3" name="element_3">
+                                <option value="" selected="selected"></option>
+                                <option value="1" >First option</option>
+                                <option value="2" >Second option</option>
+                                <option value="3" >Third option</option>
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="element_6">Period </label>
+			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="element_6">Shifting </label>
+			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="element_6">Value</label>
+			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <p id="cet1">End term </p>
+
+                 <li id="li_8" >
+                    <button id="open1" class="btn add-more-close-terms" type="button">Add term</button>
+                 </li>
+			
+                <li class="buttons">
+			        <input type="hidden" name="form_id" value="1139967" />
+				    <input id="saveForm" class="button_text" type="submit" name="submit" value="Submit" />
+		        </li>
+			</ul>
+		</form>
+	</div>
+	<img id="bottom" src="{% static 'Markit/pic/bottom.png' %}" alt="">
 {% endblock content %}
