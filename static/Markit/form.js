@@ -34,31 +34,72 @@ $(document).ready(function(){
     var next = 1;
     $(".add-more-open-terms").click(function(e){
         e.preventDefault();
-        var addto = "#et" + next;
-        var removefrom = "#et" + (next);
+        var clauseNum = this.id.charAt(this.id.length-1);
+        var addto = "#oet_" + clauseNum + "_" + next;
+        var removefrom = "#oet_" + clauseNum + "_" + next;
         next = next + 1;
-        var newIn = '<p id="st' + next + '">Start term</p><li id="li_3_' + next + '"><div><span> <label class="description" for="element_3_' + next + '">Name</label> <select class="element select medium" id="element_3_' + next + '" name="element_3_' + next + '"> <option value="" selected="selected"></option> <option value="1" >First option</option> <option value="2" >Second option</option> <option value="3" >Third option</option> </select> </span> <span> <label class="description" for="element_6_' + next + '">Period </label> <input id="element_6_' + next + '" name="element_6_' + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> <span> <label class="description" for="element_6_' + next + '">Shifting </label> <input id="element_6_' + next + '" name="element_6_' + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> </div> </li> <li id="li_4_' + next + '" > <div> <span> <label class="description" for="element_3_' + next + '">Name</label> <select class="element select medium" id="element_3_' + next + '" name="element_3_' + next + '"> <option value="" selected="selected"></option> <option value="1" >First option</option> <option value="2" >Second option</option> <option value="3" >Third option</option> </select> </span> <span> <label class="description" for="element_6_' + next + '">Period </label> <input id="element_6_' + next + '" name="element_6_' + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> <span> <label class="description" for="element_6_' + next + '">Shifting </label> <input id="element_6_' + next + '" name="element_6_' + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> <span> <label class="description" for="element_6_' + next + '">Value</label> <input id="element_6_' + next + '" name="element_6_' + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> </div> </li><p id="et' + next + '">End term</p>';
+        var newIn = '<p id="ost_'+ clauseNum+ "_" + next + '" style="margin-left: 50px;">Start term ' + next + '</p><li id="li_3_'+ clauseNum+ "_" + next + '" style="margin-left: 50px;"><div><span> <label class="description" for="element_3_1_'+ clauseNum+ "_" + next + '">Name</label> <select class="element select medium" id="element_3_1_'+ clauseNum+ "_" + next + '" name="element_3_1_'+ clauseNum+ "_" + next + '"> <option value="" selected="selected"></option> <option value="1" >First option</option> <option value="2" >Second option</option> <option value="3" >Third option</option> </select> </span> <span> <label class="description" for="element_3_2_'+ clauseNum+ "_" + next + '">Period </label> <input id="element_3_2_'+ clauseNum+ "_" + next + '" name="element_3_2_'+ clauseNum+ "_" + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> <span> <label class="description" for="element_3_3_'+ clauseNum+ "_" + next + '">Shifting </label> <input id="element_3_3_'+ clauseNum+ "_" + next + '" name="element_3_3_'+ clauseNum+ "_" + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> </div> </li> <li id="li_4_'+ clauseNum+ "_" + next + '" style="margin-left: 50px;"> <div> <span> <label class="description" for="element_4_1_'+ clauseNum+ "_" + next + '">Name</label> <select class="element select medium" id="element_4_1_'+ clauseNum+ "_" + next + '" name="element_4_1_'+ clauseNum+ "_" + next + '"> <option value="" selected="selected"></option> <option value="1" >First option</option> <option value="2" >Second option</option> <option value="3" >Third option</option> </select> </span> <span> <label class="description" for="element_4_2_'+ clauseNum+ "_" + next + '">Period </label> <input id="element_4_2_'+ clauseNum+ "_" + next + '" name="element_4_2_'+ clauseNum+ "_" + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> <span> <label class="description" for="element_4_3_'+ clauseNum+ "_" + next + '">Shifting </label> <input id="element_4_3_'+ clauseNum+ "_" + next + '" name="element_4_3_'+ clauseNum+ "_" + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> <span> <label class="description" for="element_4_4_'+ clauseNum+ "_" + next + '">Value</label> <input id="element_4_4_'+ clauseNum+ "_" + next + '" name="element_4_4_'+ clauseNum+ "_" + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> </div> </li><p id="oet_'+ clauseNum+ "_" + next + '" style="margin-left: 50px;">End term ' + next + '</p>';
         var newInput = $(newIn);
-        var removeBtn = '<button id="remove' + (next - 1) + '" class="btn btn-danger remove-me" >Remove term</button>';
+        var removeBtn = '<button id="remove_'+ clauseNum + "_" + (next-1) + '" class="btn btn-danger remove-term" style="margin-left: 50px;" >Remove term</button>';
         var removeButton = $(removeBtn);
         $(addto).after(newInput);
         $(removefrom).after(removeButton);
 
-            $('.remove-me').click(function(e){
+            $('.remove-term').click(function(e){
                 e.preventDefault();
                 var fieldNum = this.id.charAt(this.id.length-1);
-                var fieldID = "#et" + fieldNum;
-                var fieldDD = "#st" + fieldNum;
-                var elementID = "#li_3_" + fieldNum;
-                var elementDD = "#li_4_" + fieldNum;
+                var clauseNum = this.id.charAt(this.id.length-3);
+                var fieldIdStart = "#ost_" + clauseNum + "_" + fieldNum;
+                var fieldIdEnd = "#oet_" + clauseNum + "_" + fieldNum;
+                var listIdFirst = "#li_3_" + clauseNum + "_" + fieldNum;
+                var listIdSecond = "#li_4_" + clauseNum + "_" + fieldNum;
                 $(this).remove();
-                $(fieldDD).remove();
-                $(fieldID).remove();
-                $(elementID).remove();
-                $(elementDD).remove();
+                $(fieldIdEnd).remove();
+                $(fieldIdStart).remove();
+                $(listIdFirst).remove();
+                $(listIdSecond).remove();
             });
     });
 });
+
+$(document).ready(function(){
+    var next = 1;
+    $(".add-more-open-clause").click(function(e){
+        e.preventDefault();
+        var addto = "#li_6";
+        var removefrom = "#li_6";
+        next = next + 1;
+        var newIn = '<ul id="ul' + next + '"><h3 id="osc_' + next + ' ">Start clause ' + next + '</h3><p id="ost_'+ next + "_" + 1 + '" style="margin-left: 50px;">Start term ' + next + '</p><li id="li_3_'+ next+ "_" + 1 + '" style="margin-left: 50px;"><div><span> <label class="description" for="element_3_1_'+ next + "_" + 1 + '">Name</label> <select class="element select medium" id="element_3_1_'+ next + "_" + 1 + '" name="element_3_1_'+ next + "_" + 1 + '"> <option value="" selected="selected"></option> <option value="1" >First option</option> <option value="2" >Second option</option> <option value="3" >Third option</option> </select> </span> <span> <label class="description" for="element_3_2_'+ next + "_" + 1 + '">Period </label> <input id="element_3_2_'+ next + "_" + 1 + '" name="element_3_2_'+ next + "_" + 1 + '" class="element text medium" type="text" maxlength="255" value=""/> </span> <span> <label class="description" for="element_3_3_'+ next + "_" + 1 + '">Shifting </label> <input id="element_3_3_'+ next + "_" + 1 + '" name="element_3_3_'+ next + "_" + 1 + '" class="element text medium" type="text" maxlength="255" value=""/> </span> </div> </li> <li id="li_4_'+ next + "_" + 1 + '" style="margin-left: 50px;"> <div> <span> <label class="description" for="element_4_1_'+ next + "_" + 1 + '">Name</label> <select class="element select medium" id="element_4_1_'+ next + "_" + 1 + '" name="element_4_1_'+ next + "_" + 1 + '"> <option value="" selected="selected"></option> <option value="1" >First option</option> <option value="2" >Second option</option> <option value="3" >Third option</option> </select> </span> <span> <label class="description" for="element_4_2_'+ next + "_" + 1 + '">Period </label> <input id="element_4_2_'+ next + "_" + 1 + '" name="element_4_2_'+ next + "_" + 1 + '" class="element text medium" type="text" maxlength="255" value=""/> </span> <span> <label class="description" for="element_4_3_'+ next + "_" + 1 + '">Shifting </label> <input id="element_4_3_'+ next + "_" + 1 + '" name="element_4_3_'+ next + "_" + 1 + '" class="element text medium" type="text" maxlength="255" value=""/> </span> <span> <label class="description" for="element_4_4_'+ next + "_" + 1 + '">Value</label> <input id="element_4_4_'+ next + "_" + 1 + '" name="element_4_4_'+ next + "_" + 1 + '" class="element text medium" type="text" maxlength="255" value=""/> </span> </div> </li><p id="oet_'+ next + "_" + 1 + '" style="margin-left: 50px;">End term ' + next + '</p><li id="li_5_' + next + '" style="margin-left: 50px;"><button id="OR' + next + '" class="btn btn-danger add-in-clause" type="button">OR</button></li><h3 id="osc_' + next + ' ">End clause ' + next + '</h3></ul>';
+        var newInput = $(newIn);
+        var removeBtn = '<button id="remove_' + (next-1) + '" class="btn btn-danger remove-clause">Remove clause</button>';
+        var removeButton = $(removeBtn);
+        $(removefrom).before(removeButton);
+        $(addto).before(newInput);
+
+            $('.remove-clause').click(function(e){
+                e.preventDefault();
+                var fieldNum = this.id.charAt(this.id.length-1);
+                var listIdFirst = "#ul" + fieldNum;
+                $(this).remove();
+                $(listIdFirst).remove();
+            });
+            $(".add-in-clause").click(function(e) {
+                e.preventDefault();
+                var next = 1
+                var clauseNum = this.id.charAt(this.id.length - 1);
+                var addto = "#oet_" + clauseNum + "_" + next;
+                var removefrom = "#oet_" + clauseNum + "_" + next;
+                next = next + 1;
+                var newIn = '<p id="ost_' + clauseNum + "_" + next + '" style="margin-left: 50px;">Start term ' + next + '</p><li id="li_3_' + clauseNum + "_" + next + '" style="margin-left: 50px;"><div><span> <label class="description" for="element_3_1_' + clauseNum + "_" + next + '">Name</label> <select class="element select medium" id="element_3_1_' + clauseNum + "_" + next + '" name="element_3_1_' + clauseNum + "_" + next + '"> <option value="" selected="selected"></option> <option value="1" >First option</option> <option value="2" >Second option</option> <option value="3" >Third option</option> </select> </span> <span> <label class="description" for="element_3_2_' + clauseNum + "_" + next + '">Period </label> <input id="element_3_2_' + clauseNum + "_" + next + '" name="element_3_2_' + clauseNum + "_" + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> <span> <label class="description" for="element_3_3_' + clauseNum + "_" + next + '">Shifting </label> <input id="element_3_3_' + clauseNum + "_" + next + '" name="element_3_3_' + clauseNum + "_" + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> </div> </li> <li id="li_4_' + clauseNum + "_" + next + '" style="margin-left: 50px;"> <div> <span> <label class="description" for="element_4_1_' + clauseNum + "_" + next + '">Name</label> <select class="element select medium" id="element_4_1_' + clauseNum + "_" + next + '" name="element_4_1_' + clauseNum + "_" + next + '"> <option value="" selected="selected"></option> <option value="1" >First option</option> <option value="2" >Second option</option> <option value="3" >Third option</option> </select> </span> <span> <label class="description" for="element_4_2_' + clauseNum + "_" + next + '">Period </label> <input id="element_4_2_' + clauseNum + "_" + next + '" name="element_4_2_' + clauseNum + "_" + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> <span> <label class="description" for="element_4_3_' + clauseNum + "_" + next + '">Shifting </label> <input id="element_4_3_' + clauseNum + "_" + next + '" name="element_4_3_' + clauseNum + "_" + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> <span> <label class="description" for="element_4_4_' + clauseNum + "_" + next + '">Value</label> <input id="element_4_4_' + clauseNum + "_" + next + '" name="element_4_4_' + clauseNum + "_" + next + '" class="element text medium" type="text" maxlength="255" value=""/> </span> </div> </li><p id="oet_' + clauseNum + "_" + next + '" style="margin-left: 50px;">End term ' + next + '</p>';
+                var newInput = $(newIn);
+                var removeBtn = '<button id="remove_' + clauseNum + "_" + (next - 1) + '" class="btn btn-danger remove-term" style="margin-left: 50px;" >Remove term</button>';
+                var removeButton = $(removeBtn);
+                $(addto).after(newInput);
+                $(removefrom).after(removeButton);
+            });
+    });
+});
+
 
 $(document).ready(function(){
     var next = 1;
@@ -89,3 +130,4 @@ $(document).ready(function(){
             });
     });
 });
+

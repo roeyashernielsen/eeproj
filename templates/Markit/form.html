@@ -9,22 +9,22 @@
 			    <h2>Markit</h2>
 			    <p>This is your form description. Click here to edit.</p>
 		    </div>
-            <ul >
+            <ul id="all">
                 <li id="li_1" >
 		            <div>
                         <span>
-                            <label class="description" for="element_1">System Name </label>
-                            <input id="element_1" name="element_1" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="element_1_1">System Name </label>
+                            <input id="element_1_1" name="element_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
                         <span>
-                            <label class="description" for="element_5">System Type </label>
+                            <label class="description" for="element_1_2">System Type </label>
                             <span>
-                                <input id="element_5_1" name="element_5" class="element radio" type="radio" value="1" />
-                                <label class="choice" for="element_5_1">Long</label>
+                                <input id="element_1_2" name="element_1_2" class="element radio" type="radio" value="1" />
+                                <label class="choice" for="element_1_2">Long</label>
                             </span>
                             <span>
-                                <input id="element_5_2" name="element_5" class="element radio" type="radio" value="2" />
-                                <label class="choice" for="element_5_2">Short</label>
+                                <input id="element_1_2_" name="element_1_2" class="element radio" type="radio" value="2" />
+                                <label class="choice" for="element_1_2">Short</label>
                             </span>
                         </span>
 		            </div>
@@ -33,7 +33,7 @@
                 <li id="li_2" >
 		            <label class="description" for="element_2">Market </label>
 		            <div>
-		                <select class="element select medium" id="element_2" name="element_2">
+		                <select class="element select medium" id="element_2_1" name="element_2_1">
 			                <option value="" selected="selected"></option>
                             <option value="1" >NYCE</option>
                             <option value="2" >NASDAQ</option>
@@ -43,13 +43,14 @@
 		        </li>
 
                 <h2>Open Rule</h2>
-
-                <p id="st1">Start term</p>
-                <li id="li_3_1" >
+            <ul id="ul1">
+                <h3 id="osc_1">Start clause 1</h3>
+                <p id="ost_1_1" style="margin-left: 50px;">Start term 1</p>
+                <li id="li_3_1_1"  style="margin-left: 50px;">
 		            <div>
                         <span>
-                            <label class="description" for="element_3">Name</label>
-                            <select class="element select medium" id="element_3" name="element_3">
+                            <label class="description" for="element_3_1_1_1">Name</label>
+                            <select class="element select medium" id="element_3_1_1_1" name="element_3_1_1_1">
                                 <option value="" selected="selected"></option>
                                 <option value="1" >First option</option>
                                 <option value="2" >Second option</option>
@@ -57,20 +58,20 @@
 		                    </select>
                         </span>
                         <span>
-                            <label class="description" for="element_6">Period </label>
-			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="element_3_2_1_1">Period </label>
+			                <input id="element_3_2_1_1" name="element_3_2_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
                         <span>
-                            <label class="description" for="element_6">Shifting </label>
-			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="element_3_3_1_1">Shifting </label>
+			                <input id="element_3_3_1_1" name="element_3_3_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
 		            </div>
 		        </li>
-                <li id="li_4_1" >
+                <li id="li_4_1_1" style="margin-left: 50px;">
 		            <div>
                         <span>
-                            <label class="description" for="element_3">Name</label>
-                            <select class="element select medium" id="element_3" name="element_3">
+                            <label class="description" for="element_4_1_1_1">Name</label>
+                            <select class="element select medium" id="element_4_1_1_1" name="element_4_1_1_1">
                                 <option value="" selected="selected"></option>
                                 <option value="1" >First option</option>
                                 <option value="2" >Second option</option>
@@ -78,25 +79,29 @@
 		                    </select>
                         </span>
                         <span>
-                            <label class="description" for="element_6">Period </label>
-			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="element_4_2_1_1">Period </label>
+			                <input id="element_4_2_1_1" name="element_4_2_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
                         <span>
-                            <label class="description" for="element_6">Shifting </label>
-			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="element_4_3_1_1">Shifting </label>
+			                <input id="element_4_3_1_1" name="element_4_3_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
                         <span>
-                            <label class="description" for="element_6">Value</label>
-			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="element_4_4_1_1">Value</label>
+			                <input id="element_4_4_1_1" name="element_4_4_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
 		            </div>
 		        </li>
-                <p id="et1">End term </p>
+                <p id="oet_1_1" style="margin-left: 50px;">End term 1</p>
 
-                 <li id="li_5" >
-                    <button id="open1" class="btn add-more-open-terms" type="button">Add term</button>
+                 <li id="li_5_1" style="margin-left: 50px;">
+                    <button id="OR1" class="btn add-more-open-terms" type="button">OR</button>
                  </li>
-
+                <h3 id="oec1">End clause 1</h3>
+            </ul>
+                <li id="li_6">
+                    <button id="AND" class="btn add-more-open-clause" type="button">AND</button>
+                 </li>
                 <h2>Close Rule</h2>
 
                 <p id="cst1">Start term</p>
