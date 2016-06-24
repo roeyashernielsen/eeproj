@@ -1,5 +1,5 @@
 from utils.general_utils import *
-import rule
+from . import rule
 from utils import enums
 """
 This Module defines trade-system.

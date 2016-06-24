@@ -25,7 +25,7 @@ class TechnicalParameter:
                 self.is_raw = True
             else:
                 self.is_raw = False
-            self.period = timeperiod
+            self.timeperiod = timeperiod
             self.shifting = shifting
             self.is_numeric_value = False
 
@@ -36,7 +36,7 @@ class TechnicalParameter:
         return self.name
 
     def get_period(self):
-        return self.period
+        return self.timeperiod
 
     def get_shifting(self):
         return self.shifting
