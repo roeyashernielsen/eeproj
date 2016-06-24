@@ -11,9 +11,9 @@ class Term:
     def __init__(self, technical_parameter_1, relation, technical_parameter_2):
 
         # type checking
-        type_checking(TechnicalParameter, technical_parameter_1)
-        type_checking(TechnicalParameter, technical_parameter_2)
-        type_checking(enums.RELATIONS, relation)
+        # type_checking(TechnicalParameter, technical_parameter_1)
+        # type_checking(TechnicalParameter, technical_parameter_2)
+        # type_checking(enums.RELATIONS, relation)
 
         # assignments
         self.technical_parameter_1 = technical_parameter_1

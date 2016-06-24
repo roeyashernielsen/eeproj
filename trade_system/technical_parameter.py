@@ -17,17 +17,12 @@ class TechnicalParameter:
         if name not in enums.TECHNICAL_PARAMETER + enums.NUMERIC_VALUE:
             raise AttributeError
         self.name = name
-        if name == enums.NUMERIC_VALUE.numeric_value:
-            self.value = float(value)
-        else:
-            if name in enums.RAW_PARAMETERS:
-                self.raw = True
-            else:
-                self.raw = False
-            self.timeperiod = timeperiod
-            self.shifting = shifting
+        self.value = float(value) if name in enums.NUMERIC_VALUE else value
+        self.raw = True if name in enums.RAW_PARAMETERS else False
+        self.timeperiod = timeperiod
+        self.shifting = shifting
 
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             setattr(self, key, value)
 
     def get_name(self):
@@ -52,5 +47,3 @@ class TechnicalParameter:
 
     def is_technical_indicator(self):
         return not (self.is_raw() or self.is_numeric_value())
-
-
