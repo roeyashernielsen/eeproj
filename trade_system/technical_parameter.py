@@ -6,10 +6,10 @@ class TechnicalParameter:
     Class of that represented technical parameter instance. It could be raw stock data (e.g. open price, close...), or
     technical indicators or oscillators. The second type is pure numeric value- floating point number.
     """
-    def __init__(self, name, period=0, shifting=0, value=None, **kwargs):
+    def __init__(self, name, timeperiod=0, shifting=0, value=None, **kwargs):
         """
         :param name: name of the parameter, should be one of the TECHNICAL_PARAMETERS or NUMERIC_VALUE.
-        :param period: time period (in days) that the calculation relays on. Default is 0 (based on current time/raw data).
+        :param timeperiod: time period (in days) that the calculation relays on. Default is 0 (based on current time/raw data).
         :param shifting: the relevant day for the analysis. Default is 0 (current day)
         :param value: for numeric values input (constant number). Has meaning only when name==NUMERIC_VALUE. Default is None.
         :param kwargs: other args, that relevant for specific technical indicators.
@@ -25,7 +25,7 @@ class TechnicalParameter:
                 self.is_raw = True
             else:
                 self.is_raw = False
-            self.period = period
+            self.period = timeperiod
             self.shifting = shifting
             self.is_numeric_value = False
 

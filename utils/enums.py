@@ -1,4 +1,5 @@
 import copy
+import talib
 
 """
 This class contains Enum class definition and enums classes to be use within the different modules
@@ -83,4 +84,7 @@ The next Enum class contains all the order relations between indicators.
 RELATIONS = EnumDict(greater='GREATER', less='LESS', crossover='CROSSOVER', crossover_below='CROSSOVER_BELOW',
                      crossover_above='CROSSOVER_ABOVE')
 
+
+# TA-Lib technical indicators
+INDICATORS_GROUPS = EnumDict()
 
