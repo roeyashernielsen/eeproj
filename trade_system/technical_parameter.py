@@ -6,10 +6,10 @@ class TechnicalParameter:
     Class of that represented technical parameter instance. It could be raw stock data (e.g. open price, close...), or
     technical indicators or oscillators. The second type is pure numeric value- floating point number.
     """
-    def __init__(self, name, timeperiod=0, shifting=0, value=None, **kwargs):
+    def __init__(self, name, timeperiod=None, shifting=0, value=None, **kwargs):
         """
         :param name: name of the parameter, should be one of the TECHNICAL_PARAMETERS or NUMERIC_VALUE.
-        :param timeperiod: time period (in days) that the calculation relays on. Default is 0 (based on current time/raw data).
+        :param timeperiod: time period (in days) that the calculation relays on. Default is None.
         :param shifting: the relevant day for the analysis. Default is 0 (current day)
         :param value: for numeric values input (constant number). Has meaning only when name==NUMERIC_VALUE. Default is None.
         :param kwargs: other args, that relevant for specific technical indicators.
@@ -18,16 +18,14 @@ class TechnicalParameter:
             raise AttributeError
         self.name = name
         if name == enums.NUMERIC_VALUE.numeric_value:
-            self.is_numeric_value = True
             self.value = float(value)
         else:
             if name in enums.RAW_PARAMETERS:
-                self.is_raw = True
+                self.raw = True
             else:
-                self.is_raw = False
+                self.raw = False
             self.timeperiod = timeperiod
             self.shifting = shifting
-            self.is_numeric_value = False
 
         for key, value in kwargs.iteritems():
             setattr(self, key, value)
@@ -35,14 +33,24 @@ class TechnicalParameter:
     def get_name(self):
         return self.name
 
-    def get_period(self):
+    def get_timeperiod(self):
         return self.timeperiod
 
     def get_shifting(self):
         return self.shifting
 
     def is_raw(self):
-        return self.is_raw
+        """it's raw if it's Open/High/Low/Close/Volume or adj close"""
+        return self.raw
 
     def is_numeric_value(self):
-        return self.is_numeric_value
+        return bool(self.value)
+
+    def get_numeric_value(self):
+        if self.is_numeric_value():
+            return self.value
+
+    def is_technical_indicator(self):
+        return not (self.is_raw() or self.is_numeric_value())
+
+
