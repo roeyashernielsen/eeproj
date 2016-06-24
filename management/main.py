@@ -5,6 +5,7 @@ import pandas as pd
 from trade_system.trade_system import *
 from trade_system.rule import *
 from trade_system.term import *
+from processor.calculate_technical_parameters import *
 from utils import enums
 
 
@@ -13,7 +14,8 @@ def main(argv=None):
 	stocks = get_all_stocks(path)
 	trade_system = get_mock_trade_system()
 	indicators = get_indicators(trade_system)
-	print(indicators)
+	a = {(name, evaluate_technical_parameters(stock, indicators)) for name, stock in stocks.items()}
+	print(a)
 
 
 def get_mock_trade_system():
