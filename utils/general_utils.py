@@ -10,8 +10,8 @@ def type_checking(expected_type, *objects):
     """
     assert objects
     if type(expected_type) is list or type(expected_type) is tuple:
-        if any([object for object in objects if type(object) not in expected_type]):
+        if any([object_i for object_i in objects if [not isinstance(object_i, e_type) for e_type in expected_type]]):
             raise TypeError
     else:
-        if any([object for object in objects if type(object) is not expected_type]):
+        if any([object for object in objects if not isinstance(object, expected_type)]):
             raise TypeError
