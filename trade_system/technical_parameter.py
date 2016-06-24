@@ -47,3 +47,35 @@ class TechnicalParameter:
 
     def is_technical_indicator(self):
         return not (self.is_raw() or self.is_numeric_value())
+
+    def get_title(self):
+        return self.title
+
+def generate_indicator_title(technical_parameter):
+    """
+    Generate string name represents the technical parameter. This name is unique for two indicator that require the same
+    calculation for their values. The name uses as the title in the stock data frame table
+    :param technical_parameter: TechnicalParameter instance.
+    :return: string title of format "name(key=value,...)" where keys and values are only those that influence the
+    calculation of the technical indicator
+    """
+
+    def kwargs_to_string(kwargs):
+        signature = ''
+        for key, value in zip(kwargs.keys(), kwargs.values()):
+            signature += str(key) + '=' + str(value) + ','
+        return signature[:-1]
+
+    title = technical_parameter.name()
+    if technical_parameter.is_technical_indicator():  # TODO less hardcoded
+        title += '(timeperiod=' + str(technical_parameter.get_timeperiod()) + ','
+        title += kwargs_to_string(technical_parameter.kwargs)
+        title += ')'
+    if technical_parameter.is_numeric_value():
+        title += '(' + str(technical_parameter.get_numeric_value())
+        title += ')'
+    return title
+
+
+
+
