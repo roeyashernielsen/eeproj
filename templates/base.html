@@ -1,12 +1,15 @@
 {% load staticfiles %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Markit</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'Markit/site.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'Markit/view.css' %}" media="all">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static 'Markit/view.js' %}"></script>
+    <script type="text/javascript" src="{% static 'Markit/form.js' %}"></script>
 </head>
-<body>
+<body id="main_body">
 {% block content %}
 {% endblock content %}
 </body>
