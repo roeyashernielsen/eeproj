@@ -22,6 +22,7 @@ class TechnicalParameter:
         self.timeperiod = timeperiod
         self.shifting = shifting
 
+        self.kwargs = kwargs
         for key, value in kwargs.items():
             setattr(self, key, value)
 
