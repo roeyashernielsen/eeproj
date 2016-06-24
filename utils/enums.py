@@ -34,7 +34,7 @@ class EnumDict(dict):
     get: enum_name.key1 --> value1
     """
     def __getattr__(self, name):
-        if name in self:
+        if name in self.keys():
             return self.get(name)
         raise AttributeError
 
@@ -51,6 +51,9 @@ class EnumDict(dict):
         new_enum = copy.copy(self)
         new_enum.update(other)
         return new_enum
+
+    def __contains__(self, value):
+        return value in self.values()
 
 
 # ###################
