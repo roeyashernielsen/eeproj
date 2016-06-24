@@ -22,6 +22,13 @@ def main(argv=None):
 	# close_rule = Rule()
 	# sys = TradeSystem()
 
+# def parse_indicators(trade_system):
+# 	indicators = []
+# 	for trem in trade_system.get_open_rule().get_clauses().get_terms():
+# 		indicators.append(term.get_technical_parameter_1())
+# 	close_rule = trade_system.get_close_rule()
+#
+
 
 if __name__ == "__main__":
 	sys.exit(main())
