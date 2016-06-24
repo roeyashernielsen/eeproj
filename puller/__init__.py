@@ -1,1 +1,1 @@
-__author__ = 'Tzion'
+DATA_PATH = "./data/"

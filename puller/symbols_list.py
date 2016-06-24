@@ -2,11 +2,11 @@ import urllib2
 import os
 from logbook import Logger, StreamHandler
 import sys
-
+from .__init__ import *
 StreamHandler(sys.stdout).push_application()
 log = Logger(__name__)
 
-DATA_PATH = "../data/"
+
 
 class MarketData():
     """
