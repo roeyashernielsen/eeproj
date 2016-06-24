@@ -1,5 +1,5 @@
 from utils.general_utils import type_checking
-import term
+from . import term
 """
 rule (trading rule) is represented by boolean formula of sum of products (SOP). Means that the formula is built of
 clauses with OR operator between 2 clauses, and evey clauses is built of predicates with AND operator between.
