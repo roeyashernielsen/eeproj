@@ -1,4 +1,11 @@
 import talib
+from collections import OrderedDict
+from logbook import Logger, StreamHandler
+import sys
+
+StreamHandler(sys.stdout).push_application()
+log = Logger(__name__)
+
 """
 This file contains the functions that calculate the technical parameters values along time per stock data table
 """
@@ -7,8 +14,8 @@ def evaluate_technical_parameters(raw_stock_data, technical_parameters):
     """
     This function extends the table that contains the raw stock data, with the values of the technical indicators
     received as argument. The calculated values are added into new columns (vectors) within that table.
-    Notice that the length of each of the new vectors is usually shorted than the time vector, since most of the
-    technical indicators are functions defined as: R^n --> R, so the first output is function of the first n inputs.
+    Notice that the effective length of each of the new vectors is usually shorted than the time vector, since most of
+    the technical indicators are functions defined as: R^n --> R, so the first output is function of the first n inputs.
     :param raw_stock_data: DataFrame table, contains open, high, low, close and volume vectors (columns).
     :param technical_parameters: list of TechnicalParameter objects, each contains the name of the technical indicator
     and other arguments needed for the calculation.
@@ -17,9 +24,9 @@ def evaluate_technical_parameters(raw_stock_data, technical_parameters):
     # first calculate each indicator values and adds the vector to data table
     for technical_parameter in technical_parameters:
         values = calculate_technical_indicator(raw_stock_data, technical_parameter)
-        raw_stock_data = extend_stock_table(raw_stock_data, values)
+        raw_stock_data = extend_stock_table(raw_stock_data, values, technical_parameter.get_title())
 
-    # normalize data table to unify length (shorten the un fully rows)
+    # normalize data table to unify length (shorten the unfully rows)
     # TODO
 
     return raw_stock_data
@@ -33,13 +40,13 @@ def calculate_technical_indicator(stock_data, technical_parameter):
     :param technical_parameter: TechnicalParameter object, contains the indicator name and the arguments needed for the
     calculation.
     :return: vectors contains the calculated values over time.
-
     """
-
-    if technical_parameter.is_raw() or technical_parameter.is_numeric_value():
+    if not technical_parameter.is_technical_indicator():
         return  # no need to calculate anything in this case
     arguments = talib_adapter(stock_data, technical_parameter)
-
+    technical_indicator = talib.abstract.Function(technical_parameter.get_name())
+    technical_valuses = technical_indicator(arguments)
+    return technical_valuses
 
 
 def talib_adapter(stock_data, technical_parameter):
@@ -48,8 +55,34 @@ def talib_adapter(stock_data, technical_parameter):
     calculation of technical indicators
     :return: OrderedDict contains arguments according to talib needs
     """
-    inputs = dict(zip([title.lower() for title in stock_data.columns[:-1]], )
+    talib_inputs = OrderedDict()
+    # set the raw data values
+    sd = stock_data
+    columns = [sd.Open.values, sd.High.values, sd.Low.values, sd.Close.values, sd.Volume.values]
+    raw_data = OrderedDict(zip([title.lower() for title in sd.columns[1:-1]], columns))
+    talib_inputs.update(raw_data)
 
+    # set common arguments
+    if technical_parameter.get_timeperiod():
+        period = OrderedDict(timeperiod=technical_parameter.get_timeperiod())
+        talib_inputs.update(period)
+
+    # rest arguments should be given as kwargs
+    talib_inputs.update(OrderedDict(technical_parameter.kwargs))
+
+
+def extend_stock_table(stock_data, new_column, column_name):
+    """
+    Adds new_column into stock_data table. Extends table with the additional vector under the given name.
+    :param stock_data: DataFrame of stock data
+    :param new_column: vector contains the new values
+    :param column_name: the title will be given to the added values
+    :return: The extended stock_data
+    """
+    # sanity checks
+    log.warn("stock data and the additional vector length are different") if len(stock_data) != len(new_column) else None
+    log.warn("column {} already exist in stock data".format(column_name)) if stock_data.get(column_name) else None
+    stock_data[column_name] = new_column
 
 # for tests use TODO relocate
 import random
