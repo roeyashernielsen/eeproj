@@ -3,6 +3,7 @@ import os
 from logbook import Logger, StreamHandler
 import sys
 from .__init__ import *
+from utils import enums
 StreamHandler(sys.stdout).push_application()
 log = Logger(__name__)
 
@@ -20,8 +21,8 @@ class MarketData():
 nasdaq_url = 'http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=nasdaq&render=download'
 nyse_url = 'http://www.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=nyse&render=download'
 
-nasdaq = MarketData('NASDAQ', nasdaq_url)
-nyse = MarketData('NYSE', nyse_url)
+nasdaq = MarketData(enums.MARKETS.nasdaq, nasdaq_url)
+nyse = MarketData(enums.MARKETS.nyse, nyse_url)
 
 markets = [nasdaq, nyse]
 

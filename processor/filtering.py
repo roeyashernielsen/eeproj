@@ -5,6 +5,7 @@ from utils.enums import STOCK_DATA_COLUMNS as COLUMNS  # the columns name in sto
 from logbook import Logger, StreamHandler
 from utils import enums
 import sys
+from math import isnan
 
 StreamHandler(sys.stdout).push_application()
 log = Logger(__name__)
@@ -34,18 +35,20 @@ def filter_stock_data(trade_system, stock_data):
 
     _mark_trigger_lines(trade_system, stock_data)
 
-    _remove_untriggered_lines(stock_data)
+    filtered_stock_data = _remove_untriggered_lines(stock_data)
 
-    return stock_data
+    return filtered_stock_data
 
 
 def _remove_untriggered_lines(stock_data):
     """
     remove rows that aren't match the trade system (according to the mark column)
+    :return: new table without the dropped rows.
     """
     for row in range(len(stock_data.index)):
-        if not stock_data.get_values(row, COLUMNS.open_trigger) or stock_data.get_values(row, COLUMNS.close_trigger):
-            stock_data.drop(row)
+        if not stock_data.get_value(row, COLUMNS.open_trigger) and not stock_data.get_value(row, COLUMNS.close_trigger):
+            stock_data = stock_data.drop(row)
+    return stock_data
 
 
 def _mark_trigger_lines(trade_system, stock_data):
@@ -57,7 +60,7 @@ def _mark_trigger_lines(trade_system, stock_data):
     entering_price = None  # the entering price of the current position, if there's open one.
 
     for row in range(len(stock_data.index)):
-        date = stock_data.get_values(row, COLUMNS.date)
+        date = stock_data.get_value(row, COLUMNS.date)
         symbol = None  # TODO symbol from metadata on the logs prints
         for rule in [trade_system.get_open_rule(), trade_system.get_close_rule()]:
 
@@ -79,8 +82,8 @@ def _mark_trigger_lines(trade_system, stock_data):
                         log.error("Received open trigger while having open position. Trigger is ignored. Date: {} symbol: {}".format(date, symbol))
                     else:
                         stock_data.set_value(row, COLUMNS.open_trigger, open_trigger)
-                        entering_price = stock_data.get_values(row+1, COLUMNS.open) if row+1 < len(stock_data.index) else None
-                        log.info("Open trigger was marked for TODO_ADD_SYMBOL at {}".format(stock_data.get_values(row, date)))
+                        entering_price = stock_data.get_value(row+1, COLUMNS.open) if row+1 < len(stock_data.index) else None
+                        log.info("Open trigger was marked for TODO_ADD_SYMBOL at {}".format(row, date))
 
             # check close position triggers
             if rule is trade_system.get_close_rule():
@@ -92,7 +95,7 @@ def _mark_trigger_lines(trade_system, stock_data):
                     entering_price = None
                     log.info("Close trigger was marked for TODO_ADD_SYMBOL at {}".format(stock_data.get_values(row, date)))
 
-        if stock_data.get_values(row, COLUMNS.open_trigger) and stock_data.get_values(row, COLUMNS.close_trigger):
+        if stock_data.get_value(row, COLUMNS.open_trigger) and stock_data.get_value(row, COLUMNS.close_trigger):
             log.warning("Stock {} were trigger for open and close at the same day ({})".format(symbol, date))
 
 
@@ -131,12 +134,15 @@ def is_term_applied_by_stock(term, stock_data, index):
     :return: True if the term is satisfied, False otherwise
     """
     # retrieve the data of both technical params
-    param_1_values = _get_relevant_stock_data_sections(term.get_technical_parameter_1, stock_data, index)
+    param_1_values = _get_relevant_stock_data_sections(term.get_technical_parameter_1(), stock_data, index)
     if term.get_technical_parameter_2().is_numeric_value():
         numeric_value = term.get_technical_parameter_2().get_numeric_value()
         param_2_values = numeric_value, numeric_value  # tuple of same value
     else:
-        param_2_values = _get_relevant_stock_data_sections(term.get_technical_parameter_2, stock_data, index)
+        param_2_values = _get_relevant_stock_data_sections(term.get_technical_parameter_2(), stock_data, index)
+
+    #if any([value for value in param_1_values+param_2_values if isnan(value)]):  # some (indicators) values may be NaN
+     #   return False
 
     relation = term.get_relation()
     # check relations logic
@@ -148,7 +154,7 @@ def is_term_applied_by_stock(term, stock_data, index):
         return param_1_values[0] < param_2_values[0] and param_1_values[1] > param_2_values[1]
     if relation is enums.RELATIONS.crossover_above:
         return param_1_values[0] > param_2_values[0] and param_1_values[1] < param_2_values[1]
-    if relation is enums.RELATIONS.corssover:  # == crossover_below or crossover_above
+    if relation is enums.RELATIONS.crossover:  # == crossover_below or crossover_above
         return (param_1_values[0] < param_2_values[0] and param_1_values[1] > param_2_values[1]) or \
                (param_1_values[0] > param_2_values[0] and param_1_values[1] < param_2_values[1])
 
@@ -179,7 +185,7 @@ def _get_relevant_stock_data_sections(technical_param, stock_data, index):
              If wanted day is the first day, then day_before_value is None.
     """
     wanted_day_index = index - technical_param.get_shifting()  # retrieve the row index
-    wanted_day_param = technical_param.get_name()  # retrieve the column index
+    wanted_day_param = technical_param.get_title()  # retrieve the column index
     wanted_day_value = stock_data.get_value(wanted_day_index, wanted_day_param)
     try:
         previous_day_value = stock_data.get_value(wanted_day_index-1, wanted_day_param)

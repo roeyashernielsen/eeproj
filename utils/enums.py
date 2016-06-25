@@ -56,20 +56,16 @@ class EnumDict(dict):
         return value in self.values()
 
 
+
+
 # ###################
 # ## Enum classes ###
 # ###################
 
-"""
-The next Enum class contains the names of all the supported technical indicators
-SMA- simple moving average
-EMA- exponential moving average
-RSI- relative strength index
-AR- Aroon indicator
-ARO- Aroon oscillator
-ATR- average true range
-"""
-SUPPORTED_INDICATORS = EnumDict(sma='SMA', ema='EMA', rsi='RSI', ar='AR', aro='ARO', atr='ATR')
+MARKETS = EnumDict(nyse='NYSE', nasdaq='NASDAQ')
+# Enum class of the supported indicators at the moment
+SUPPORTED_INDICATORS = EnumDict(adx='ADX', aroonosc='AROONOSC', atr='ATR', ema='EMA', ma='MA', rsi='RSI', sar='SAR',
+                                sma='SMA', wma='WMA')
 
 # The parameters that received from the puller
 RAW_PARAMETERS = EnumDict(open='Open', high='High', low='Low', close='Close', volume='Volume', adj_close='Adj Close')
@@ -88,6 +84,29 @@ RELATIONS = EnumDict(greater='GREATER', less='LESS', crossover='CROSSOVER', cros
                      crossover_above='CROSSOVER_ABOVE')
 
 
-# TA-Lib technical indicators
-INDICATORS_GROUPS = EnumDict()
+# TA-Lib technical indicators by groups
+INDICATORS_GROUPS = EnumDict(zip([k.lower().replace(' ', '_') for k in talib.get_function_groups().keys()],
+                                 [k for k in talib.get_function_groups().keys()]))
+CYCLE_INDICATORS = EnumDict(zip([ind.lower() for ind in talib.get_function_groups().get(INDICATORS_GROUPS.cycle_indicators)],
+                                [ind for ind in talib.get_function_groups().get(INDICATORS_GROUPS.cycle_indicators)]))
+MOMENTUM_INDICATORS = EnumDict(zip([ind.lower() for ind in talib.get_function_groups().get(INDICATORS_GROUPS.momentum_indicators)],
+                                [ind for ind in talib.get_function_groups().get(INDICATORS_GROUPS.momentum_indicators)]))
+OVERLAP_STUDIES_INDICATORS = EnumDict(zip([ind.lower() for ind in talib.get_function_groups().get(INDICATORS_GROUPS.overlap_studies)],
+                                [ind for ind in talib.get_function_groups().get(INDICATORS_GROUPS.overlap_studies)]))
+VOLATILITY_INDICATORS = EnumDict(zip([ind.lower() for ind in talib.get_function_groups().get(INDICATORS_GROUPS.volatility_indicators)],
+                                [ind for ind in talib.get_function_groups().get(INDICATORS_GROUPS.volatility_indicators)]))
+VOLUME_INDICATORS = EnumDict(zip([ind.lower() for ind in talib.get_function_groups().get(INDICATORS_GROUPS.volume_indicators)],
+                                [ind for ind in talib.get_function_groups().get(INDICATORS_GROUPS.volume_indicators)]))
 
+# PRICE_TRANSFORM = EnumDict(zip([ind.lower() for ind in talib.get_function_groups().get(INDICATORS_GROUPS.price_transform)],
+ #                               [ind for ind in talib.get_function_groups().get(INDICATORS_GROUPS.price_transform)]))
+
+
+"""
+The next Enum class contains the names of all the supported technical indicators, derived from the TA-Lib's indicators
+"""
+ALL_INDICATORS = CYCLE_INDICATORS + MOMENTUM_INDICATORS + OVERLAP_STUDIES_INDICATORS + VOLATILITY_INDICATORS + VOLUME_INDICATORS
+
+# remove all the indicators with more than 1 vector output - the architecture not supported at the moment # TODO add support
+indicators_to_remove = [ind for ind in ALL_INDICATORS if len(talib.abstract.Function(ind).output_names) > 1]
+[ALL_INDICATORS.pop(ind) for ind in indicators_to_remove]
