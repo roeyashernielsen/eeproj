@@ -62,6 +62,7 @@ class EnumDict(dict):
 # ## Enum classes ###
 # ###################
 
+MARKETS = EnumDict(nyse='NYSE', nasdaq='NASDAQ')
 # Enum class of the supported indicators at the moment
 SUPPORTED_INDICATORS = EnumDict(adx='ADX', aroonosc='AROONOSC', atr='ATR', ema='EMA', ma='MA', rsi='RSI', sar='SAR',
                                 sma='SMA', wma='WMA')
