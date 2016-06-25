@@ -1,0 +1,48 @@
+from utils.enums import TRADE_DIRECTIONS
+
+
+class Trade:
+    """
+    This class represents trade after its closure. It contains info of the opening day and the closing day.
+    """
+    def __init__(self, opening_day, closing_day, direction):
+        """
+        :param opening_day: tuple of: (pandas Series object contains the raw stock data parameters, the index of this
+        Series in the previous DataFrame
+        :param closing_day: tuple of: (pandas Series object contains the raw stock data parameters, the index of this
+        Series in the previous DataFrame
+        :param direction: long/short
+        """
+        self.opening_day = opening_day[0]
+        self.closing_day = closing_day[0]
+
+        # at default, the opening and the closing price determine by the open price of the day
+        self.open_price = opening_day.COLUMS.open
+        self.close_price = opening_day.COLUMS.close
+        self.profit = self.open_price - self.close_price  # in points ($)
+        self.gain = (self.profit / self.open_price) * 100.0  # in percentages
+        if direction is TRADE_DIRECTIONS.short:
+            self.profit = -self.profit
+            self.gain = -self.gain
+        self.term = opening_day[1] - closing_day[1]  # trade length in days
+
+    def get_opening_day(self):
+        return self.opening_day
+
+    def get_closing_day(self):
+        return self.closing_day
+
+    def get_open_price(self):
+        return self.open_price
+
+    def get_close_price(self):
+        return self.close_price
+
+    def get_profit(self):
+        return self.profit
+
+    def get_gain(self):
+        return self.gain
+
+    def get_term(self):
+        return self.term

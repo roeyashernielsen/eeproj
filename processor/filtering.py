@@ -45,7 +45,7 @@ def _remove_untriggered_lines(stock_data):
     remove rows that aren't match the trade system (according to the mark column)
     :return: new table without the dropped rows.
     """
-    for row in range(len(stock_data.index)):
+    for row in stock_data.index:
         if not stock_data.get_value(row, COLUMNS.open_trigger) and not stock_data.get_value(row, COLUMNS.close_trigger):
             stock_data = stock_data.drop(row)
     return stock_data
@@ -59,7 +59,7 @@ def _mark_trigger_lines(trade_system, stock_data):
     """
     entering_price = None  # the entering price of the current position, if there's open one.
 
-    for row in range(len(stock_data.index)):
+    for row in stock_data.index[:-1]:  # ignore the last day (war mode) # TODO fix in order to get live triggers
         date = stock_data.get_value(row, COLUMNS.date)
         symbol = None  # TODO symbol from metadata on the logs prints
         for rule in [trade_system.get_open_rule(), trade_system.get_close_rule()]:
@@ -81,8 +81,8 @@ def _mark_trigger_lines(trade_system, stock_data):
                     if entering_price:
                         log.error("Received open trigger while having open position. Trigger is ignored. Date: {} symbol: {}".format(date, symbol))
                     else:
-                        stock_data.set_value(row, COLUMNS.open_trigger, open_trigger)
-                        entering_price = stock_data.get_value(row+1, COLUMNS.open) if row+1 < len(stock_data.index) else None
+                        stock_data.set_value(row+1, COLUMNS.open_trigger, open_trigger)
+                        entering_price = stock_data.get_value(row+1, COLUMNS.open) if row+1 < len(stock_data) else None
                         log.info("Open trigger was marked for TODO_ADD_SYMBOL at {}".format(row, date))
 
             # check close position triggers
@@ -91,10 +91,11 @@ def _mark_trigger_lines(trade_system, stock_data):
                 if not entering_price:
                     log.error("Received close trigger while no position is open. Trigger is ignored. Date: {} symbol: {}".format(date, symbol))
                 else:
-                    stock_data.set_value(row, COLUMNS.close_trigger, close_trigger)
+                    stock_data.set_value(row+1, COLUMNS.close_trigger, close_trigger)
                     entering_price = None
                     log.info("Close trigger was marked for TODO_ADD_SYMBOL at {}".format(stock_data.get_values(row, date)))
 
+        # check for open and close triggers on the same day
         if stock_data.get_value(row, COLUMNS.open_trigger) and stock_data.get_value(row, COLUMNS.close_trigger):
             log.warning("Stock {} were trigger for open and close at the same day ({})".format(symbol, date))
 
