@@ -4,7 +4,7 @@
     <img id="top" src="{% static 'Markit/pic/top.png' %}" alt="">
 	<div id="form_container">
 		<h1><a>Markit</a></h1>
-		<form id="form_1139967" class="appnitro"  method="post" action="">
+		<form action="#" method="get">
             <div class="form_description">
 			    <h2>Markit</h2>
 			    <p>This is your form description. Click here to edit.</p>
@@ -18,14 +18,12 @@
                         </span>
                         <span>
                             <label class="description" for="element_1_2">System Type </label>
-                            <span>
-                                <input id="element_1_2" name="element_1_2" class="element radio" type="radio" value="1" />
-                                <label class="choice" for="element_1_2">Long</label>
-                            </span>
-                            <span>
-                                <input id="element_1_2_" name="element_1_2" class="element radio" type="radio" value="2" />
-                                <label class="choice" for="element_1_2">Short</label>
-                            </span>
+                                {% for direction in directions %}
+                                    <span>
+                                        <input id="element_1_2" name="element_1_2" class="element radio" type="radio" value={{ direction }} />
+                                        <label class="choice" for="element_1_2">{{ direction }}</label>
+                                    </span>
+                                {% endfor %}
                         </span>
 		            </div>
 		        </li>
@@ -35,16 +33,16 @@
 		            <div>
 		                <select class="element select medium" id="element_2_1" name="element_2_1">
 			                <option value="" selected="selected"></option>
-                            <option value="1" >NYCE</option>
-                            <option value="2" >NASDAQ</option>
-                            <option value="3" >ALL</option>
+                                {% for market in markets %}
+                                    <option value="{{ market }}" >{{ market }}</option>
+                                {% endfor %}
 		                </select>
                     </div>
 		        </li>
 
                 <h2>Open Rule</h2>
-            <ul id="ul1">
-                <h3 id="osc_1">Start clause 1</h3>
+                <h3 id="osc1">Start clause 1</h3>
+                <ul id="ul1">
                 <p id="ost_1_1" style="margin-left: 50px;">Start term 1</p>
                 <li id="li_3_1_1"  style="margin-left: 50px;">
 		            <div>
@@ -52,9 +50,9 @@
                             <label class="description" for="element_3_1_1_1">Name</label>
                             <select class="element select medium" id="element_3_1_1_1" name="element_3_1_1_1">
                                 <option value="" selected="selected"></option>
-                                <option value="1" >First option</option>
-                                <option value="2" >Second option</option>
-                                <option value="3" >Third option</option>
+                                {% for indicator in indicators %}
+                                    <option value="{{ indicator }}" >{{ indicator }}</option>
+                                {% endfor %}
 		                    </select>
                         </span>
                         <span>
@@ -73,9 +71,10 @@
                             <label class="description" for="element_4_1_1_1">Name</label>
                             <select class="element select medium" id="element_4_1_1_1" name="element_4_1_1_1">
                                 <option value="" selected="selected"></option>
-                                <option value="1" >First option</option>
-                                <option value="2" >Second option</option>
-                                <option value="3" >Third option</option>
+                                <option value="" selected="selected"></option>
+                                {% for indicator in indicators %}
+                                    <option value="indicator" >{{ indicator }}</option>
+                                {% endfor %}
 		                    </select>
                         </span>
                         <span>
@@ -97,8 +96,8 @@
                  <li id="li_5_1" style="margin-left: 50px;">
                     <button id="OR1" class="btn add-more-open-terms" type="button">OR</button>
                  </li>
-                <h3 id="oec1">End clause 1</h3>
             </ul>
+                <h3 id="oec1">End clause 1</h3>
                 <li id="li_6">
                     <button id="AND" class="btn add-more-open-clause" type="button">AND</button>
                  </li>
@@ -158,8 +157,8 @@
                  </li>
 			
                 <li class="buttons">
-			        <input type="hidden" name="form_id" value="1139967" />
-				    <input id="saveForm" class="button_text" type="submit" name="submit" value="Submit" />
+{#				    <input id="saveForm" class="button_text" type="submit" name="submit" value="Submit" />#}
+                    <input type="submit" class="btn" value="SendForm" name="send.form">
 		        </li>
 			</ul>
 		</form>
