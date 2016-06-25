@@ -13,12 +13,8 @@ def main(argv=None):
     stocks = get_all_stocks(path)
     trade_system = get_mock_trade_system()
     indicators = get_indicators(trade_system)
-    a = dict((name, evaluate_technical_parameters(stock, indicators)) for name, stock in stocks.items())
-    b = dict((name, filter_stock_data(trade_system, stock)) for name, stock in stocks.items())
-    print(a)
-    print(b)
-    import pdb;
-    pdb.set_trace()
+    extended = dict((name, evaluate_technical_parameters(stock, indicators)) for name, stock in stocks.items())
+    filtered = dict((name, filter_stock_data(trade_system, stock)) for name, stock in stocks.items())
 
 
 def get_mock_trade_system():

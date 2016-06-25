@@ -35,18 +35,20 @@ def filter_stock_data(trade_system, stock_data):
 
     _mark_trigger_lines(trade_system, stock_data)
 
-    _remove_untriggered_lines(stock_data)
+    filtered_stock_data = _remove_untriggered_lines(stock_data)
 
-    return stock_data
+    return filtered_stock_data
 
 
 def _remove_untriggered_lines(stock_data):
     """
     remove rows that aren't match the trade system (according to the mark column)
+    :return: new table without the dropped rows.
     """
     for row in range(len(stock_data.index)):
-        if not stock_data.get_value(row, COLUMNS.open_trigger) or stock_data.get_value(row, COLUMNS.close_trigger):
-            stock_data.drop(row)
+        if not stock_data.get_value(row, COLUMNS.open_trigger) and not stock_data.get_value(row, COLUMNS.close_trigger):
+            stock_data = stock_data.drop(row)
+    return stock_data
 
 
 def _mark_trigger_lines(trade_system, stock_data):
