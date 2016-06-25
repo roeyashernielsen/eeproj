@@ -16,6 +16,7 @@ def evaluate_technical_parameters(raw_stock_data, technical_parameters):
     received as argument. The calculated values are added into new columns (vectors) within that table.
     Notice that the effective length of each of the new vectors is usually shorted than the time vector, since most of
     the technical indicators are functions defined as: R^n --> R, so the first output is function of the first n inputs.
+    Those NaN values are still part of the calculated vector, and are treated in the next level (filtering).
     :param raw_stock_data: DataFrame table, contains open, high, low, close and volume vectors (columns).
     :param technical_parameters: list of TechnicalParameter objects, each contains the name of the technical indicator
     and other arguments needed for the calculation.
@@ -25,9 +26,6 @@ def evaluate_technical_parameters(raw_stock_data, technical_parameters):
     for technical_parameter in technical_parameters:
         values = calculate_technical_indicator(raw_stock_data, technical_parameter)
         raw_stock_data = extend_stock_table(raw_stock_data, values, technical_parameter.get_title())
-
-    # normalize data table to unify length (shorten the unfully rows)
-    # TODO
 
     return raw_stock_data
 
@@ -45,8 +43,8 @@ def calculate_technical_indicator(stock_data, technical_parameter):
         return  # no need to calculate anything in this case
     arguments = talib_adapter(stock_data, technical_parameter)
     technical_indicator = talib.abstract.Function(technical_parameter.get_name())
-    technical_valuses = technical_indicator(arguments)
-    return technical_valuses
+    technical_values = technical_indicator(arguments)
+    return technical_values
 
 
 def talib_adapter(stock_data, technical_parameter):
@@ -70,6 +68,8 @@ def talib_adapter(stock_data, technical_parameter):
     # rest arguments should be given as kwargs
     talib_inputs.update(OrderedDict(technical_parameter.kwargs))
 
+    return talib_inputs
+
 
 def extend_stock_table(stock_data, new_column, column_name):
     """
@@ -83,6 +83,7 @@ def extend_stock_table(stock_data, new_column, column_name):
     log.warn("stock data and the additional vector length are different") if len(stock_data) != len(new_column) else None
     log.warn("column {} already exist in stock data".format(column_name)) if stock_data.get(column_name) else None
     stock_data[column_name] = new_column
+    return stock_data
 
 # for tests use TODO relocate
 import random

@@ -69,7 +69,7 @@ AR- Aroon indicator
 ARO- Aroon oscillator
 ATR- average true range
 """
-SUPPORTED_INDICATORS = EnumDict(sma='SMA', ema='EMA', rsi='RSI', ar='AR', aro='ARO', atr='ATR')
+SUPPORTED_INDICATORS = EnumDict(sma='SMA', ema='EMA', rsi='RSI', aroon='AROON', aroonosc='AROONOSC', atr='ATR')
 
 # The parameters that received from the puller
 RAW_PARAMETERS = EnumDict(open='Open', high='High', low='Low', close='Close', volume='Volume', adj_close='Adj Close')

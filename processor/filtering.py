@@ -5,6 +5,7 @@ from utils.enums import STOCK_DATA_COLUMNS as COLUMNS  # the columns name in sto
 from logbook import Logger, StreamHandler
 from utils import enums
 import sys
+from math import isnan
 
 StreamHandler(sys.stdout).push_application()
 log = Logger(__name__)
@@ -137,6 +138,9 @@ def is_term_applied_by_stock(term, stock_data, index):
         param_2_values = numeric_value, numeric_value  # tuple of same value
     else:
         param_2_values = _get_relevant_stock_data_sections(term.get_technical_parameter_2, stock_data, index)
+
+    if any([value for value in param_1_values+param_2_values if isnan(value)]):  # some (indicators) values may be NaN
+        return False
 
     relation = term.get_relation()
     # check relations logic

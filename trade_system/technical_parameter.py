@@ -21,8 +21,9 @@ class TechnicalParameter:
         self.raw = True if name in enums.RAW_PARAMETERS else False
         self.timeperiod = timeperiod
         self.shifting = shifting
-
         self.kwargs = kwargs
+
+        self.title = generate_indicator_title(self)
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -67,7 +68,7 @@ def generate_indicator_title(technical_parameter):
             signature += str(key) + '=' + str(value) + ','
         return signature[:-1]
 
-    title = technical_parameter.name()
+    title = technical_parameter.get_name()
     if technical_parameter.is_technical_indicator():  # TODO less hardcoded
         title += '(timeperiod=' + str(technical_parameter.get_timeperiod()) + ','
         title += kwargs_to_string(technical_parameter.kwargs)
