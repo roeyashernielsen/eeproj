@@ -1,13 +1,12 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 {% block content %}
-    <img id="top" src="{% static 'Markit/pic/top.png' %}" alt="">
+    <h1>Markit</h1>
 	<div id="form_container">
-		<h1><a>Markit</a></h1>
 		<form action="#" method="get">
             <div class="form_description">
-			    <h2>Markit</h2>
-			    <p>This is your form description. Click here to edit.</p>
+			    <H2>Markit</H2>
+			    <H3>Your Marker For Stocks Market</H3>
 		    </div>
             <ul id="all">
                 <li id="li_1" >
@@ -29,26 +28,29 @@
 		        </li>
 
                 <li id="li_2" >
-		            <label class="description" for="element_2">Market </label>
+		            <label class="description" for="element_2_1">Market </label>
 		            <div>
 		                <select class="element select medium" id="element_2_1" name="element_2_1">
 			                <option value="" selected="selected"></option>
                                 {% for market in markets %}
                                     <option value="{{ market }}" >{{ market }}</option>
                                 {% endfor %}
+                            <option value="ALL">ALL</option>
 		                </select>
                     </div>
 		        </li>
 
+
+                <ul id="open">
                 <h2>Open Rule</h2>
                 <h3 id="osc1">Start clause 1</h3>
-                <ul id="ul1">
+                <ul id="oul1">
                 <p id="ost_1_1" style="margin-left: 50px;">Start term 1</p>
-                <li id="li_3_1_1"  style="margin-left: 50px;">
+                <li id="open_li_3_1_1"  style="margin-left: 50px;">
 		            <div>
                         <span>
-                            <label class="description" for="element_3_1_1_1">Name</label>
-                            <select class="element select medium" id="element_3_1_1_1" name="element_3_1_1_1">
+                            <label class="description" for="oelement_3_1_1_1">Name</label>
+                            <select class="element select medium" id="oelement_3_1_1_1" name="oelement_3_1_1_1">
                                 <option value="" selected="selected"></option>
                                 {% for indicator in indicators %}
                                     <option value="{{ indicator }}" >{{ indicator }}</option>
@@ -56,105 +58,140 @@
 		                    </select>
                         </span>
                         <span>
-                            <label class="description" for="element_3_2_1_1">Period </label>
-			                <input id="element_3_2_1_1" name="element_3_2_1_1" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="oelement_3_2_1_1">Period </label>
+			                <input id="oelement_3_2_1_1" name="oelement_3_2_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
                         <span>
-                            <label class="description" for="element_3_3_1_1">Shifting </label>
-			                <input id="element_3_3_1_1" name="element_3_3_1_1" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="oelement_3_3_1_1">Shifting </label>
+			                <input id="oelement_3_3_1_1" name="oelement_3_3_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
 		            </div>
 		        </li>
-                <li id="li_4_1_1" style="margin-left: 50px;">
+                <li id="open_li_7_1_1" style="margin-left: 50px;">
+                    <label class="description" for="oelement_7_1_1_1">Relation </label>
+		            <div>
+		                <select class="element select medium" id="oelement_7_1_1_1" name="oelement_7_1_1_1">
+			                <option value="" selected="selected"></option>
+                                {% for relation in relations %}
+                                    <option value="{{ relation }}"
+                                    >{{ relation }}</option>
+                                {% endfor %}
+		                </select>
+                    </div>
+                </li>
+                <li id="open_li_4_1_1" style="margin-left: 50px;">
 		            <div>
                         <span>
-                            <label class="description" for="element_4_1_1_1">Name</label>
-                            <select class="element select medium" id="element_4_1_1_1" name="element_4_1_1_1">
+                            <label class="description" for="oelement_4_1_1_1">Name</label>
+                            <select class="element select medium" id="oelement_4_1_1_1" name="oelement_4_1_1_1">
                                 <option value="" selected="selected"></option>
                                 <option value="" selected="selected"></option>
                                 {% for indicator in indicators %}
-                                    <option value="indicator" >{{ indicator }}</option>
+                                    <option value={{ indicator }} >{{ indicator }}</option>
                                 {% endfor %}
 		                    </select>
                         </span>
                         <span>
-                            <label class="description" for="element_4_2_1_1">Period </label>
-			                <input id="element_4_2_1_1" name="element_4_2_1_1" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="oelement_4_2_1_1">Period </label>
+			                <input id="oelement_4_2_1_1" name="oelement_4_2_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
                         <span>
-                            <label class="description" for="element_4_3_1_1">Shifting </label>
-			                <input id="element_4_3_1_1" name="element_4_3_1_1" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="oelement_4_3_1_1">Shifting </label>
+			                <input id="oelement_4_3_1_1" name="oelement_4_3_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
                         <span>
-                            <label class="description" for="element_4_4_1_1">Value</label>
-			                <input id="element_4_4_1_1" name="element_4_4_1_1" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="oelement_4_4_1_1">Value</label>
+			                <input id="oelement_4_4_1_1" name="oelement_4_4_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
 		            </div>
 		        </li>
                 <p id="oet_1_1" style="margin-left: 50px;">End term 1</p>
 
-                 <li id="li_5_1" style="margin-left: 50px;">
+                 <li id="open_li_5_1" style="margin-left: 50px;">
                     <button id="OR1" class="btn add-more-open-terms" type="button">OR</button>
                  </li>
             </ul>
                 <h3 id="oec1">End clause 1</h3>
-                <li id="li_6">
+                <li id="open_li_6">
                     <button id="AND" class="btn add-more-open-clause" type="button">AND</button>
                  </li>
+            </ul>
+
+            <ul id="close">
                 <h2>Close Rule</h2>
-
-                <p id="cst1">Start term</p>
-                <li id="li_6_1" >
+                <h3 id="csc1">Start clause 1</h3>
+                <ul id="cul1">
+                <p id="cst_1_1" style="margin-left: 50px;">Start term 1</p>
+                <li id="close_li_3_1_1"  style="margin-left: 50px;">
 		            <div>
                         <span>
-                            <label class="description" for="element_3">Name</label>
-                            <select class="element select medium" id="element_3" name="element_3">
+                            <label class="description" for="celement_3_1_1_1">Name</label>
+                            <select class="element select medium" id="celement_3_1_1_1" name="celement_3_1_1_1">
                                 <option value="" selected="selected"></option>
-                                <option value="1" >First option</option>
-                                <option value="2" >Second option</option>
-                                <option value="3" >Third option</option>
+                                {% for indicator in indicators %}
+                                    <option value="{{ indicator }}" >{{ indicator }}</option>
+                                {% endfor %}
 		                    </select>
                         </span>
                         <span>
-                            <label class="description" for="element_6">Period </label>
-			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="celement_3_2_1_1">Period </label>
+			                <input id="celement_3_2_1_1" name="celement_3_2_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
                         <span>
-                            <label class="description" for="element_6">Shifting </label>
-			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="celement_3_3_1_1">Shifting </label>
+			                <input id="celement_3_3_1_1" name="celement_3_3_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
 		            </div>
 		        </li>
-                <li id="li_7_1" >
+                <li id="close_li_7_1_1" style="margin-left: 50px;">
+                    <label class="description" for="celement_7_1_1_1">Relation </label>
+		            <div>
+		                <select class="element select medium" id="celement_7_1_1_1" name="celement_7_1_1_1">
+			                <option value="" selected="selected"></option>
+                                {% for relation in relations %}
+                                    <option value="{{ relation }}"
+                                    >{{ relation }}</option>
+                                {% endfor %}
+		                </select>
+                    </div>
+                </li>
+                <li id="close_li_4_1_1" style="margin-left: 50px;">
 		            <div>
                         <span>
-                            <label class="description" for="element_3">Name</label>
-                            <select class="element select medium" id="element_3" name="element_3">
+                            <label class="description" for="celement_4_1_1_1">Name</label>
+                            <select class="element select medium" id="celement_4_1_1_1" name="celement_4_1_1_1">
                                 <option value="" selected="selected"></option>
-                                <option value="1" >First option</option>
-                                <option value="2" >Second option</option>
-                                <option value="3" >Third option</option>
+                                <option value="" selected="selected"></option>
+                                {% for indicator in indicators %}
+                                    <option value={{ indicator }} >{{ indicator }}</option>
+                                {% endfor %}
 		                    </select>
                         </span>
                         <span>
-                            <label class="description" for="element_6">Period </label>
-			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="celement_4_2_1_1">Period </label>
+			                <input id="celement_4_2_1_1" name="celement_4_2_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
                         <span>
-                            <label class="description" for="element_6">Shifting </label>
-			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="celement_4_3_1_1">Shifting </label>
+			                <input id="celement_4_3_1_1" name="celement_4_3_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
                         <span>
-                            <label class="description" for="element_6">Value</label>
-			                <input id="element_6" name="element_6" class="element text medium" type="text" maxlength="255" value=""/>
+                            <label class="description" for="celement_4_4_1_1">Value</label>
+			                <input id="celement_4_4_1_1" name="celement_4_4_1_1" class="element text medium" type="text" maxlength="255" value=""/>
                         </span>
 		            </div>
 		        </li>
-                <p id="cet1">End term </p>
+                <p id="cet_1_1" style="margin-left: 50px;">End term 1</p>
 
-                 <li id="li_8" >
-                    <button id="open1" class="btn add-more-close-terms" type="button">Add term</button>
+                 <li id="close_li_5_1" style="margin-left: 50px;">
+                    <button id="OR1" class="btn add-more-close-terms" type="button">OR</button>
                  </li>
+            </ul>
+                <h3 id="cec1">End clause 1</h3>
+                <li id="close_li_6">
+                    <button id="AND" class="btn add-more-close-clause" type="button">AND</button>
+                 </li>
+            </ul>
 			
                 <li class="buttons">
 {#				    <input id="saveForm" class="button_text" type="submit" name="submit" value="Submit" />#}
@@ -162,6 +199,6 @@
 		        </li>
 			</ul>
 		</form>
-	</div>
-	<img id="bottom" src="{% static 'Markit/pic/bottom.png' %}" alt="">
+    </div>
+    <h1>Markit</h1>
 {% endblock content %}

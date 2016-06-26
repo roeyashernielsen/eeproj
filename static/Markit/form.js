@@ -44,15 +44,20 @@ $(document).ready(function(){
         cloneost.innerHTML = "Start term " + next;
         $(addto).after(cloneost);
 
-        var li3 = document.getElementById('li_3_1_1'),
+        var li3 = document.getElementById('open_li_3_1_1'),
         cloneli3 = li3.cloneNode(true); // true means clone all childNodes and all event handlers
         cloneli3.id = "li_3_" +clauseNum+ "_" + next;
         $(cloneost).after(cloneli3);
+        
+        var li7 = document.getElementById('open_li_7_1_1'),
+        cloneli7 = li7.cloneNode(true); // true means clone all childNodes and all event handlers
+        cloneli7.id = "open_li_7_" +clauseNum+ "_" + next;
+        $(cloneli3).after(cloneli7);
 
-        var li4 = document.getElementById('li_4_1_1'),
+        var li4 = document.getElementById('open_li_4_1_1'),
         cloneli4 = li4.cloneNode(true); // true means clone all childNodes and all event handlers
-        cloneli4.id = "li_4_" +clauseNum+ "_" + next;
-        $(cloneli3).after(cloneli4);
+        cloneli4.id = "open_li_4_" +clauseNum+ "_" + next;
+        $(cloneli7).after(cloneli4);
 
         var oet = document.getElementById('oet_1_1'),
         cloneoet = oet.cloneNode(true); // true means clone all childNodes and all event handlers
@@ -66,7 +71,7 @@ $(document).ready(function(){
     var next2 = 1;
     $(".add-more-open-clause").click(function(e){
         e.preventDefault();
-        var addto = "#li_6";
+        var addto = "#open_li_6";
         next2 = next2 + 1;
 
         var osc = document.getElementById('osc1'),
@@ -75,9 +80,9 @@ $(document).ready(function(){
         cloneosc.innerHTML = "Start clause " + next2;
         $(addto).before(cloneosc);
 
-        var ul = document.getElementById('ul1'),
+        var ul = document.getElementById('oul1'),
         cloneul = ul.cloneNode(true); // true means clone all childNodes and all event handlers
-        cloneul.id = "ul_" + next2;
+        cloneul.id = "oul_" + next2;
         $(cloneosc).after(cloneul);
 
         var oec = document.getElementById('oec1'),
@@ -89,3 +94,66 @@ $(document).ready(function(){
     });
 });
 
+$(document).ready(function(){
+    var next = 1;
+    $(".add-more-close-terms").click(function(e){
+        e.preventDefault();
+        var clauseNum = this.id.charAt(this.id.length-1);
+        var addto = "#cet_" + clauseNum + "_" + next;
+        next = next + 1;
+
+        var cst = document.getElementById('cst_1_1'),
+        clonecst = cst.cloneNode(true); // true means clone all childNodes and all event handlers
+        clonecst.id = "cst_" +clauseNum+ "_" + next;
+        clonecst.innerHTML = "Start term " + next;
+        $(addto).after(clonecst);
+
+        var li3 = document.getElementById('close_li_3_1_1'),
+        cloneli3 = li3.cloneNode(true); // true means clone all childNodes and all event handlers
+        cloneli3.id = "close_li_3_" +clauseNum+ "_" + next;
+        $(clonecst).after(cloneli3);
+
+        var li7 = document.getElementById('close_li_7_1_1'),
+        cloneli7 = li7.cloneNode(true); // true means clone all childNodes and all event handlers
+        cloneli7.id = "close_li_7_" +clauseNum+ "_" + next;
+        $(cloneli3).after(cloneli7);
+
+        var li4 = document.getElementById('close_li_4_1_1'),
+        cloneli4 = li4.cloneNode(true); // true means clone all childNodes and all event handlers
+        cloneli4.id = "close_li_4_" +clauseNum+ "_" + next;
+        $(cloneli7).after(cloneli4);
+
+        var cet = document.getElementById('cet_1_1'),
+        clonecet = cet.cloneNode(true); // true means clone all childNodes and all event handlers
+        clonecet.id = "cet_" +clauseNum+ "_" + next;
+        clonecet.innerHTML = "End term " + next;
+        $(cloneli4).after(clonecet);
+    });
+});
+
+$(document).ready(function(){
+    var next2 = 1;
+    $(".add-more-close-clause").click(function(e){
+        e.preventDefault();
+        var addto = "#close_li_6";
+        next2 = next2 + 1;
+
+        var csc = document.getElementById('csc1'),
+        clonecsc = csc.cloneNode(true); // true means clone all childNodes and all event handlers
+        clonecsc.id = "csc" + next2;
+        clonecsc.innerHTML = "Start clause " + next2;
+        $(addto).before(clonecsc);
+
+        var ul = document.getElementById('cul1'),
+        cloneul = ul.cloneNode(true); // true means clone all childNodes and all event handlers
+        cloneul.id = "cul_" + next2;
+        $(clonecsc).after(cloneul);
+
+        var cec = document.getElementById('cec1'),
+        clonecec = cec.cloneNode(true); // true means clone all childNodes and all event handlers
+        clonecec.id = "cec" + next2;
+        clonecec.innerHTML = "End clause " + next2;
+        $(cloneul).after(clonecec);
+
+    });
+});
