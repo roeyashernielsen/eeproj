@@ -19,12 +19,12 @@ class Trade:
         # at default, the opening and the closing price determine by the open price of the day
         self.open_price = opening_day.COLUMS.open
         self.close_price = opening_day.COLUMS.close
-        self.profit = self.open_price - self.close_price  # in points ($)
-        self.gain = (self.profit / self.open_price) * 100.0  # in percentages
+        self.profit_points = self.open_price - self.close_price  # in points ($)
+        self.profit_percentages = (self.profit_points / self.open_price) * 100.0  # in percentages
         if direction is TRADE_DIRECTIONS.short:
-            self.profit = -self.profit
-            self.gain = -self.gain
-        self.term = opening_day[1] - closing_day[1]  # trade length in days
+            self.profit_points = -self.profit_points
+            self.profit_percentages = -self.profit_percentages
+        self.duration = opening_day[1] - closing_day[1]  # trade length in days
 
     def get_opening_day(self):
         return self.opening_day
@@ -38,11 +38,11 @@ class Trade:
     def get_close_price(self):
         return self.close_price
 
-    def get_profit(self):
-        return self.profit
+    def get_profit_points(self):
+        return self.profit_points
 
-    def get_gain(self):
-        return self.gain
+    def get_profit_percentage(self):
+        return self.profit_percentages
 
-    def get_term(self):
-        return self.term
+    def get_duration(self):
+        return self.duration
