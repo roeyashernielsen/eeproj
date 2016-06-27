@@ -10,7 +10,7 @@ from puller.__init__ import *
 
 
 def main(argv=None):
-    path = '/Users/roeya/Desktop/stock/'
+    path = path = DATA_PATH + 'few_symbols/'
     stocks = get_all_stocks(path)
     trade_system = get_mock_trade_system()
     indicators = get_indicators(trade_system)
