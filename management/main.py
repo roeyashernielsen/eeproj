@@ -9,15 +9,16 @@ from utils import enums
 from puller.__init__ import *
 
 
-def main(argv=None):
-    path = path = DATA_PATH + 'few_symbols/'
+def main(trade_system):
+    path = path = '/Users/roeya/Desktop/stock/'
     stocks = get_all_stocks(path)
-    trade_system = get_mock_trade_system()
+    # trade_system = get_mock_trade_system()
     indicators = get_indicators(trade_system)
     extended = dict((name, evaluate_technical_parameters(stock, indicators)) for name, stock in stocks.items())
-    #filtered = dict((name, filter_stock_data(trade_system, stock)) for name, stock in extended.items())
+    filtered = dict((name, filter_stock_data(trade_system, stock)) for name, stock in extended.items())
     stats_dict = get_stat_dict(stocks, extended)
-    # stats = calculate_system_statistics(stats_dict, trade_system.direction, "bb")
+    # stats = calculate_system_statistics(stats_dict, trade_system.direction, trade_system.name)
+    return extended.values()[0]
 
 
 def get_mock_trade_system():
@@ -27,7 +28,7 @@ def get_mock_trade_system():
     # term2 = Term(get_mock_technical_parameter(), enums.RELATIONS.crossover_above, get_mock_technical_parameter())
     open_rule = Rule(Clause(get_mock_term()))
     close_rule = Rule(Clause(get_mock_term()))
-    return TradeSystem(open_rule, close_rule, enums.TRADE_DIRECTIONS.long)
+    return TradeSystem("test", open_rule, close_rule, enums.TRADE_DIRECTIONS.long)
 
 
 def get_mock_term():
@@ -101,6 +102,7 @@ def get_stat_dict(full, filtered):
         l = len(full.get(k))
         res[k] = (filtered.get(k), full.get(k).iloc[0, 0], full.get(k).iloc[l - 1, 0], l)
     return res
+
 
 if __name__ == "__main__":
     sys.exit(main())

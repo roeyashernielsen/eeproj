@@ -2,6 +2,7 @@ from django.shortcuts import render
 from trade_system.rule import *
 from trade_system.term import *
 from trade_system.trade_system import *
+from management.main import *
 from utils import enums
 import pandas as pd
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -62,24 +63,11 @@ def form(request):
 		close_dict = separate_dict_to_clauses(dict((k, v) for k, v in ts_dic.items() if k.startswith('c')))
 		open_rule = build_rule(open_dict)
 		close_rule = build_rule(close_dict)
-		trade_system = TradeSystem(open_rule, close_rule, direction)
-
-		print(name + direction + market)
-		print(request.GET)
-	# open_rule = Rule(Clause(get_mock_term()))
-	# 	close_rule = Rule(Clause(get_mock_term()))
-	# 	return TradeSystem(open_rule, close_rule, enums.TRADE_DIRECTIONS.long)
-	#
-	# def get_mock_term():
-	# 	tp1 = get_mock_technical_parameter()
-	# 	tp2 = get_mock_technical_parameter()
-	# 	rel = random.choice(list(enums.RELATIONS.values()))
-	# 	return Term(tp1, rel, tp2)
-	#
-	# def get_mock_technical_parameter():
-	# 	indicator = random.choice(list(enums.SUPPORTED_INDICATORS.values()))
-	# 	period = random.randint(10, 50)
-	# 	return TechnicalParameter(indicator, period, 0)
+		trade_system = TradeSystem(name, open_rule, close_rule, direction)
+		res = main(trade_system)
+		return render(request, 'Markit/results.html', {
+			'data': res.to_html,
+		})
 
 	return render(request, 'Markit/form.html', {
 		'indicators': list(enums.SUPPORTED_INDICATORS.values()),
@@ -107,6 +95,7 @@ def separate_dict_to_terms(dic):
 		res.append(dict((k, v) for k, v in dic.items() if regexp.search(k) is not None))
 
 	return res
+
 
 def build_term(dic):
 	sdic = sorted(dic)
