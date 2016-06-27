@@ -9,7 +9,7 @@ based on those, it derives the statistics of the whole trading system.
 """
 
 
-def calculate_system_statistics(stock_data_table_dict, direction, period_days, start_date, end_date, system_name):
+def calculate_system_statistics(stock_data_table_dict, direction, system_name):
     """
     This function does the calculation of the systems and the stocks statistics.
     :param stock_data_table_dict: dictionary where the key is the stock symbol, and the value is tuple of:
@@ -24,17 +24,28 @@ def calculate_system_statistics(stock_data_table_dict, direction, period_days, s
     """
 
     # retrieve all the trade of all the stocks in the trade system
-    system_trades = {}  # dictionary with stock symbols as keys and list of all trades of that stock as value
+    system_trades = {}
     for stock in stock_data_table_dict:
-        system_trades.update({stock: calculate_trades_statistics(stock_data_table_dict[stock], direction)})
+        stock_trades = stock_data_table_dict.get(stock)[0]
+        stock_start_date = stock_data_table_dict.get(stock)[1]
+        stock_end_date = stock_data_table_dict.get(stock)[2]
+        stock_period = stock_data_table_dict.get(stock)[3]
+        # dictionary with stock symbols as keys and tuple of:(list of all trades of that stock as value, start_date, end_date, period) #TODO make it more friendly
+        system_trades.update({stock: (calculate_trades_statistics(stock_trades, direction), stock_start_date,
+                                      stock_end_date, stock_period)})
+
+    # retrieve system trade dates and period
+    system_start_date, system_end_date, system_period = _get_system_times(stock_data_table_dict)
 
     stocks_statistics_list = []
-    system_statistics = SystemStatistics(system_name, period_days, [], [], [], start_date, end_date)
+    system_statistics = SystemStatistics(system_name, system_start_date, system_end_date, system_period, [], [], []) # init with empty vectors
     # iterate over all stocks create StockStatistics objects
     for stock in system_trades:
-        stock_statistics = StockStatistics(stock, period_days, [trade.get_duration() for trade in system_trades[stock]],
-                                           [trade.get_profit_points() for trade in system_trades[stock]],
-                                           [trade.get_profit_percentage() for trade in system_trades[stock]])
+        trades_list, start, end, period = system_trades.get(stock)
+        stock_statistics = StockStatistics(stock, start, end, period,
+                                           [trade.get_duration() for trade in trades_list],
+                                           [trade.get_profit_points() for trade in trades_list],
+                                           [trade.get_profit_percentage() for trade in trades_list])
         stock_statistics.calculate_statistics()  # calculate each stock's statistics
         stocks_statistics_list.extend([stock_statistics])  # add it to the output list
 
@@ -45,6 +56,20 @@ def calculate_system_statistics(stock_data_table_dict, direction, period_days, s
     system_statistics.calculate_statistics()  # finally calculate the system stats, based on the concatenated vectors of all stocks
 
     return system_statistics, stocks_statistics_list
+
+
+def _get_system_times(stock_data_table_dict):
+    """
+    Retrieves the start date, end date and period of the system out of the data from stock_data_table_dict.
+    Take the earliest start date, latest end date and the max period time among the stocks.
+    :param stock_data_table_dict: as define in calculate_system_statistics()
+    :return: tuple of (start_date, end_date, period)
+    """
+
+    start_dates = [stock_data_table_dict.get(symbol)[1] for symbol in stock_data_table_dict]
+    end_dates = [stock_data_table_dict.get(symbol)[2] for symbol in stock_data_table_dict]
+    periods = [stock_data_table_dict.get(symbol)[3] for symbol in stock_data_table_dict]
+    return min(start_dates), max(end_dates), max(periods)
 
 
 class StockStatistics:
