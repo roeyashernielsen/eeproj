@@ -7,6 +7,11 @@ import pandas as pd
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from django.http import HttpResponse
+# import plotly.plotly as py
+# import plotly.graph_objs as go
+# from IPython.display import display
+# from plotly.graph_objs import *
+# import plotly.tools as tls
 import re
 
 
@@ -24,15 +29,26 @@ def index(request):
 
 
 def results(request):
-	fig = Figure()
-	ax = fig.add_subplot(111)
-	data_df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
-	data_df = pd.DataFrame(data_df)
-	data_df.plot(ax=ax)
-	canvas = FigureCanvas(fig)
-	response = HttpResponse(content_type='image/png')
-	canvas.print_png(response)
-	return response
+	# fig = Figure()
+	# ax = fig.add_subplot(111)
+	# data_df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
+	# data_df = pd.DataFrame(data_df)
+	# data_df.plot(ax=ax)
+	# canvas = FigureCanvas(fig)
+	# response = HttpResponse(content_type='image/png')
+	# canvas.print_png(response)
+	# return response
+	df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
+	return render(request, 'Markit/results.html', {
+		'data': df.to_html,
+	})
+
+
+def results2(request):
+	py.tools.set_credentials_file(username='roey', api_key='uj73ktb1kf')
+	df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
+	return py.plot([py.go.Bar(x=df.Close, y=df.Open)], filename='bla')
+
 
 
 def form(request):
