@@ -37,46 +37,52 @@ def graph(request):
 	import pandas as pd
 
 	global s
-	mondays = WeekdayLocator(MONDAY)  # major ticks on the mondays
-	alldays = DayLocator()  # minor ticks on the days
-	weekFormatter = DateFormatter('%b %d')  # e.g., Jan 12
-	dayFormatter = DateFormatter('%d')  # e.g., 12
-	funcy = lambda x: date2num(datetime.strptime(x, "%Y-%m-%d"))
+	if request.GET.get('show.graph'):
+		mondays = WeekdayLocator(MONDAY)  # major ticks on the mondays
+		alldays = DayLocator()  # minor ticks on the days
+		weekFormatter = DateFormatter('%b %d')  # e.g., Jan 12
+		dayFormatter = DateFormatter('%d')  # e.g., 12
+		funcy = lambda x: date2num(datetime.strptime(x, "%Y-%m-%d"))
 
-	df = s.get(str(request.GET.get('stock_name')))
-	df = df[['Date', 'Open', 'Close', 'High', 'Low']]
-	df.columns = ['date', 'open', 'close', 'high', 'low']
-	df[['date']] = df['date'].map(funcy)
+		df = s.get(str(request.GET.get('stock_name')))
+		df = df[['Date', 'Open', 'Close', 'High', 'Low']]
+		df.columns = ['date', 'open', 'close', 'high', 'low']
+		df[['date']] = df['date'].map(funcy)
 
-	df2 = s.get(str(request.GET.get('stock_name'))).sample(10)
-	df2 = df2[['Date', 'Open', 'Close', 'High', 'Low']]
-	df2.columns = ['date', 'open', 'close', 'high', 'low']
-	df2[['date']] = df2['date'].map(funcy)
+		df2 = f.get(str(request.GET.get('stock_name')))
+		df2 = df2[['Date', 'Open', 'Close', 'High', 'Low']]
+		df2.columns = ['date', 'open', 'close', 'high', 'low']
+		df2[['date']] = df2['date'].map(funcy)
 
-	fig, ax = plt.subplots(2,1)
-	fig.set_size_inches(18.5, 10.5)
-	fig.subplots_adjust(bottom=0.2)
-	ax[0].xaxis.set_major_locator(mondays)
-	ax[0].xaxis.set_minor_locator(alldays)
-	ax[0].xaxis.set_major_formatter(weekFormatter)
-	_candlestick(ax[0], [tuple(x) for x in df.values], width=0.6)
-	ax[0].xaxis_date()
-	ax[0].autoscale_view()
-	plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
+		fig, ax = plt.subplots(2,1)
+		fig.set_size_inches(18.5, 10.5)
+		fig.subplots_adjust(bottom=0.2)
+		# ax[0].xaxis.set_major_locator(mondays)
+		# ax[0].xaxis.set_minor_locator(alldays)
+		ax[0].xaxis.set_major_formatter(weekFormatter)
+		_candlestick(ax[0], [tuple(x) for x in df.values], width=0.6)
+		# ax[0].xaxis_date()
+		# ax[0].autoscale_view()
+		plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
 
-	ax[1].xaxis.set_major_locator(mondays)
-	ax[1].xaxis.set_minor_locator(alldays)
-	ax[1].xaxis.set_major_formatter(weekFormatter)
-	_candlestick(ax[1], [tuple(x) for x in df2.values], width=0.6, colorup='g', colordown='g')
-	ax[1].xaxis_date()
-	ax[1].autoscale_view()
-	plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
+		# ax[1].xaxis.set_major_locator(mondays)
+		# ax[1].xaxis.set_minor_locator(alldays)
+		ax[1].xaxis.set_major_formatter(weekFormatter)
+		_candlestick(ax[1], [tuple(x) for x in df2.values], width=0.6, colorup='g', colordown='g')
+		# ax[1].xaxis_date()
+		# ax[1].autoscale_view()
+		plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
 
-	canvas = FigureCanvas(fig)
-	response = HttpResponse(content_type='image/png')
-	canvas.print_png(response)
-	return response
-
+		canvas = FigureCanvas(fig)
+		response = HttpResponse(content_type='image/png')
+		canvas.print_png(response)
+		return response
+	if request.GET.get('show.table'):
+		df = f.get(str(request.GET.get('stock_name')))
+		return render(request, 'Markit/table.html', {
+			'name': str(request.GET.get('stock_name')),
+			'data': df.to_html,
+		})
 # fig = Figure()
 	# ax = fig.add_subplot(111)
 	# data_df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")

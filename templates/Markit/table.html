@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+    <br>
+    <br>
+    <br><br>
+    <span style="margin:auto;">
+<h2>{{ name }}</h2>
+    </span>
+    <br><br>
+        <span style="margin:auto; display:table; border:1px solid black;">
+{{data | safe}}
+    </span>
+{% endblock content %}
