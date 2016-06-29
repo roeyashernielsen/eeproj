@@ -6,8 +6,8 @@ from processor.calculate_technical_parameters import *
 from processor.filtering import *
 from statistics.system_statistics import *
 from utils import enums
-import collections
-
+from statistics.system_statistics import *
+from collections import  OrderedDict
 
 def main(trade_system):
     path = "/Users/roeya/Desktop/stock/"
@@ -19,7 +19,9 @@ def main(trade_system):
     stats_dict = get_stat_dict(stocks, filtered)
     stats = calculate_system_statistics(stats_dict, trade_system.direction, trade_system.name)
     list_of_stocks = [s.name for s in stats[1]]
-    return list_to_df({'name':'Name'}, stats[1])
+    atr1 = OrderedDict([('name', 'name'), ('start_date', 'start_date'), ('end_date', 'end_date'), ('period', 'period'), ('trades', 'trades')])
+    atr2 = OrderedDict([('name', 'name'), ('trades', 'trades'), ('total_holding_period', 'total_holding_period'), ('yield_points', 'yield_points'), ('yield_percentages', 'yield_percentages')])
+    return stocks,filtered,list_of_stocks, list_to_df(atr1, [stats[0]]), list_to_df(atr1, stats[1]), list_to_df(atr2, stats[1])
 
 
 def get_mock_trade_system():

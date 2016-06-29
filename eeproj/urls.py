@@ -21,7 +21,6 @@ from Markit import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^form/', views.form, name='form'),
-    url(r'^results/', views.results, name='results'),
     url(r'^graph/', views.graph, name='graph'),
     url(r'^admin/', admin.site.urls),
 ]

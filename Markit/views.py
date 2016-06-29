@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from trade_system.rule import *
 from trade_system.term import *
 from trade_system.trade_system import *
@@ -8,9 +8,10 @@ from utils import enums
 import pandas as pd
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 import re
-
+s = ""
+f = ""
 
 
 def index(request):
@@ -25,15 +26,6 @@ def index(request):
 	})
 
 
-def results(request):
-	df = pd.read_csv("/Users/roeya/Desktop/stock/sample.csv")
-	stock_list = ['a', 'b', 'c', 'd']
-	return render(request, 'Markit/results.html', {
-		'data': df.to_html,
-		'stock_list': stock_list
-	})
-
-
 def graph(request):
 	# from pylab import *
 	import matplotlib.pyplot as plt
@@ -44,23 +36,25 @@ def graph(request):
 	from matplotlib.finance import _candlestick
 	import pandas as pd
 
+	global s
 	mondays = WeekdayLocator(MONDAY)  # major ticks on the mondays
 	alldays = DayLocator()  # minor ticks on the days
 	weekFormatter = DateFormatter('%b %d')  # e.g., Jan 12
 	dayFormatter = DateFormatter('%d')  # e.g., 12
 	funcy = lambda x: date2num(datetime.strptime(x, "%Y-%m-%d"))
 
-	df = pd.read_csv("/Users/roeya/Desktop/stock/sample.csv")
+	df = s.get(str(request.GET.get('stock_name')))
 	df = df[['Date', 'Open', 'Close', 'High', 'Low']]
 	df.columns = ['date', 'open', 'close', 'high', 'low']
 	df[['date']] = df['date'].map(funcy)
 
-	df2 = pd.read_csv("/Users/roeya/Desktop/stock/sample.csv").sample(10)
+	df2 = s.get(str(request.GET.get('stock_name'))).sample(10)
 	df2 = df2[['Date', 'Open', 'Close', 'High', 'Low']]
 	df2.columns = ['date', 'open', 'close', 'high', 'low']
 	df2[['date']] = df2['date'].map(funcy)
 
 	fig, ax = plt.subplots(2,1)
+	fig.set_size_inches(18.5, 10.5)
 	fig.subplots_adjust(bottom=0.2)
 	ax[0].xaxis.set_major_locator(mondays)
 	ax[0].xaxis.set_minor_locator(alldays)
@@ -77,7 +71,6 @@ def graph(request):
 	ax[1].xaxis_date()
 	ax[1].autoscale_view()
 	plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
-
 
 	canvas = FigureCanvas(fig)
 	response = HttpResponse(content_type='image/png')
@@ -99,9 +92,8 @@ def graph(request):
 	# 	'data': df.to_html,
 	# })
 
-
-
 def form(request):
+	global s,f
 	if request.GET.get('send.form'):
 		name = str(request.GET.get('element_1_1'))
 		direction = enums.get_enum_value(enums.TRADE_DIRECTIONS, str(request.GET.get('element_1_2')))
@@ -113,11 +105,21 @@ def form(request):
 		open_rule = build_rule(open_dict)
 		close_rule = build_rule(close_dict)
 		trade_system = TradeSystem(name, open_rule, close_rule, direction)
-		res = main(trade_system)
+		s, f, stock_list, dfglb, dfall, dfall2 = main(trade_system)
 		return render(request, 'Markit/results.html', {
-			'data': res.to_html,
+			'dfglb': dfglb.to_html,
+			'dfall': dfall.to_html,
+			'dfall2': dfall2.to_html,
+			'stock_list': stock_list
 		})
+	if request.GET.get('show.table'):
 
+		return render(request, 'Markit/results.html', {
+			'dfglb': dfglb.to_html,
+			'dfall': dfall.to_html,
+			'dfall2': dfall2.to_html,
+			'stock_list': stock_list
+		})
 	return render(request, 'Markit/form.html', {
 		'indicators': list(enums.TECHNICAL_PARAMETER.values() + enums.NUMERIC_VALUE.values()),
 		'directions': list(enums.TRADE_DIRECTIONS.values()),

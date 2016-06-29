@@ -1,16 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
+    <br>
+    <br>
 <span>
-    <label class="description" for="celement_4_1_1_1">Name</label>
-    <select class="element select medium" id="celement_4_1_1_1" name="celement_4_1_1_1">
+<form action="http://127.0.0.1:8000/graph" target="_blank" method="get">
+    <label class="description" for="stock_name">Name</label>
+    <select class="element select medium" id="stock_name" name="stock_name">
         <option value="" selected="selected"></option>
         {% for stock in stock_list %}
             <option value={{ stock }} >{{ stock }}</option>
         {% endfor %}
     </select>
     <input type="submit" class="btn" value="ShowTable" name="show.table">
+</form>
 </span>
+    <br><br>
     <span style="margin:auto; display:table; border:1px solid black;">
-{{data | safe}}
+{{dfglb | safe}}
+    </span>
+    <br><br>
+        <span style="margin:auto; display:table; border:1px solid black;">
+{{dfall | safe}}
+    </span>
+    <br><br>
+    <span style="margin:auto; display:table; border:1px solid black;">
+{{dfall2 | safe}}
     </span>
 {% endblock content %}
