@@ -60,7 +60,6 @@ def get_enum_value(enum, key):
 
 
 
-
 # ###################
 # ## Enum classes ###
 # ###################
