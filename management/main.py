@@ -6,19 +6,22 @@ from processor.calculate_technical_parameters import *
 from processor.filtering import *
 from statistics.system_statistics import *
 from utils import enums
-from puller.__init__ import *
-
+from statistics.system_statistics import *
+from collections import  OrderedDict
 
 def main(trade_system):
-    path = DATA_PATH + 'debug/'
+    path = "/Users/roeya/Desktop/stock/"
     stocks = get_all_stocks(path)
     # trade_system = get_mock_trade_system()
     indicators = get_indicators(trade_system)
     extended = dict((name, evaluate_technical_parameters(stock, indicators)) for name, stock in stocks.items())
     filtered = dict((name, filter_stock_data(trade_system, stock)) for name, stock in extended.items())
-    stats_dict = get_stat_dict(stocks, extended)
-    # stats = calculate_system_statistics(stats_dict, trade_system.direction, trade_system.name)
-    return extended.values()[0]
+    stats_dict = get_stat_dict(stocks, filtered)
+    stats = calculate_system_statistics(stats_dict, trade_system.direction, trade_system.name)
+    list_of_stocks = [s.name for s in stats[1]]
+    atr1 = OrderedDict([('name', 'name'), ('start_date', 'start_date'), ('end_date', 'end_date'), ('period', 'period'), ('trades', 'trades')])
+    atr2 = OrderedDict([('name', 'name'), ('trades', 'trades'), ('total_holding_period', 'total_holding_period'), ('yield_points', 'yield_points'), ('yield_percentages', 'yield_percentages')])
+    return stocks,filtered,list_of_stocks, list_to_df(atr1, [stats[0]]), list_to_df(atr1, stats[1]), list_to_df(atr2, stats[1])
 
 
 def get_mock_trade_system():
@@ -46,9 +49,9 @@ def get_mock_technical_parameter():
 
 def get_all_stocks(path):
     stocks = {}
-    for file in os.listdir(path):
-        if file.endswith(".csv"):
-            stocks[file.rsplit('.', 1)[0]] = pd.read_csv(path + file)
+    for csv_file in os.listdir(path):
+        if csv_file.endswith(".csv"):
+            stocks[csv_file.rsplit('.', 1)[0]] = pd.read_csv(path + csv_file)
     return stocks
 
 
@@ -104,6 +107,18 @@ def get_stat_dict(full, filtered):
             res[k] = (filtered.get(k), full.get(k).iloc[0, 0], full.get(k).iloc[l - 1, 0], l)
     return res
 
+
+def list_to_df(field_dict, obj_list):
+
+    list_row = []
+    for obj in obj_list:
+        row = {}
+        for field, col in field_dict.items():
+            if hasattr(obj, field):
+                row[col] = getattr(obj, field)
+        list_row.append(row)
+
+    return pd.DataFrame(list_row, columns=(field_dict.values()))
 
 if __name__ == "__main__":
     sys.exit(main())

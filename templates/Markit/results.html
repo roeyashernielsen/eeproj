@@ -1,4 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
-{{data | safe}}
+    <br>
+    <br>
+<span>
+<form action="http://127.0.0.1:8000/graph" target="_blank" method="get">
+    <label class="description" for="stock_name">Name</label>
+    <select class="element select medium" id="stock_name" name="stock_name">
+        <option value="" selected="selected"></option>
+        {% for stock in stock_list %}
+            <option value={{ stock }} >{{ stock }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" class="btn" value="ShowTable" name="show.table">
+</form>
+</span>
+    <br><br>
+    <span style="margin:auto; display:table; border:1px solid black;">
+{{dfglb | safe}}
+    </span>
+    <br><br>
+        <span style="margin:auto; display:table; border:1px solid black;">
+{{dfall | safe}}
+    </span>
+    <br><br>
+    <span style="margin:auto; display:table; border:1px solid black;">
+{{dfall2 | safe}}
+    </span>
 {% endblock content %}

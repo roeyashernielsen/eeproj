@@ -1,20 +1,17 @@
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from trade_system.rule import *
 from trade_system.term import *
 from trade_system.trade_system import *
 from management.main import *
+from management.ploter import *
 from utils import enums
 import pandas as pd
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
-from django.http import HttpResponse
-# import plotly.plotly as py
-# import plotly.graph_objs as go
-# from IPython.display import display
-# from plotly.graph_objs import *
-# import plotly.tools as tls
+from django.http import HttpResponse, HttpResponseRedirect
 import re
-
+s = ""
+f = ""
 
 
 def index(request):
@@ -29,8 +26,58 @@ def index(request):
 	})
 
 
-def results(request):
-	# fig = Figure()
+def graph(request):
+	# from pylab import *
+	import matplotlib.pyplot as plt
+	from datetime import datetime
+	import time
+	from matplotlib.dates import DateFormatter, WeekdayLocator, HourLocator, \
+		DayLocator, MONDAY
+	from matplotlib.finance import _candlestick
+	import pandas as pd
+
+	global s
+	mondays = WeekdayLocator(MONDAY)  # major ticks on the mondays
+	alldays = DayLocator()  # minor ticks on the days
+	weekFormatter = DateFormatter('%b %d')  # e.g., Jan 12
+	dayFormatter = DateFormatter('%d')  # e.g., 12
+	funcy = lambda x: date2num(datetime.strptime(x, "%Y-%m-%d"))
+
+	df = s.get(str(request.GET.get('stock_name')))
+	df = df[['Date', 'Open', 'Close', 'High', 'Low']]
+	df.columns = ['date', 'open', 'close', 'high', 'low']
+	df[['date']] = df['date'].map(funcy)
+
+	df2 = s.get(str(request.GET.get('stock_name'))).sample(10)
+	df2 = df2[['Date', 'Open', 'Close', 'High', 'Low']]
+	df2.columns = ['date', 'open', 'close', 'high', 'low']
+	df2[['date']] = df2['date'].map(funcy)
+
+	fig, ax = plt.subplots(2,1)
+	fig.set_size_inches(18.5, 10.5)
+	fig.subplots_adjust(bottom=0.2)
+	ax[0].xaxis.set_major_locator(mondays)
+	ax[0].xaxis.set_minor_locator(alldays)
+	ax[0].xaxis.set_major_formatter(weekFormatter)
+	_candlestick(ax[0], [tuple(x) for x in df.values], width=0.6)
+	ax[0].xaxis_date()
+	ax[0].autoscale_view()
+	plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
+
+	ax[1].xaxis.set_major_locator(mondays)
+	ax[1].xaxis.set_minor_locator(alldays)
+	ax[1].xaxis.set_major_formatter(weekFormatter)
+	_candlestick(ax[1], [tuple(x) for x in df2.values], width=0.6, colorup='g', colordown='g')
+	ax[1].xaxis_date()
+	ax[1].autoscale_view()
+	plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
+
+	canvas = FigureCanvas(fig)
+	response = HttpResponse(content_type='image/png')
+	canvas.print_png(response)
+	return response
+
+# fig = Figure()
 	# ax = fig.add_subplot(111)
 	# data_df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
 	# data_df = pd.DataFrame(data_df)
@@ -39,24 +86,18 @@ def results(request):
 	# response = HttpResponse(content_type='image/png')
 	# canvas.print_png(response)
 	# return response
-	df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
-	return render(request, 'Markit/results.html', {
-		'data': df.to_html,
-	})
-
-
-def results2(request):
-	py.tools.set_credentials_file(username='roey', api_key='uj73ktb1kf')
-	df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
-	return py.plot([py.go.Bar(x=df.Close, y=df.Open)], filename='bla')
-
-
+	# df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
+	# plotTest(df)
+	# return render(request, 'Markit/results.html', {
+	# 	'data': df.to_html,
+	# })
 
 def form(request):
+	global s,f
 	if request.GET.get('send.form'):
 		name = str(request.GET.get('element_1_1'))
-		direction = str(request.GET.get('element_1_2'))
-		market = str(request.GET.get('element_2_1'))
+		direction = enums.get_enum_value(enums.TRADE_DIRECTIONS, str(request.GET.get('element_1_2')))
+		market = enums.get_enum_value(enums.MARKETS, str(request.GET.get('element_2_1')))
 
 		ts_dic = dict(zip(request.GET.keys(), request.GET.values()))
 		open_dict = separate_dict_to_clauses(dict((k, v) for k, v in ts_dic.items() if k.startswith('o')))
@@ -64,13 +105,23 @@ def form(request):
 		open_rule = build_rule(open_dict)
 		close_rule = build_rule(close_dict)
 		trade_system = TradeSystem(name, open_rule, close_rule, direction)
-		res = main(trade_system)
+		s, f, stock_list, dfglb, dfall, dfall2 = main(trade_system)
 		return render(request, 'Markit/results.html', {
-			'data': res.to_html,
+			'dfglb': dfglb.to_html,
+			'dfall': dfall.to_html,
+			'dfall2': dfall2.to_html,
+			'stock_list': stock_list
 		})
+	if request.GET.get('show.table'):
 
+		return render(request, 'Markit/results.html', {
+			'dfglb': dfglb.to_html,
+			'dfall': dfall.to_html,
+			'dfall2': dfall2.to_html,
+			'stock_list': stock_list
+		})
 	return render(request, 'Markit/form.html', {
-		'indicators': list(enums.SUPPORTED_INDICATORS.values()),
+		'indicators': list(enums.TECHNICAL_PARAMETER.values() + enums.NUMERIC_VALUE.values()),
 		'directions': list(enums.TRADE_DIRECTIONS.values()),
 		'markets': list(enums.MARKETS.values()),
 		'relations': list(enums.RELATIONS.values())
@@ -99,10 +150,20 @@ def separate_dict_to_terms(dic):
 
 def build_term(dic):
 	sdic = sorted(dic)
-	tp1 = TechnicalParameter(dic.get(sdic[0]), int(dic.get(sdic[1])))
-	tp2 = TechnicalParameter(dic.get(sdic[3]), int(dic.get(sdic[4])))
+	if dic.get(sdic[2]) == "":
+		tp1 = TechnicalParameter(name=enums.get_enum_value(enums.TECHNICAL_PARAMETER, dic.get(sdic[0])), timeperiod=int(dic.get(sdic[1])))
+	else:
+		tp1 = TechnicalParameter(name=enums.get_enum_value(enums.TECHNICAL_PARAMETER, dic.get(sdic[0])), timeperiod=int(dic.get(sdic[1])), shifting=int(dic.get(sdic[2])))
 
-	return Term(tp1, dic.get(sdic[7]), tp2)
+	if dic.get(sdic[3]) not in enums.NUMERIC_VALUE:
+		if dic.get(sdic[5]) == "":
+			tp2 = TechnicalParameter(name=enums.get_enum_value(enums.TECHNICAL_PARAMETER, dic.get(sdic[3])), timeperiod=int(dic.get(sdic[4])))
+		else:
+			tp2 = TechnicalParameter(name=enums.get_enum_value(enums.TECHNICAL_PARAMETER, dic.get(sdic[3])), timeperiod=int(dic.get(sdic[4])), shifting=int(dic.get(sdic[5])))
+	else:
+		tp2 = TechnicalParameter(name=enums.get_enum_value(enums.NUMERIC_VALUE, dic.get(sdic[3])), value=int(dic.get(sdic[6])))
+
+	return Term(tp1, enums.get_enum_value(enums.RELATIONS, dic.get(sdic[7])), tp2)
 
 
 def return_valid_terms(terms):
