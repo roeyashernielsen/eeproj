@@ -10,7 +10,7 @@ from trade_system.term import Term
 import sys
 from processor.filtering import filter_stock_data
 from pandas import DataFrame
-from pdb import set_trace
+from ipdb import set_trace
 from copy import copy
 
 StreamHandler(sys.stdout).push_application()
@@ -40,23 +40,24 @@ def test_calculate_technical_indicator(sample_data):
     data = copy(sample_data)
     rsi10_v = calculate_technical_indicator(data, rsi10)
     rsi10_s2_v = calculate_technical_indicator(data, rsi10_s2)
+
     rsi21_v = calculate_technical_indicator(data, rsi21)
-    calculate_technical_indicator(data, ema4)
-    calculate_technical_indicator(data, ema15)
+    ema4_v = calculate_technical_indicator(data, ema4)
+    ema15_v =calculate_technical_indicator(data, ema15)
 
+    extended_table = evaluate_technical_parameters(sample_data, [rsi10])
 
-    extended_table = evaluate_technical_parameters(sample_data, all_parameters)
-    set_trace()
+    extended_table = evaluate_technical_parameters(sample_data, [rsi21])
     print extended_table
 
 def test_flow(sample_data):
     #technical parameters
 
-    parameters = [ema4, ema15, const55, const25]
+    parameters = [rsi21, ema15, const55, const25]
 
     # system definer
-    open_term = Term(ema4, RELATIONS.greater, const25)
-    close_term = Term(ema15, RELATIONS.less, const55)
+    open_term = Term(rsi21, RELATIONS.greater, const55)
+    close_term = Term(ema15, RELATIONS.less, const25)
     open_clause = Clause(open_term)
     close_clause = Clause(close_term)
     open_rule = Rule(open_clause)
@@ -68,7 +69,7 @@ def test_flow(sample_data):
     # extend
     ext_table = evaluate_technical_parameters(table, parameters)
 
-    filter_stock_data(trade_system, copy(ext_table))
+    filtered = filter_stock_data(trade_system, copy(ext_table))
     set_trace()
 
 
