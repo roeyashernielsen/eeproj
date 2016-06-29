@@ -1,4 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
+<span>
+    <label class="description" for="celement_4_1_1_1">Name</label>
+    <select class="element select medium" id="celement_4_1_1_1" name="celement_4_1_1_1">
+        <option value="" selected="selected"></option>
+        {% for stock in stock_list %}
+            <option value={{ stock }} >{{ stock }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" class="btn" value="ShowTable" name="show.table">
+</span>
+    <span style="margin:auto; display:table; border:1px solid black;">
 {{data | safe}}
+    </span>
 {% endblock content %}

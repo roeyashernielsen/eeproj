@@ -18,6 +18,7 @@ def main(trade_system):
     filtered = dict((name, filter_stock_data(trade_system, stock)) for name, stock in extended.items())
     stats_dict = get_stat_dict(stocks, filtered)
     stats = calculate_system_statistics(stats_dict, trade_system.direction, trade_system.name)
+    list_of_stocks = [s.name for s in stats[1]]
     return list_to_df({'name':'Name'}, stats[1])
 
 
@@ -46,9 +47,9 @@ def get_mock_technical_parameter():
 
 def get_all_stocks(path):
     stocks = {}
-    for file in os.listdir(path):
-        if file.endswith(".csv"):
-            stocks[file.rsplit('.', 1)[0]] = pd.read_csv(path + file)
+    for csv_file in os.listdir(path):
+        if csv_file.endswith(".csv"):
+            stocks[csv_file.rsplit('.', 1)[0]] = pd.read_csv(path + csv_file)
     return stocks
 
 
@@ -99,8 +100,9 @@ def remove_duplicate_indicators(indicators):
 def get_stat_dict(full, filtered):
     res = {}
     for k in filtered.keys():
-        l = len(full.get(k))
-        res[k] = (filtered.get(k), full.get(k).iloc[0, 0], full.get(k).iloc[l - 1, 0], l)
+        if len(filtered.get(k)):
+            l = len(full.get(k))
+            res[k] = (filtered.get(k), full.get(k).iloc[0, 0], full.get(k).iloc[l - 1, 0], l)
     return res
 
 
@@ -115,7 +117,6 @@ def list_to_df(field_dict, obj_list):
         list_row.append(row)
 
     return pd.DataFrame(list_row, columns=(field_dict.values()))
-
 
 if __name__ == "__main__":
     sys.exit(main())

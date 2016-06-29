@@ -26,9 +26,11 @@ def index(request):
 
 
 def results(request):
-	df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
+	df = pd.read_csv("/Users/roeya/Desktop/stock/sample.csv")
+	stock_list = ['a', 'b', 'c', 'd']
 	return render(request, 'Markit/results.html', {
 		'data': df.to_html,
+		'stock_list': stock_list
 	})
 
 
@@ -48,20 +50,34 @@ def graph(request):
 	dayFormatter = DateFormatter('%d')  # e.g., 12
 	funcy = lambda x: date2num(datetime.strptime(x, "%Y-%m-%d"))
 
-	df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
+	df = pd.read_csv("/Users/roeya/Desktop/stock/sample.csv")
 	df = df[['Date', 'Open', 'Close', 'High', 'Low']]
 	df.columns = ['date', 'open', 'close', 'high', 'low']
 	df[['date']] = df['date'].map(funcy)
 
-	fig, ax = plt.subplots()
+	df2 = pd.read_csv("/Users/roeya/Desktop/stock/sample.csv").sample(10)
+	df2 = df2[['Date', 'Open', 'Close', 'High', 'Low']]
+	df2.columns = ['date', 'open', 'close', 'high', 'low']
+	df2[['date']] = df2['date'].map(funcy)
+
+	fig, ax = plt.subplots(2,1)
 	fig.subplots_adjust(bottom=0.2)
-	# ax.xaxis.set_major_locator(mondays)
-	# ax.xaxis.set_minor_locator(alldays)
-	ax.xaxis.set_major_formatter(weekFormatter)
-	_candlestick(ax, [tuple(x) for x in df.head(n=100).values], width=0.6)
-	ax.xaxis_date()
-	ax.autoscale_view()
+	ax[0].xaxis.set_major_locator(mondays)
+	ax[0].xaxis.set_minor_locator(alldays)
+	ax[0].xaxis.set_major_formatter(weekFormatter)
+	_candlestick(ax[0], [tuple(x) for x in df.values], width=0.6)
+	ax[0].xaxis_date()
+	ax[0].autoscale_view()
 	plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
+
+	ax[1].xaxis.set_major_locator(mondays)
+	ax[1].xaxis.set_minor_locator(alldays)
+	ax[1].xaxis.set_major_formatter(weekFormatter)
+	_candlestick(ax[1], [tuple(x) for x in df2.values], width=0.6, colorup='g', colordown='g')
+	ax[1].xaxis_date()
+	ax[1].autoscale_view()
+	plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
+
 
 	canvas = FigureCanvas(fig)
 	response = HttpResponse(content_type='image/png')
@@ -88,8 +104,8 @@ def graph(request):
 def form(request):
 	if request.GET.get('send.form'):
 		name = str(request.GET.get('element_1_1'))
-		direction = str(request.GET.get('element_1_2'))
-		market = str(request.GET.get('element_2_1'))
+		direction = enums.get_enum_value(enums.TRADE_DIRECTIONS, str(request.GET.get('element_1_2')))
+		market = enums.get_enum_value(enums.MARKETS, str(request.GET.get('element_2_1')))
 
 		ts_dic = dict(zip(request.GET.keys(), request.GET.values()))
 		open_dict = separate_dict_to_clauses(dict((k, v) for k, v in ts_dic.items() if k.startswith('o')))
@@ -133,19 +149,19 @@ def separate_dict_to_terms(dic):
 def build_term(dic):
 	sdic = sorted(dic)
 	if dic.get(sdic[2]) == "":
-		tp1 = TechnicalParameter(name=dic.get(sdic[0]), timeperiod=int(dic.get(sdic[1])))
+		tp1 = TechnicalParameter(name=enums.get_enum_value(enums.TECHNICAL_PARAMETER, dic.get(sdic[0])), timeperiod=int(dic.get(sdic[1])))
 	else:
-		tp1 = TechnicalParameter(name=dic.get(sdic[0]), timeperiod=int(dic.get(sdic[1])), shifting=int(dic.get(sdic[2])))
+		tp1 = TechnicalParameter(name=enums.get_enum_value(enums.TECHNICAL_PARAMETER, dic.get(sdic[0])), timeperiod=int(dic.get(sdic[1])), shifting=int(dic.get(sdic[2])))
 
 	if dic.get(sdic[3]) not in enums.NUMERIC_VALUE:
 		if dic.get(sdic[5]) == "":
-			tp2 = TechnicalParameter(name=dic.get(sdic[3]), timeperiod=int(dic.get(sdic[4])))
+			tp2 = TechnicalParameter(name=enums.get_enum_value(enums.TECHNICAL_PARAMETER, dic.get(sdic[3])), timeperiod=int(dic.get(sdic[4])))
 		else:
-			tp2 = TechnicalParameter(name=dic.get(sdic[3]), timeperiod=int(dic.get(sdic[4])), shifting=int(dic.get(sdic[5])))
+			tp2 = TechnicalParameter(name=enums.get_enum_value(enums.TECHNICAL_PARAMETER, dic.get(sdic[3])), timeperiod=int(dic.get(sdic[4])), shifting=int(dic.get(sdic[5])))
 	else:
-		tp2 = TechnicalParameter(name=dic.get(sdic[3]), value=int(dic.get(sdic[6])))
+		tp2 = TechnicalParameter(name=enums.get_enum_value(enums.NUMERIC_VALUE, dic.get(sdic[3])), value=int(dic.get(sdic[6])))
 
-	return Term(tp1, dic.get(sdic[7]), tp2)
+	return Term(tp1, enums.get_enum_value(enums.RELATIONS, dic.get(sdic[7])), tp2)
 
 
 def return_valid_terms(terms):
