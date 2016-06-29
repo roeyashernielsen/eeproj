@@ -6,6 +6,7 @@ from logbook import Logger, StreamHandler
 from utils import enums
 import sys
 from math import isnan
+import ipdb
 
 StreamHandler(sys.stdout).push_application()
 log = Logger(__name__)
@@ -58,48 +59,55 @@ def _mark_trigger_lines(trade_system, stock_data):
     Checks an enforces stop loss
     Opens and closures triggers are set on the advanced day from the triggered day, closures due to stop loss is set
     on the current day.
+    The prices are determine by the open price of the intended day.
+    The system do not close trade the was opened on the same day,
     """
-    entering_price = None  # the entering price of the current position, if there's open one.
+    entering_price = None  # the entering price of the current position, indicates if there's open one.
 
     for row in stock_data.index[:-1]:  # ignore the last day (war mode) # TODO fix in order to get live triggers
         date = stock_data.get_value(row, COLUMNS.date)
         symbol = None  # TODO symbol from metadata on the logs prints
-        for rule in [trade_system.get_open_rule(), trade_system.get_close_rule()]:
 
-            # check closing due to stop loss
-            if entering_price and row > 0:
-                current_price = stock_data.get_value(row, COLUMNS.close)
-                previous_price = stock_data.get_value(row - 1, COLUMNS.close) if row > 0 else None
-                if is_stop_loss_reached(current_price, entering_price, trade_system.get_stop_loss(), trade_system.get_direction()) or \
-                        is_stop_loss_reached(current_price, previous_price, trade_system.get_moving_stop_loss(), trade_system.get_direction()):
-                    log.info("Trade reached stop-loss point, setting close trigger. symbol: {}, date: {}".format(symbol, date))
-                    stock_data.set_value(row, COLUMNS.close_trigger, True)
-                    entering_price = None
+        # check closing due to stop loss
+        if entering_price and row > 0:
+            current_price = stock_data.get_value(row, COLUMNS.close)
+            previous_price = stock_data.get_value(row - 1, COLUMNS.close) if row > 0 else None
+            if is_stop_loss_reached(current_price, entering_price, trade_system.get_stop_loss(), trade_system.get_direction()) or \
+                    is_stop_loss_reached(current_price, previous_price, trade_system.get_moving_stop_loss(), trade_system.get_direction()):
+                log.info("Trade reached stop-loss point, setting close trigger. symbol: {}, date: {}".format(symbol, date))
+                stock_data.set_value(row, COLUMNS.close_trigger, True)
+                entering_price = None
+
+        for rule in [trade_system.get_close_rule(), trade_system.get_open_rule()]:  # must be at this order- check closing before opening
+
+            # check close position triggers
+            if rule is trade_system.get_close_rule():
+                close_trigger = is_rule_applied_by_stock(rule, stock_data, row)
+                if close_trigger:
+                    if not entering_price:
+                        log.debug("Received close trigger while no position is open. Trigger is ignored. Date: {} symbol: {}".format(date, symbol))
+                    else:
+                        stock_data.set_value(row+1, COLUMNS.close_trigger, close_trigger)
+                        entering_price = None
+                        log.info("Close trigger was marked for {} at {}".format(symbol, date))
 
             # check open position triggers
             if rule is trade_system.get_open_rule():
                 open_trigger = is_rule_applied_by_stock(rule, stock_data, row)
                 if open_trigger:
                     if entering_price:
-                        log.debug("Received open trigger while having open position. Trigger is ignored. Date: {} symbol: {}".format(date, symbol))
+                        log.debug(
+                            "Received open trigger while having open position. Trigger is ignored. Date: {} symbol: {}".format(
+                                date, symbol))
                     else:
-                        stock_data.set_value(row+1, COLUMNS.open_trigger, open_trigger)
-                        entering_price = stock_data.get_value(row+1, COLUMNS.open) if row+1 < len(stock_data) else None
+                        stock_data.set_value(row + 1, COLUMNS.open_trigger, open_trigger)
+                        entering_price = stock_data.get_value(row + 1, COLUMNS.open) if row + 1 < len(
+                            stock_data) else None
                         log.info("Open trigger was marked for {} at {}".format(symbol, date))
-
-            # check close position triggers
-            if rule is trade_system.get_close_rule():
-                close_trigger = is_rule_applied_by_stock(rule, stock_data, row)
-                if not entering_price:
-                    log.debug("Received close trigger while no position is open. Trigger is ignored. Date: {} symbol: {}".format(date, symbol))
-                else:
-                    stock_data.set_value(row+1, COLUMNS.close_trigger, close_trigger)
-                    entering_price = None
-                    log.info("Close trigger was marked for {} at {}".format(symbol, date))
 
         # check for open and close triggers on the same day
         if stock_data.get_value(row, COLUMNS.open_trigger) and stock_data.get_value(row, COLUMNS.close_trigger):
-            log.warning("Stock {} were trigger for open and close at the same day ({})".format(symbol, date))
+            log.warning("Stock {} were trigger for open and close at the same day ({}. Make sure that an old trade was closed)".format(symbol, date))
 
 
 

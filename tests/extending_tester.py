@@ -33,6 +33,7 @@ ema4 = TechnicalParameter(IND.ema, timeperiod=4)
 ema15 = TechnicalParameter(IND.ema, timeperiod=15)
 const25 = TechnicalParameter(NV.numeric_value, value=25)
 const55 = TechnicalParameter(NV.numeric_value, value=55)
+adx4 = TechnicalParameter(IND.adx, timeperiod=4)
 
 all_parameters = [rsi10, rsi10_s2, rsi21, ema4, ema15, const25, const55]
 
@@ -45,6 +46,7 @@ def test_calculate_technical_indicator(sample_data):
     ema4_v = calculate_technical_indicator(data, ema4)
     ema15_v =calculate_technical_indicator(data, ema15)
 
+
     extended_table = evaluate_technical_parameters(sample_data, [rsi10])
 
     extended_table = evaluate_technical_parameters(sample_data, [rsi21])
@@ -53,11 +55,11 @@ def test_calculate_technical_indicator(sample_data):
 def test_flow(sample_data):
     #technical parameters
 
-    parameters = [rsi21, ema15, const55, const25]
+    parameters = [rsi21, adx4]
 
     # system definer
     open_term = Term(rsi21, RELATIONS.greater, const55)
-    close_term = Term(ema15, RELATIONS.less, const25)
+    close_term = Term(adx4, RELATIONS.less, const25)
     open_clause = Clause(open_term)
     close_clause = Clause(close_term)
     open_rule = Rule(open_clause)
