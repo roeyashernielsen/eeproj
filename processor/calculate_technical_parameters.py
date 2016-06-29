@@ -24,8 +24,9 @@ def evaluate_technical_parameters(raw_stock_data, technical_parameters):
     """
     # first calculate each indicator values and adds the vector to data table
     for technical_parameter in technical_parameters:
-        values, technical_indicator = calculate_technical_indicator(raw_stock_data, technical_parameter)
-        raw_stock_data = extend_stock_table(raw_stock_data, values, technical_parameter.get_title(), technical_indicator)
+        if technical_parameter.is_technical_indicator():  # no calculation for numeric values (e.g)
+            values, technical_indicator = calculate_technical_indicator(raw_stock_data, technical_parameter)
+            raw_stock_data = extend_stock_table(raw_stock_data, values, technical_parameter.get_title(), technical_indicator)
 
     return raw_stock_data
 
@@ -39,8 +40,6 @@ def calculate_technical_indicator(stock_data, technical_parameter):
     calculation.
     :return: tuple contains: vectors contains the calculated values over time, the technical indicator object (TA-Lib's)
     """
-    if not technical_parameter.is_technical_indicator():
-        return  # no need to calculate anything in this case
     arguments = talib_adapter(stock_data, technical_parameter)
     technical_indicator = talib.abstract.Function(technical_parameter.get_name())
     technical_values = technical_indicator(arguments)

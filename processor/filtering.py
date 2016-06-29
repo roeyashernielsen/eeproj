@@ -197,10 +197,3 @@ def _get_relevant_stock_data_sections(technical_param, stock_data, index):
 
 
 
-
-def csv_to_data_frame(path):
-    DataFrame.from_csv(path, index_col=None, infer_datetime_format=True)
-
-
-
-

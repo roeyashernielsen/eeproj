@@ -1,3 +1,5 @@
+from pandas import DataFrame
+
 """
 file to put all the general utils in it
 """
@@ -15,3 +17,11 @@ def type_checking(expected_type, *objects):
     else:
         if any([object for object in objects if not isinstance(object, expected_type)]):
             raise TypeError
+
+
+def csv_file_to_data_frame(path):
+    return DataFrame.from_csv(path, index_col=None, infer_datetime_format=True)
+
+
+
+
