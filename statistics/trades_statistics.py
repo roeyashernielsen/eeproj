@@ -1,5 +1,6 @@
 from utils.enums import STOCK_DATA_COLUMNS as COLUMNS
 from .trade import Trade
+import ipdb
 
 """
 This file liable for the statistics calculations of each trade among all the trades that been done on stock.
@@ -33,7 +34,7 @@ def check_filtered_data(stock_trades_table):
     """
     # check that every open trade has closurez
     opens, closes = 0,0
-    for row in range(len(stock_trades_table.index)):
+    for row in stock_trades_table.index:
         if stock_trades_table.get_value(row, COLUMNS.open_trigger):
             opens += 1
         if stock_trades_table.get_value(row, COLUMNS.close_trigger):
@@ -45,7 +46,7 @@ def check_filtered_data(stock_trades_table):
 
 def retrieve_trades(stock_trades_table, direction):
     """
-    retrieve all the trades from the data table and put them into list of Trades objects.
+    retrieve all the closed trades from the data table and put them into list of Trades objects.
     :param stock_trades_table: DataFrame table filled with the rows of the open days and close days (the filtered
     stock_data_table).
     :param direction: the direction of the trade - long/short (define in the right enum)
@@ -58,17 +59,18 @@ def retrieve_trades(stock_trades_table, direction):
         """
         if trade_and_index[0] and trade_and_index[1]:  # both are not None
             all_trades.extend([Trade(trade_and_index[0], trade_and_index[1], direction)])  # stamp the trade as close and add it to trades list
+
             return [None, None]  # reset trade_and_index
         return trade_and_index
 
     all_trades = []
-    trade = [None, None]
+    trade = [None, None]  #[trade, index]
     for index in stock_trades_table.index:
         if stock_trades_table.get_value(index, COLUMNS.close_trigger):
-            trade[1] = (stock_trades_table.iloc[index], index)  # a tuple of the data and the index
+            trade[1] = (stock_trades_table.loc[index], index)  # a tuple of the data and the index
             trade = try_to_add_closed_trade(trade)
         if stock_trades_table.get_value(index, COLUMNS.open_trigger):
-            trade[0] = (stock_trades_table.iloc[index], index)  # a tuple of the data and the index
+            trade[0] = (stock_trades_table.loc[index], index)  # a tuple of the data and the index
             trade = try_to_add_closed_trade(trade)
     return all_trades
 

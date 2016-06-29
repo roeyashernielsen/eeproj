@@ -99,8 +99,9 @@ def remove_duplicate_indicators(indicators):
 def get_stat_dict(full, filtered):
     res = {}
     for k in filtered.keys():
-        l = len(full.get(k))
-        res[k] = (filtered.get(k), full.get(k).iloc[0, 0], full.get(k).iloc[l - 1, 0], l)
+        if len(filtered.get(k)):
+            l = len(full.get(k))
+            res[k] = (filtered.get(k), full.get(k).iloc[0, 0], full.get(k).iloc[l - 1, 0], l)
     return res
 
 

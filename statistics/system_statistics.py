@@ -1,5 +1,6 @@
 from .trades_statistics import calculate_trades_statistics
 from numpy import std, average
+import ipdb
 
 
 """
@@ -22,7 +23,7 @@ def calculate_system_statistics(stock_data_table_dict, direction, system_name):
     :param system_name: the name of system as the user defined
     :return: tuple of: (SystemStatistics, [StockStatistics]), the second item is list contains all stock statistics.
     """
-    import pdb;pdb.set_trace()
+
     # retrieve all the trade of all the stocks in the trade system
     system_trades = {}
     for stock in stock_data_table_dict:
@@ -40,6 +41,7 @@ def calculate_system_statistics(stock_data_table_dict, direction, system_name):
     stocks_statistics_list = []
     system_statistics = SystemStatistics(system_name, system_start_date, system_end_date, system_period, [], [], []) # init with empty vectors
     # iterate over all stocks create StockStatistics objects
+
     for stock in system_trades:
         trades_list, start, end, period = system_trades.get(stock)
         stock_statistics = StockStatistics(stock, start, end, period,
@@ -101,10 +103,10 @@ class StockStatistics:
         self.yields_percentages_vector = yields_percentages_vector
         
         # Derived vectors (order 0 statistics)
-        self.profit_points_vector = [y for y in yields_points_vector if y > 0]
-        self.profit_percentages_vector = [y for y in yields_percentages_vector if y > 0]
-        self.loss_points_vector = [y for y in yields_points_vector if y < 0]
-        self.loss_percentages_vector = [y for y in yields_percentages_vector if y < 0]
+        self.profit_points_vector = []
+        self.profit_percentages_vector = []
+        self.loss_points_vector = []
+        self.loss_percentages_vector = []
 
         # All following fields are calculated later on, by calling to calculate_statistics()
         # Accumulating fields (order 1 statistics)
@@ -140,6 +142,12 @@ class StockStatistics:
         self.durations_vector = tuple(self.durations_vector)
         self.yields_points_vector = tuple(self.yields_points_vector)
         self.yields_percentages_vector = tuple(self.yields_percentages_vector)
+
+        self.profit_points_vector = [y for y in self.yields_points_vector if y > 0]
+        self.profit_percentages_vector = [y for y in self.yields_percentages_vector if y > 0]
+        self.loss_points_vector = [y for y in self.yields_points_vector if y < 0]
+        self.loss_percentages_vector = [y for y in self.yields_percentages_vector if y < 0]
+
         self.profit_points_vector = tuple(self.profit_points_vector)
         self.profit_percentages_vector = tuple(self.profit_percentages_vector)
         self.loss_points_vector = tuple(self.loss_points_vector)

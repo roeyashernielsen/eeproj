@@ -55,6 +55,8 @@ class EnumDict(dict):
     def __contains__(self, value):
         return value in self.values()
 
+def get_enum_value(enum, key):
+    return enum.__getattr__(key.lower())
 
 
 
