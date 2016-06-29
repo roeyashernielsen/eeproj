@@ -2,6 +2,7 @@ import talib
 from collections import OrderedDict
 from logbook import Logger, StreamHandler
 import sys
+import ipdb;
 
 StreamHandler(sys.stdout).push_application()
 log = Logger(__name__)
@@ -24,8 +25,9 @@ def evaluate_technical_parameters(raw_stock_data, technical_parameters):
     """
     # first calculate each indicator values and adds the vector to data table
     for technical_parameter in technical_parameters:
-        values, technical_indicator = calculate_technical_indicator(raw_stock_data, technical_parameter)
-        raw_stock_data = extend_stock_table(raw_stock_data, values, technical_parameter.get_title(), technical_indicator)
+        if technical_parameter.is_technical_indicator():  # no calculation for numeric values (e.g)
+            values, technical_indicator = calculate_technical_indicator(raw_stock_data, technical_parameter)
+            raw_stock_data = extend_stock_table(raw_stock_data, values, technical_parameter.get_title(), technical_indicator)
 
     return raw_stock_data
 
@@ -39,11 +41,9 @@ def calculate_technical_indicator(stock_data, technical_parameter):
     calculation.
     :return: tuple contains: vectors contains the calculated values over time, the technical indicator object (TA-Lib's)
     """
-    if not technical_parameter.is_technical_indicator():
-        return  # no need to calculate anything in this case
     arguments = talib_adapter(stock_data, technical_parameter)
     technical_indicator = talib.abstract.Function(technical_parameter.get_name())
-    technical_values = technical_indicator(arguments)
+    technical_values = technical_indicator(arguments, timeperiod=technical_parameter.get_timeperiod()) # TODO this is workaround, fixing talib_adapter should fix it
     return technical_values, technical_indicator
 
 
@@ -51,7 +51,7 @@ def talib_adapter(stock_data, technical_parameter):
     """
     This function draw the field from the given params and adapt them to the inputs required for talib tools for
     calculation of technical indicators
-    :return: OrderedDict contains arguments according to talib needs
+    :return: OrderedDict contains arguments according to talib needs (....need to be fixed)
     """
     talib_inputs = OrderedDict()
     # set the raw data values
@@ -59,7 +59,9 @@ def talib_adapter(stock_data, technical_parameter):
     columns = [sd.Open.values, sd.High.values, sd.Low.values, sd.Close.values, sd.Volume.values]
     raw_data = OrderedDict(zip([title.lower() for title in sd.columns[1:-1]], columns))
     talib_inputs.update(raw_data)
-
+    return talib_inputs
+    #TODO fix so all the arguments wil retrieved (not only the raw data array)
+    """
     # set common arguments
     if technical_parameter.get_timeperiod():
         period = OrderedDict(timeperiod=technical_parameter.get_timeperiod())
@@ -69,7 +71,7 @@ def talib_adapter(stock_data, technical_parameter):
     talib_inputs.update(OrderedDict(technical_parameter.kwargs))
 
     return talib_inputs
-
+    """
 
 def extend_stock_table(stock_data, new_columns, column_name, technical_indicator):
     """

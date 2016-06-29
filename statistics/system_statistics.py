@@ -22,7 +22,7 @@ def calculate_system_statistics(stock_data_table_dict, direction, system_name):
     :param system_name: the name of system as the user defined
     :return: tuple of: (SystemStatistics, [StockStatistics]), the second item is list contains all stock statistics.
     """
-
+    import pdb;pdb.set_trace()
     # retrieve all the trade of all the stocks in the trade system
     system_trades = {}
     for stock in stock_data_table_dict:
@@ -74,7 +74,7 @@ def _get_system_times(stock_data_table_dict):
 
 class StockStatistics:
     """
-    Class to store the statistics of stock, and does the calculation of them.
+    Class that store the statistics of stock, and does the calculation of them.
     Some of the class statistics:
     + total number of trades
     + average gain ($/%) + stdev
@@ -181,5 +181,4 @@ class SystemStatistics(StockStatistics):
     This is the system statistics class, it extends the stock statistics class.
     [At the moment there is no different between them, so it is just the infrastructure]
     """
-    pass
     # TODO add fields: average open trades at single point over time, max open trades on single point of time (may required to add dates per trade)

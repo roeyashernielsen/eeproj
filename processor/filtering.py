@@ -56,6 +56,8 @@ def _mark_trigger_lines(trade_system, stock_data):
     Test every line in stock_data to see if it matches the trade system, and mark it accordingly.
     Stateful mode- no allows only single open position at a time.
     Checks an enforces stop loss
+    Opens and closures triggers are set on the advanced day from the triggered day, closures due to stop loss is set
+    on the current day.
     """
     entering_price = None  # the entering price of the current position, if there's open one.
 
@@ -79,21 +81,21 @@ def _mark_trigger_lines(trade_system, stock_data):
                 open_trigger = is_rule_applied_by_stock(rule, stock_data, row)
                 if open_trigger:
                     if entering_price:
-                        log.error("Received open trigger while having open position. Trigger is ignored. Date: {} symbol: {}".format(date, symbol))
+                        log.debug("Received open trigger while having open position. Trigger is ignored. Date: {} symbol: {}".format(date, symbol))
                     else:
                         stock_data.set_value(row+1, COLUMNS.open_trigger, open_trigger)
                         entering_price = stock_data.get_value(row+1, COLUMNS.open) if row+1 < len(stock_data) else None
-                        log.info("Open trigger was marked for TODO_ADD_SYMBOL at {}".format(row, date))
+                        log.info("Open trigger was marked for {} at {}".format(symbol, date))
 
             # check close position triggers
             if rule is trade_system.get_close_rule():
                 close_trigger = is_rule_applied_by_stock(rule, stock_data, row)
                 if not entering_price:
-                    log.error("Received close trigger while no position is open. Trigger is ignored. Date: {} symbol: {}".format(date, symbol))
+                    log.debug("Received close trigger while no position is open. Trigger is ignored. Date: {} symbol: {}".format(date, symbol))
                 else:
                     stock_data.set_value(row+1, COLUMNS.close_trigger, close_trigger)
                     entering_price = None
-                    log.info("Close trigger was marked for TODO_ADD_SYMBOL at {}".format(stock_data.get_values(row, date)))
+                    log.info("Close trigger was marked for {} at {}".format(symbol, date))
 
         # check for open and close triggers on the same day
         if stock_data.get_value(row, COLUMNS.open_trigger) and stock_data.get_value(row, COLUMNS.close_trigger):
@@ -169,6 +171,9 @@ def is_stop_loss_reached(current_price, referenced_price, stop_loss_percentage, 
     :param direction: type of trade - long/short
     :return: True in case current price reached the stop loss limitation, False otherwise.
     """
+    if not stop_loss_percentage:  # stop loss was not set
+        return False
+
     if direction == enums.TRADE_DIRECTIONS.short:
         return ((current_price - referenced_price) / referenced_price) * 100.0 > stop_loss_percentage
     if direction == enums.TRADE_DIRECTIONS.long:
@@ -193,13 +198,6 @@ def _get_relevant_stock_data_sections(technical_param, stock_data, index):
     except KeyError:  # out of bounds
         previous_day_value = None
     return previous_day_value, wanted_day_value
-
-
-
-
-
-def csv_to_data_frame(path):
-    DataFrame.from_csv(path, index_col=None, infer_datetime_format=True)
 
 
 
