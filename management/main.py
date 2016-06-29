@@ -7,7 +7,9 @@ from processor.filtering import *
 from statistics.system_statistics import *
 from utils import enums
 from statistics.system_statistics import *
-from collections import  OrderedDict
+from collections import OrderedDict
+from visualization.stats_tables import *
+
 
 def main(trade_system):
     path = "/Users/roeya/Desktop/stock/"
@@ -19,9 +21,8 @@ def main(trade_system):
     stats_dict = get_stat_dict(stocks, filtered)
     stats = calculate_system_statistics(stats_dict, trade_system.direction, trade_system.name)
     list_of_stocks = [s.name for s in stats[1]]
-    atr1 = OrderedDict([('name', 'name'), ('start_date', 'start_date'), ('end_date', 'end_date'), ('period', 'period'), ('trades', 'trades')])
-    atr2 = OrderedDict([('name', 'name'), ('trades', 'trades'), ('total_holding_period', 'total_holding_period'), ('yield_points', 'yield_points'), ('yield_percentages', 'yield_percentages')])
-    return stocks,filtered,list_of_stocks, list_to_df(atr1, [stats[0]]), list_to_df(atr1, stats[1]), list_to_df(atr2, stats[1])
+    stocks_stats_df = dict((s.name, (list_to_df(general_details, [s]), list_to_df(performances, [s]), list_to_df(averages_and_bounds, [s]))) for s in stats[1])
+    return stocks, filtered, list_of_stocks, stocks_stats_df, list_to_df(full_statistics, [stats[0]] + stats[1])
 
 
 def get_mock_trade_system():

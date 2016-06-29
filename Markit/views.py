@@ -12,6 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 import re
 s = ""
 f = ""
+stocks_stat_df = ""
 
 
 def index(request):
@@ -36,7 +37,7 @@ def graph(request):
 	from matplotlib.finance import _candlestick
 	import pandas as pd
 
-	global s
+	global s,f,stocks_stat_df
 	if request.GET.get('show.graph'):
 		mondays = WeekdayLocator(MONDAY)  # major ticks on the mondays
 		alldays = DayLocator()  # minor ticks on the days
@@ -77,29 +78,21 @@ def graph(request):
 		response = HttpResponse(content_type='image/png')
 		canvas.print_png(response)
 		return response
+
 	if request.GET.get('show.table'):
-		df = f.get(str(request.GET.get('stock_name')))
+		df1 = stocks_stat_df.get(str(request.GET.get('stock_name')))[0]
+		df2 = stocks_stat_df.get(str(request.GET.get('stock_name')))[1]
+		df3 = stocks_stat_df.get(str(request.GET.get('stock_name')))[2]
 		return render(request, 'Markit/table.html', {
 			'name': str(request.GET.get('stock_name')),
-			'data': df.to_html,
+			'data1': df1.to_html,
+			'data2': df2.to_html,
+			'data3': df3.to_html,
 		})
-# fig = Figure()
-	# ax = fig.add_subplot(111)
-	# data_df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
-	# data_df = pd.DataFrame(data_df)
-	# data_df.plot(ax=ax)
-	# canvas = FigureCanvas(fig)
-	# response = HttpResponse(content_type='image/png')
-	# canvas.print_png(response)
-	# return response
-	# df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
-	# plotTest(df)
-	# return render(request, 'Markit/results.html', {
-	# 	'data': df.to_html,
-	# })
+
 
 def form(request):
-	global s,f
+	global s,f,stocks_stat_df
 	if request.GET.get('send.form'):
 		name = str(request.GET.get('element_1_1'))
 		direction = enums.get_enum_value(enums.TRADE_DIRECTIONS, str(request.GET.get('element_1_2')))
@@ -111,21 +104,12 @@ def form(request):
 		open_rule = build_rule(open_dict)
 		close_rule = build_rule(close_dict)
 		trade_system = TradeSystem(name, open_rule, close_rule, direction)
-		s, f, stock_list, dfglb, dfall, dfall2 = main(trade_system)
+		s, f, stock_list, stocks_stat_df, sts_stat_df = main(trade_system)
 		return render(request, 'Markit/results.html', {
-			'dfglb': dfglb.to_html,
-			'dfall': dfall.to_html,
-			'dfall2': dfall2.to_html,
+			'df': sts_stat_df.to_html,
 			'stock_list': stock_list
 		})
-	if request.GET.get('show.table'):
 
-		return render(request, 'Markit/results.html', {
-			'dfglb': dfglb.to_html,
-			'dfall': dfall.to_html,
-			'dfall2': dfall2.to_html,
-			'stock_list': stock_list
-		})
 	return render(request, 'Markit/form.html', {
 		'indicators': list(enums.TECHNICAL_PARAMETER.values() + enums.NUMERIC_VALUE.values()),
 		'directions': list(enums.TRADE_DIRECTIONS.values()),
