@@ -3,16 +3,12 @@ from trade_system.rule import *
 from trade_system.term import *
 from trade_system.trade_system import *
 from management.main import *
+from management.ploter import *
 from utils import enums
 import pandas as pd
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from django.http import HttpResponse
-# import plotly.plotly as py
-# import plotly.graph_objs as go
-# from IPython.display import display
-# from plotly.graph_objs import *
-# import plotly.tools as tls
 import re
 
 
@@ -30,7 +26,49 @@ def index(request):
 
 
 def results(request):
-	# fig = Figure()
+	df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
+	return render(request, 'Markit/results.html', {
+		'data': df.to_html,
+	})
+
+
+def graph(request):
+	# from pylab import *
+	import matplotlib.pyplot as plt
+	from datetime import datetime
+	import time
+	from matplotlib.dates import DateFormatter, WeekdayLocator, HourLocator, \
+		DayLocator, MONDAY
+	from matplotlib.finance import _candlestick
+	import pandas as pd
+
+	mondays = WeekdayLocator(MONDAY)  # major ticks on the mondays
+	alldays = DayLocator()  # minor ticks on the days
+	weekFormatter = DateFormatter('%b %d')  # e.g., Jan 12
+	dayFormatter = DateFormatter('%d')  # e.g., 12
+	funcy = lambda x: date2num(datetime.strptime(x, "%Y-%m-%d"))
+
+	df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
+	df = df[['Date', 'Open', 'Close', 'High', 'Low']]
+	df.columns = ['date', 'open', 'close', 'high', 'low']
+	df[['date']] = df['date'].map(funcy)
+
+	fig, ax = plt.subplots()
+	fig.subplots_adjust(bottom=0.2)
+	# ax.xaxis.set_major_locator(mondays)
+	# ax.xaxis.set_minor_locator(alldays)
+	ax.xaxis.set_major_formatter(weekFormatter)
+	_candlestick(ax, [tuple(x) for x in df.head(n=100).values], width=0.6)
+	ax.xaxis_date()
+	ax.autoscale_view()
+	plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
+
+	canvas = FigureCanvas(fig)
+	response = HttpResponse(content_type='image/png')
+	canvas.print_png(response)
+	return response
+
+# fig = Figure()
 	# ax = fig.add_subplot(111)
 	# data_df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
 	# data_df = pd.DataFrame(data_df)
@@ -39,16 +77,11 @@ def results(request):
 	# response = HttpResponse(content_type='image/png')
 	# canvas.print_png(response)
 	# return response
-	df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
-	return render(request, 'Markit/results.html', {
-		'data': df.to_html,
-	})
-
-
-def results2(request):
-	py.tools.set_credentials_file(username='roey', api_key='uj73ktb1kf')
-	df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
-	return py.plot([py.go.Bar(x=df.Close, y=df.Open)], filename='bla')
+	# df = pd.read_csv("/Users/roeya/Desktop/stock/BDE.csv")
+	# plotTest(df)
+	# return render(request, 'Markit/results.html', {
+	# 	'data': df.to_html,
+	# })
 
 
 

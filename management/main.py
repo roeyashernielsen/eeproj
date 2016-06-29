@@ -6,7 +6,7 @@ from processor.calculate_technical_parameters import *
 from processor.filtering import *
 from statistics.system_statistics import *
 from utils import enums
-from puller.__init__ import *
+import collections
 
 
 def main(trade_system):
@@ -17,8 +17,8 @@ def main(trade_system):
     extended = dict((name, evaluate_technical_parameters(stock, indicators)) for name, stock in stocks.items())
     filtered = dict((name, filter_stock_data(trade_system, stock)) for name, stock in extended.items())
     stats_dict = get_stat_dict(stocks, extended)
-    # stats = calculate_system_statistics(stats_dict, trade_system.direction, trade_system.name)
-    return extended.values()[0]
+    stats = calculate_system_statistics(stats_dict, trade_system.direction, trade_system.name)
+    return list_to_df({}, stats[1])
 
 
 def get_mock_trade_system():
@@ -102,6 +102,19 @@ def get_stat_dict(full, filtered):
         l = len(full.get(k))
         res[k] = (filtered.get(k), full.get(k).iloc[0, 0], full.get(k).iloc[l - 1, 0], l)
     return res
+
+
+def list_to_df(field_dict, obj_list):
+
+    list_row = []
+    for obj in obj_list:
+        row = {}
+        for field, col in field_dict.items():
+            if hasattr(obj, field):
+                row[col] = getattr(obj, field)
+        list_row.append(row)
+
+    return pd.DataFrame(list_row, columns=(field_dict.values()))
 
 
 if __name__ == "__main__":
