@@ -77,7 +77,8 @@ def run_full_flow(dir):
     stats = calculate_system_statistics(stats_dict, trade_system.get_direction(), trade_system.get_name())
     set_trace()
 
-
+def big_run():
+    run_full_flow('./')
 
 
 
