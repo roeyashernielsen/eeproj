@@ -103,7 +103,7 @@ def form(request):
 		})
 
 	return render(request, 'Markit/form.html', {
-		'indicators': list(enums.SUPPORTED_INDICATORS.values()),
+		'indicators': list(enums.TECHNICAL_PARAMETER.values() + enums.NUMERIC_VALUE.values()),
 		'directions': list(enums.TRADE_DIRECTIONS.values()),
 		'markets': list(enums.MARKETS.values()),
 		'relations': list(enums.RELATIONS.values())
@@ -132,8 +132,18 @@ def separate_dict_to_terms(dic):
 
 def build_term(dic):
 	sdic = sorted(dic)
-	tp1 = TechnicalParameter(dic.get(sdic[0]), int(dic.get(sdic[1])))
-	tp2 = TechnicalParameter(dic.get(sdic[3]), int(dic.get(sdic[4])))
+	if dic.get(sdic[2]) == "":
+		tp1 = TechnicalParameter(name=dic.get(sdic[0]), timeperiod=int(dic.get(sdic[1])))
+	else:
+		tp1 = TechnicalParameter(name=dic.get(sdic[0]), timeperiod=int(dic.get(sdic[1])), shifting=int(dic.get(sdic[2])))
+
+	if dic.get(sdic[3]) not in enums.NUMERIC_VALUE:
+		if dic.get(sdic[5]) == "":
+			tp2 = TechnicalParameter(name=dic.get(sdic[3]), timeperiod=int(dic.get(sdic[4])))
+		else:
+			tp2 = TechnicalParameter(name=dic.get(sdic[3]), timeperiod=int(dic.get(sdic[4])), shifting=int(dic.get(sdic[5])))
+	else:
+		tp2 = TechnicalParameter(name=dic.get(sdic[3]), value=int(dic.get(sdic[6])))
 
 	return Term(tp1, dic.get(sdic[7]), tp2)
 

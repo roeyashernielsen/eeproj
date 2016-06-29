@@ -10,15 +10,15 @@ import collections
 
 
 def main(trade_system):
-    path = DATA_PATH + 'debug/'
+    path = "/Users/roeya/Desktop/stock/"
     stocks = get_all_stocks(path)
     # trade_system = get_mock_trade_system()
     indicators = get_indicators(trade_system)
     extended = dict((name, evaluate_technical_parameters(stock, indicators)) for name, stock in stocks.items())
     filtered = dict((name, filter_stock_data(trade_system, stock)) for name, stock in extended.items())
-    stats_dict = get_stat_dict(stocks, extended)
+    stats_dict = get_stat_dict(stocks, filtered)
     stats = calculate_system_statistics(stats_dict, trade_system.direction, trade_system.name)
-    return list_to_df({}, stats[1])
+    return list_to_df({'name':'Name'}, stats[1])
 
 
 def get_mock_trade_system():
