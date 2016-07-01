@@ -4,9 +4,10 @@ from pandas import DataFrame, Series
 from utils.enums import STOCK_DATA_COLUMNS as COLUMNS  # the columns name in stock_data table
 from logbook import Logger
 from utils import enums
-import sys
 
-log = Logger(__name__)
+
+log = Logger(__name__)  #TODO use better loger
+
 """
 This module is liable for the trades searching, that defined by Trad System. Basically it receive Trade System (open and
 close rules) and stock data (represented in data frame) and locking for lines (i.e. trading days) that match the trade
@@ -14,24 +15,25 @@ system rules. by doing that it filters the data so finally what left are the tra
 """
 
 
-def filter_stock_data(trade_system, stock_data):
+def filter_stock_data(trade_system, symbol, stock_data):
     """
     This function receive trade system and data, and looking for potential trades, by the defined rules of the trade
     system. It going through all the data table, and try to apply the rules on each row of the table. rows that applies
     the rules are marked by the type of trigger (open trade or close trade), and finally it clear the table from all
     the unmarked rows. So at the end we have shrunk version of the table, contains the trades rows only.
     :param trade_system: TradeSystem object- define the trade system uses for filtering
+    :param symbol: stock's symbol
     :param stock_data: DataFrame table, contains the stock's indicator values
     :return: shrunk stock data table, contains the rows marked by trade triggers
     """
     type_checking(TradeSystem, trade_system)
     type_checking(DataFrame, stock_data)
-
+    print "Filter stock data for {}".format(symbol)
     # add columns to mark whether the line applies the trade system rules or not, by trigger type. Initialized to False
     stock_data[COLUMNS.open_trigger] = Series(False, index=stock_data.index)
     stock_data[COLUMNS.close_trigger] = Series(False, index=stock_data.index)
 
-    _mark_trigger_lines(trade_system, stock_data)
+    _mark_trigger_lines(trade_system, symbol, stock_data)
 
     filtered_stock_data = _remove_untriggered_lines(stock_data)
 
@@ -49,7 +51,7 @@ def _remove_untriggered_lines(stock_data):
     return stock_data
 
 
-def _mark_trigger_lines(trade_system, stock_data):
+def _mark_trigger_lines(trade_system, symbol, stock_data):
     """
     Test every line in stock_data to see if it matches the trade system, and mark it accordingly.
     Stateful mode- no allows only single open position at a time.
@@ -63,7 +65,7 @@ def _mark_trigger_lines(trade_system, stock_data):
 
     for row in stock_data.index[:-1]:  # ignore the last day (war mode) # TODO fix in order to get live triggers
         date = stock_data.get_value(row, COLUMNS.date)
-        symbol = None  # TODO symbol from metadata on the logs prints
+        symbol = symbol
 
         # check closing due to stop loss
         if entering_price and row > 0:
@@ -71,7 +73,7 @@ def _mark_trigger_lines(trade_system, stock_data):
             previous_price = stock_data.get_value(row - 1, COLUMNS.close) if row > 0 else None
             if is_stop_loss_reached(current_price, entering_price, trade_system.get_stop_loss(), trade_system.get_direction()) or \
                     is_stop_loss_reached(current_price, previous_price, trade_system.get_moving_stop_loss(), trade_system.get_direction()):
-                log.info("Trade reached stop-loss point, setting close trigger. symbol: {}, date: {}".format(symbol, date))
+                #log.info("Trade reached stop-loss point, setting close trigger. symbol: {}, date: {}".format(symbol, date))
                 stock_data.set_value(row, COLUMNS.close_trigger, True)
                 entering_price = None
 
@@ -82,29 +84,32 @@ def _mark_trigger_lines(trade_system, stock_data):
                 close_trigger = is_rule_applied_by_stock(rule, stock_data, row)
                 if close_trigger:
                     if not entering_price:
-                        log.debug("Received close trigger while no position is open. Trigger is ignored. Date: {} symbol: {}".format(date, symbol))
+                        #log.debug("Received close trigger while no position is open. Trigger is ignored. Date: {} symbol: {}".format(date, symbol))
+                        pass
                     else:
                         stock_data.set_value(row+1, COLUMNS.close_trigger, close_trigger)
                         entering_price = None
-                        log.info("Close trigger was marked for {} at {}".format(symbol, date))
+                  #      log.debug("Close trigger was marked for {} at {}".format(symbol, date))
 
             # check open position triggers
             if rule is trade_system.get_open_rule():
                 open_trigger = is_rule_applied_by_stock(rule, stock_data, row)
                 if open_trigger:
                     if entering_price:
-                        log.debug(
-                            "Received open trigger while having open position. Trigger is ignored. Date: {} symbol: {}".format(
-                                date, symbol))
+                   #     log.debug(
+                    #        "Received open trigger while having open position. Trigger is ignored. Date: {} symbol: {}".format(
+                     #           date, symbol))
+                        pass
                     else:
                         stock_data.set_value(row + 1, COLUMNS.open_trigger, open_trigger)
                         entering_price = stock_data.get_value(row + 1, COLUMNS.open) if row + 1 < len(
                             stock_data) else None
-                        log.info("Open trigger was marked for {} at {}".format(symbol, date))
+                       # log.debug("Open trigger was marked for {} at {}".format(symbol, date))
 
         # check for open and close triggers on the same day
-        if stock_data.get_value(row, COLUMNS.open_trigger) and stock_data.get_value(row, COLUMNS.close_trigger):
-            log.warning("Stock {} were trigger for open and close at the same day ({}. Make sure that an old trade was closed)".format(symbol, date))
+        #if stock_data.get_value(row, COLUMNS.open_trigger) and stock_data.get_value(row, COLUMNS.close_trigger):
+            #log.debug("Stock {} were trigger for open and close at the same day ({}. Make sure that an old trade was closed)".format(symbol, date))
+
 
 
 

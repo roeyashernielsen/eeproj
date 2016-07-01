@@ -1,4 +1,5 @@
 from utils.enums import TRADE_DIRECTIONS
+from ipdb import set_trace
 
 
 class Trade:
@@ -18,8 +19,8 @@ class Trade:
 
         # at default, the opening and the closing price determine by the open price of the day
         self.open_price = opening_day[0].Open  # TODO fix- no hard coded
-        self.close_price = opening_day[0].Close
-        self.profit_points = self.open_price - self.close_price  # in points ($)
+        self.close_price = closing_day[0].Open
+        self.profit_points = self.close_price - self.open_price  # in points ($)
         self.profit_percentages = (self.profit_points / self.open_price) * 100.0  # in percentages
         if direction is TRADE_DIRECTIONS.short:
             self.profit_points = -self.profit_points

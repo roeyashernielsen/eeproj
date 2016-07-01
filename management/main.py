@@ -9,21 +9,46 @@ from utils import enums
 from statistics.system_statistics import *
 from collections import OrderedDict
 from visualization.stats_tables import *
+from utils import general_utils
 
+start_date = None
+end_date = None
+trading_days = 0
 
 def main(trade_system):
-    path = "./data/few_symbols/"
-    stocks = get_all_stocks(path)
-    # trade_system = get_mock_trade_system()
+    """
+    :param trade_system: TradeSystem instance as defined by the user input
+    :return:
+    """
+    path = "./data/long_run/"
+    all_stocks = get_all_stocks(path)
     indicators = get_indicators(trade_system)
-    extended = dict((name, evaluate_technical_parameters(stock, indicators)) for name, stock in stocks.items())
-    filtered = dict((name, filter_stock_data(trade_system, stock)) for name, stock in extended.items())
-    stats_dict = get_stat_dict(stocks, filtered)
-    stats = calculate_system_statistics(stats_dict, trade_system.direction, trade_system.name)
-    list_of_stocks = [s.name for s in stats[1]]
-    stocks_stats_df = dict((s.name, (list_to_df(general_details, [s]), list_to_df(performances, [s]), list_to_df(averages_and_bounds, [s]))) for s in stats[1])
-    return stocks, filtered, list_of_stocks, stocks_stats_df, list_to_df(full_statistics, [stats[0]] + stats[1])
 
+    start_date, end_date, trade_days = general_utils.get_system_times(all_stocks)
+
+    # processing stages
+    # extend stock tables with the required technical parameters
+    extended = dict((symbol, evaluate_technical_parameters(stock, indicators)) for symbol, stock in all_stocks.items())
+    # filter stock tables to reveal the trades
+    filtered = dict((symbol, filter_stock_data(trade_system, symbol,  stock)) for symbol, stock in extended.items())
+
+    # statistics stage
+    stats_dict = get_stat_dict(all_stocks, filtered)
+    stats = calculate_system_statistics(stats_dict, trade_system, start_date, end_date, trading_days)
+
+    # data to show by UI
+    active_stocks = [s.name for s in stats[1]]
+    stocks_stats_df = dict((s.name, (list_to_dataframe(general_details, [s]), list_to_dataframe(performances, [s]), list_to_dataframe(averages_and_bounds, [s]))) for s in stats[1])
+    return all_stocks, filtered, active_stocks, stocks_stats_df, list_to_dataframe(full_statistics, [stats[0]] + stats[1])
+
+
+
+
+
+
+
+
+# TODO move to a better place
 
 def get_mock_trade_system():
     # tp1 = TechnicalParameter(enums.SUPPORTED_INDICATORS.ema, 10, 0)
@@ -109,7 +134,7 @@ def get_stat_dict(full, filtered):
     return res
 
 
-def list_to_df(field_dict, obj_list):
+def list_to_dataframe(field_dict, obj_list):
 
     list_row = []
     for obj in obj_list:

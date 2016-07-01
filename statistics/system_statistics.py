@@ -9,7 +9,7 @@ based on those, it derives the statistics of the whole trading system.
 """
 
 
-def calculate_system_statistics(stock_data_table_dict, direction, system_name):
+def calculate_system_statistics(stock_data_table_dict, trade_system, start_date, end_date, period):
     """
     This function does the calculation of the systems and the stocks statistics.
     :param stock_data_table_dict: dictionary where the key is the stock symbol, and the value is tuple of:
@@ -18,10 +18,14 @@ def calculate_system_statistics(stock_data_table_dict, direction, system_name):
     start_date and end_date are the first and the last day of original stock table (before the filtering),
     period is the total amount of trading days between the start and the end.
     So the format is: {SYMBOL1=(trades_table1, start_date1, end_date1, period_days1), SYMBOL2=...}
-    :param direction: the direction of the trade - long/short (define in the right enum)
-    :param system_name: the name of system as the user defined
+    :param trade_system: TradeSystem instance
+    :param start_date: the earliest date that the system start being analyzed at
+    :param end_date: the latest date of the analysis.
+    :param period: the total amount of trading days.
     :return: tuple of: (SystemStatistics, [StockStatistics]), the second item is list contains all stock statistics.
     """
+    direction = trade_system.get_direction()
+    system_name = trade_system.get_name()
 
     # retrieve all the trade of all the stocks in the trade system
     system_trades = {}
@@ -34,11 +38,8 @@ def calculate_system_statistics(stock_data_table_dict, direction, system_name):
         system_trades.update({stock: (calculate_trades_statistics(stock_trades, direction), stock_start_date,
                                       stock_end_date, stock_period)})
 
-    # retrieve system trade dates and period
-    system_start_date, system_end_date, system_period = _get_system_times(stock_data_table_dict)
-
     stocks_statistics_list = []
-    system_statistics = SystemStatistics(system_name, system_start_date, system_end_date, system_period, [], [], []) # init with empty vectors
+    system_statistics = SystemStatistics(system_name, start_date, end_date, period, [], [], []) # init with empty vectors
     # iterate over all stocks create StockStatistics objects
 
     for stock in system_trades:
@@ -57,20 +58,6 @@ def calculate_system_statistics(stock_data_table_dict, direction, system_name):
     system_statistics.calculate_statistics()  # finally calculate the system stats, based on the concatenated vectors of all stocks
 
     return system_statistics, stocks_statistics_list
-
-
-def _get_system_times(stock_data_table_dict):
-    """
-    Retrieves the start date, end date and period of the system out of the data from stock_data_table_dict.
-    Take the earliest start date, latest end date and the max period time among the stocks.
-    :param stock_data_table_dict: as define in calculate_system_statistics()
-    :return: tuple of (start_date, end_date, period)
-    """
-
-    start_dates = [stock_data_table_dict.get(symbol)[1] for symbol in stock_data_table_dict]
-    end_dates = [stock_data_table_dict.get(symbol)[2] for symbol in stock_data_table_dict]
-    periods = [stock_data_table_dict.get(symbol)[3] for symbol in stock_data_table_dict]
-    return min(start_dates), max(end_dates), max(periods)
 
 
 class StockStatistics:
@@ -141,6 +128,7 @@ class StockStatistics:
         self.durations_vector = tuple(self.durations_vector)
         self.yields_points_vector = tuple(self.yields_points_vector)
         self.yields_percentages_vector = tuple(self.yields_percentages_vector)
+        assert len(self.durations_vector) == len(self.yields_points_vector) == len(self.yields_percentages_vector)
 
         self.profit_points_vector = [y for y in self.yields_points_vector if y > 0]
         self.profit_percentages_vector = [y for y in self.yields_percentages_vector if y > 0]
@@ -153,7 +141,7 @@ class StockStatistics:
         self.loss_percentages_vector = tuple(self.loss_percentages_vector)
 
         # calculate first order statistics
-        self.trades = len(self.yields_points_vector)
+        self.trades = len(self.durations_vector)
         self.total_holding_period = sum(self.durations_vector)
         self.yield_points = sum(self.yields_points_vector)
         self.yield_percentages = sum(self.yields_percentages_vector)

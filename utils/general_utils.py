@@ -1,4 +1,5 @@
 from pandas import DataFrame
+from utils.enums import STOCK_DATA_COLUMNS
 import os
 #from logbook import Logger
 """
@@ -40,5 +41,16 @@ def make_filepath(directory, filename, extension=None):
     return filepath
 
 
+def get_system_times(stock_data_table_dict):
+    """
+    Retrieves the start date, end date and period of the system out of the data from stock_data_table_dict.
+    Take the earliest start date, latest end date and the max period time among the stocks.
+    :param stock_data_table_dict: dictionary of  symbol--> stock data table
+    :return: tuple of (start_date, end_date, period)
+    """
 
+    start_dates = [stock_data.head(0).Date.values for stock_data in stock_data_table_dict.values()]
+    end_dates = [stock_data.tail(0).Date.values for stock_data in stock_data_table_dict.values()]
+    periods = [len(stock_data) for stock_data in stock_data_table_dict.values()]
+    return min(start_dates), max(end_dates), max(periods)
 

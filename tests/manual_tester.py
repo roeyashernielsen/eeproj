@@ -12,9 +12,10 @@ from management.main import get_all_stocks, get_indicators
 import sys
 from management.main import get_stat_dict
 from processor.filtering import filter_stock_data
-from pandas import DataFrame
 from ipdb import set_trace
 from copy import copy
+from management.main import main
+from utils.general_utils import get_system_times
 
 StreamHandler(sys.stdout).push_application()
 log = Logger(__name__)
@@ -61,25 +62,21 @@ def run_flow(sample_data, trade_system, parameters):
     # extend
     extended = evaluate_technical_parameters(table, parameters)
     # filter
-    filtered = filter_stock_data(trade_system, copy(extended))
+    filtered = filter_stock_data(trade_system, 'sample', copy(extended))
     return filtered, extended,
 
 def run_full_flow(dir):
-
+    all_stocks = get_all_stocks(dir)
     fil, ext = run_flow(sample_data, trade_definer_1()[0], trade_definer_1()[1])
     trade_system = trade_definer_1()[0]
     stocks = get_all_stocks(dir)
     indicators = get_indicators(trade_system)
-    extended = dict((name, evaluate_technical_parameters(stock, indicators)) for name, stock in stocks.items())
-    filtered = dict((name, filter_stock_data(trade_system, stock)) for name, stock in extended.items())
-
+    extended = dict((symbol, evaluate_technical_parameters(stock, indicators)) for symbol, stock in stocks.items())
+    filtered = dict((symbol, filter_stock_data(trade_system, symbol, stock)) for symbol, stock in extended.items())
+    start, end, period = get_system_times(all_stocks)
     stats_dict = get_stat_dict(stocks, filtered)
-    stats = calculate_system_statistics(stats_dict, trade_system.get_direction(), trade_system.get_name())
+    stats = calculate_system_statistics(stats_dict, trade_system, start, end, period)
     set_trace()
-
-def big_run():
-    run_full_flow('./')
-
 
 
 def trade_definer_1():
@@ -115,6 +112,9 @@ def manual_tester():
     sys, params = trade_definer_1()
     fil, ext = run_flow(sample_data, sys, params)
 
+def run_main():
+    main(trade_definer_1())
+
 
 
 
@@ -122,7 +122,8 @@ def manual_tester():
 if __name__ == "__main__":
     #test_calculate_technical_indicator(sample_data)
     #manual_tester()
-    run_full_flow('./data/sam/')
+    run_full_flow('./data/long_run/symbols/')
+    #run_main()
 
 
 

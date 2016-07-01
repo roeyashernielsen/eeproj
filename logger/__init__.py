@@ -14,5 +14,5 @@ create instance of Logger that use the file name as print prefix: logger = Logge
 # TODO add timestamp (without creating 2 files)
 #timestamp = LOG_DIR + str(datetime.now()).replace(' ', '_')
 
-general_log_handler = FileHandler(LOG_DIR + 'general.log', mode='w').push_application()
+general_log_handler = FileHandler(LOG_DIR + 'general.log', mode='w', bubble=True).push_application()
 
