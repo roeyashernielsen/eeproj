@@ -129,6 +129,8 @@ class StockStatistics:
         self.yields_points_vector = tuple(self.yields_points_vector)
         self.yields_percentages_vector = tuple(self.yields_percentages_vector)
         assert len(self.durations_vector) == len(self.yields_points_vector) == len(self.yields_percentages_vector)
+        if len(self.durations_vector) == 0:  # no trade- probably received open trigger without close trigger
+            return
 
         self.profit_points_vector = [y for y in self.yields_points_vector if y > 0]
         self.profit_percentages_vector = [y for y in self.yields_percentages_vector if y > 0]
