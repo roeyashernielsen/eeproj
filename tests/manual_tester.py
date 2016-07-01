@@ -1,6 +1,6 @@
 from utils import general_utils as gu
 from trade_system.technical_parameter import TechnicalParameter
-from utils.enums import SUPPORTED_INDICATORS as IND, NUMERIC_VALUE as NV
+from utils.enums import SUPPORTED_INDICATORS as IND, NUMERIC_VALUE as NV, RULE_TYPE
 from logbook import Logger, StreamHandler
 from trade_system.rule import Rule, Clause
 from utils.enums import RELATIONS, TRADE_DIRECTIONS
@@ -89,8 +89,8 @@ def trade_definer_1():
     close_term = Term(adx4, RELATIONS.less, const25)
     open_clause = Clause(open_term)
     close_clause = Clause(close_term)
-    open_rule = Rule(open_clause)
-    close_rule = Rule(close_clause)
+    open_rule = Rule(RULE_TYPE.open, open_clause)
+    close_rule = Rule(RULE_TYPE.close, close_clause)
     trade_system = TradeSystem('tester', open_rule, close_rule, TRADE_DIRECTIONS.long)
     return trade_system, used_parameters
 
@@ -103,8 +103,8 @@ def trade_definer_2():
     close_term = Term(adx4, RELATIONS.crossover_below, rsi10)
     open_clause = Clause(open_term)
     close_clause = Clause(close_term)
-    open_rule = Rule(open_clause)
-    close_rule = Rule(close_clause)
+    open_rule = Rule(RULE_TYPE.open, open_clause)
+    close_rule = Rule(RULE_TYPE.close, close_clause)
     trade_system = TradeSystem('tester', open_rule, close_rule, TRADE_DIRECTIONS.long)
 
     return trade_system, used_parameters
@@ -124,7 +124,7 @@ def run_main():
 if __name__ == "__main__":
     #test_calculate_technical_indicator(sample_data)
     #manual_tester()
-    run_full_flow('./data/long_run/symbols/')
+    run_full_flow('./data/bench_short/')
     #run_main()
 
 

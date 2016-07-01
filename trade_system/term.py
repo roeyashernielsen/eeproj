@@ -29,4 +29,10 @@ class Term:
     def get_relation(self):
         return self.relation
 
+    def set_index(self, index):
+        self.index = index
+
+    def get_index(self):
+        return self.index
+
 

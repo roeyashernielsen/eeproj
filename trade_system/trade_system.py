@@ -1,6 +1,7 @@
+from utils import enums
 from utils.general_utils import *
 from . import rule
-from utils import enums
+
 """
 This Module defines trade-system.
 """

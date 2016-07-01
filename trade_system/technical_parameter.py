@@ -76,6 +76,7 @@ def generate_indicator_title(technical_parameter):
     if technical_parameter.is_numeric_value():
         title += '(' + str(technical_parameter.get_numeric_value())
         title += ')'
+
     return title
 
 
