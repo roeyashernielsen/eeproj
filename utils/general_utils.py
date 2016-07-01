@@ -1,9 +1,12 @@
 from pandas import DataFrame
-
+import os
+#from logbook import Logger
 """
 file to put all the general utils in it
 """
-
+#from logger.__init__  import log_handler
+#log_handler.push_application()
+#log = Logger(__name__)
 
 def type_checking(expected_type, *objects):
     """
@@ -21,6 +24,20 @@ def type_checking(expected_type, *objects):
 
 def csv_file_to_data_frame(path):
     return DataFrame.from_csv(path, index_col=None, infer_datetime_format=True)
+
+
+def make_filepath(directory, filename, extension=None):
+    """
+    Create file in path = directory/filename.extension. Also create the directory it doesn't exist.
+    :return: The file path
+    """
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        # log.info('New directory was created at {}'.format(os.path.abspath('.')+'/'+directory))
+    filepath = directory + '/' + filename
+    if extension:
+        filepath += "." + extension
+    return filepath
 
 
 

@@ -1,6 +1,5 @@
 from .trades_statistics import calculate_trades_statistics
 from numpy import std, average
-import ipdb
 
 
 """

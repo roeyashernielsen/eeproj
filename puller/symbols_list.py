@@ -1,10 +1,9 @@
 import urllib2
-import os
-from logbook import Logger, StreamHandler
-import sys
-from .__init__ import *
+from utils.general_utils import make_filepath
+from logbook import Logger
+from __init__ import DATA_PATH
 from utils import enums
-StreamHandler(sys.stdout).push_application()
+
 log = Logger(__name__)
 
 
@@ -62,20 +61,6 @@ def get_stocks_symbols(write_to_files=True):
         all_symbols.extend(symbols)
 
     return all_symbols
-
-
-def make_filepath(directory, filename, extension=None):
-    """
-    Create file in path = directory/filename.extension. Also create the directory it doesn't exist.
-    :return: The file path
-    """
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-        log.info('New directory was created at {}'.format(os.path.abspath('.')+'/'+directory))
-    filepath = directory + '/' + filename
-    if extension:
-        filepath += "." + extension
-    return filepath
 
 
 if __name__ == '__main__':

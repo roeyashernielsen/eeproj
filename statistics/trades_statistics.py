@@ -1,6 +1,6 @@
 from utils.enums import STOCK_DATA_COLUMNS as COLUMNS
 from .trade import Trade
-import ipdb
+
 
 """
 This file liable for the statistics calculations of each trade among all the trades that been done on stock.

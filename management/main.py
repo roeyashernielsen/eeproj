@@ -12,7 +12,7 @@ from visualization.stats_tables import *
 
 
 def main(trade_system):
-    path = "/Users/roeya/Desktop/stock/"
+    path = "./data/few_symbols/"
     stocks = get_all_stocks(path)
     # trade_system = get_mock_trade_system()
     indicators = get_indicators(trade_system)

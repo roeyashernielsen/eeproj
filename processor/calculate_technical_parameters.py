@@ -1,10 +1,7 @@
 import talib
 from collections import OrderedDict
-from logbook import Logger, StreamHandler
-import sys
-import ipdb;
+from logbook import Logger
 
-StreamHandler(sys.stdout).push_application()
 log = Logger(__name__)
 
 """

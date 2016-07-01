@@ -1,15 +1,14 @@
 from pandas.io.data import DataReader
 from datetime import datetime, timedelta
 from symbols_list import make_filepath, get_stocks_symbols
-from logbook import Logger, StreamHandler
-import sys
+from logbook import Logger
 from symbols_list import DATA_PATH
 
-StreamHandler(sys.stdout).push_application()
+
 log = Logger(__name__)
 
 
-def pull_stocks_data(retries=2, start_date=None, end_date=None):
+def pull_stocks_data(retries=3, start_date=None, end_date=None):
     """
     Pulling stocks raw data, of the stocks in the symbol list.
     :param retries: number of retries for getting each stock's data
@@ -19,13 +18,13 @@ def pull_stocks_data(retries=2, start_date=None, end_date=None):
     symbols = get_stocks_symbols(write_to_files=False)
     log.notice("Starting to pull stocks data")
     end_date = datetime.today() if end_date is None else end_date
-    start_date = end_date - timedelta(365*2)  # take as a default 2 years backwards
+    start_date = end_date - timedelta(365*10)  # take 10 years backwards
 
     for retry in range(retries):
         for symbol in symbols:
             filepath = make_filepath(DATA_PATH+"symbols", symbol, 'csv')  # optimize by avoiding calling this function every time
             try:
-                data = DataReader(symbol,  'yahoo', start_date, end_date, retry_count=1)
+                data = DataReader(symbol,  'yahoo', start_date, end_date, retry_count=3)
             except IOError as e:
                 log.error("IOError for data query of symbol: {}\n\tError msg: {}".format(symbol, e))
                 continue

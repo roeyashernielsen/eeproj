@@ -2,13 +2,10 @@ from utils.general_utils import *
 from trade_system.trade_system import TradeSystem
 from pandas import DataFrame, Series
 from utils.enums import STOCK_DATA_COLUMNS as COLUMNS  # the columns name in stock_data table
-from logbook import Logger, StreamHandler
+from logbook import Logger
 from utils import enums
 import sys
-from math import isnan
-import ipdb
 
-StreamHandler(sys.stdout).push_application()
 log = Logger(__name__)
 """
 This module is liable for the trades searching, that defined by Trad System. Basically it receive Trade System (open and
