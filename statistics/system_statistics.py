@@ -30,6 +30,7 @@ def calculate_system_statistics(stock_data_table_dict, trade_system, start_date,
     # retrieve all the trade of all the stocks in the trade system
     system_trades = {}
     for stock in stock_data_table_dict:
+        print 'calculate stats for {}'.format(stock)
         stock_trades = stock_data_table_dict.get(stock)[0]
         stock_start_date = stock_data_table_dict.get(stock)[1]
         stock_end_date = stock_data_table_dict.get(stock)[2]
@@ -80,7 +81,6 @@ class StockStatistics:
     + average days of holding per trade
 
     """
-
     def __init__(self, symbol, start_date, end_date, period, durations_vector, yields_points_vector,
                  yields_percentages_vector, trade_list):
         self.name = symbol  # the symbol of the stock
@@ -123,6 +123,12 @@ class StockStatistics:
         self.average_holding_period = 0.0
         self.stdev_holding_period = 0.0
         self.efficiency = 0.0  # % of time of open position
+
+    def extend_vectors(self, trade_list, durations_vector_ext, yields_points_vector_ext, yields_percentages_vector_ext):
+        self.trades.extend(trade_list)
+        self.durations_vector.extend(durations_vector_ext)
+        self.yields_points_vector.extend(yields_points_vector_ext)
+        self.yields_percentages_vector.extend(yields_percentages_vector_ext)
 
     def calculate_statistics(self):
         """

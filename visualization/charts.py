@@ -16,6 +16,7 @@ from matplotlib.finance import candlestick_ochl
 import matplotlib
 import pylab
 import ipdb
+from utils.general_utils import csv_file_to_data_frame
 
 matplotlib.rcParams.update({'font.size': 9})
 
@@ -75,14 +76,19 @@ def computeMACD(x, slow=26, fast=12):
     return emaslow, emafast, emafast - emaslow
 
 
-
-
-def print_candlesticks_chart(opens):
+def print_candlesticks_chart(stock_data_table):
     """
 
     """
-    date, closep, highp, lowp, openp, volume = np.loadtxt(stockFile, delimiter=',', unpack=True,
-                                                          converters={0: mdates.strpdate2num('%Y%m%d')})
+    date = stock_data_table.Date
+    openp = stock_data_table.Open
+    highp = stock_data_table.High
+    lowp = stock_data_table.Low
+    closep = stock_data_table.Close
+    volume = stock_data_table.Volume
+    # TODO convert dates
+    # date, closep, highp, lowp, openp, volume = np.loadtxt(stockFile, delimiter=',', unpack=True,
+    #                                                       converters={0: mdates.strpdate2num('%Y%m%d')})
 
     start_point = 0 # TODO set by max indincator
     x = 0
@@ -97,6 +103,16 @@ def print_candlesticks_chart(opens):
     fig = plt.figure(facecolor='#07000d')
     ax1 = plt.subplot2grid((6, 4), (1, 0), rowspan=4, colspan=4, axisbg='#07000d')
     candlestick_ochl(ax1, newAr[-start_point:], width=.6, colorup='#53c156', colordown='#ff1717')  # plot the candle stick chart
+
+    # final adjustments
+    plt.subplots_adjust(left=.09, bottom=.14, right=.94, top=.95, wspace=.20, hspace=0)
+    plt.show()
+    fig.savefig('chart.png', facecolor=fig.get_facecolor())
+
+
+data = csv_file_to_data_frame('./data/sample3')
+#print_candlesticks_chart(data)
+
 
 
 def graphData(stock, MA1, MA2):
@@ -120,10 +136,14 @@ def graphData(stock, MA1, MA2):
             print str(e), 'failed to organize pulled data.'
     except Exception, e:
         print str(e), 'failed to pull pricing data'
+
     try:
+        import ipdb;
+        ipdb.set_trace()
         # each is numpy arrays, date is converted
         date, closep, highp, lowp, openp, volume = np.loadtxt(stockFile, delimiter=',', unpack=True,
                                                               converters={0: mdates.strpdate2num('%Y%m%d')})
+        cdate, closep, highp, lowp, openp, volume = np.loadtxt(stockFile, delimiter=',', unpack=True)
 
         x = 0
         y = len(date)

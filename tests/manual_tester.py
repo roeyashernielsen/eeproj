@@ -37,12 +37,15 @@ rsi10_s2 = TechnicalParameter(IND.rsi, timeperiod=10, shifting=2)
 rsi21 = TechnicalParameter(IND.rsi, timeperiod=21)
 ema4 = TechnicalParameter(IND.ema, timeperiod=4)
 ema2 = TechnicalParameter(IND.ema, timeperiod=2)
+ema20 = TechnicalParameter(IND.ema, timeperiod=20)
+ema10 = TechnicalParameter(IND.ema, timeperiod=10)
 ema80 = TechnicalParameter(IND.ema, timeperiod=80)
 ema100 = TechnicalParameter(IND.ema, timeperiod=100)
 ma1 = TechnicalParameter(IND.ma, timeperiod=1)
 ema15 = TechnicalParameter(IND.ema, timeperiod=15)
 const25 = TechnicalParameter(NV.numeric_value, value=25)
 const5 = TechnicalParameter(NV.numeric_value, value=5)
+const0 = TechnicalParameter(NV.numeric_value, value=0)
 adx4 = TechnicalParameter(IND.adx, timeperiod=4)
 
 all_parameters = [rsi10, rsi10_s2, rsi21, ema4, ema15, const25, const5]
@@ -114,17 +117,38 @@ def trade_definer_2():
 
 def trade_definer_3():
     # technical parameters in use
-    used_parameters = [ema100, ema80, ema2]
+    used_parameters = [ema10, ema80, ema20, const0]
     # system definer
-    open_term = Term(ema100, RELATIONS.crossover_below, ema2)
-    close_term = Term(ema100, RELATIONS.crossover_below, ema80)
-    open_clause = Clause(open_term)
+    open_terms = []
+    #open_term = Term(*open_terms)
+    close_term = Term(ema100, RELATIONS.greater, const0)
+    open_clauses = [Clause(Term(ema20, RELATIONS.crossover_above, ema10)),
+                    Clause(Term(ema20, RELATIONS.crossover_below, ema10))]
     close_clause = Clause(close_term)
-    open_rule = Rule(open_clause)
+    open_rule = Rule(*open_clauses)
     close_rule = Rule(close_clause)
     trade_system = TradeSystem('tester', open_rule, close_rule, TRADE_DIRECTIONS.long)
 
     return trade_system, used_parameters
+
+def trade_definer_and():
+    used_parameters = [ema10, ema20, const5]
+    open_rule = Rule(Clause(*[Term(ema20, RELATIONS.greater, ema10),
+                          Term(ema20, RELATIONS.less, ema10)]))
+    close_rule = Rule(Clause(*[Term(rsi10, RELATIONS.greater, const5)]))
+    trade_system = TradeSystem('and', open_rule, close_rule, TRADE_DIRECTIONS.long)
+    return trade_system, used_parameters
+
+
+def trade_definer_or():
+    used_parameters = [ema10, ema20, const5]
+    open_rule = Rule(Clause(Term(ema20, RELATIONS.greater, ema10)),
+                     Clause(Term(ema20, RELATIONS.less, ema10)))
+
+    close_rule = Rule(Clause(*[Term(rsi10, RELATIONS.greater, const5)]))
+    trade_system = TradeSystem('and', open_rule, close_rule, TRADE_DIRECTIONS.long)
+    return trade_system, used_parameters
+
 
 
 def manual_tester():
@@ -141,7 +165,7 @@ def run_main():
 if __name__ == "__main__":
     #test_calculate_technical_indicator(sample_data)
     #manual_tester()
-    run_full_flow('./data/few_symbols/', trade_definer_3()[0], trade_definer_3()[1])
+    run_full_flow('./data/few_symbols/', trade_definer_or()[0], trade_definer_or()[1])
     #run_main()
 
 

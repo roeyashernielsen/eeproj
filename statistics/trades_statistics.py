@@ -39,7 +39,8 @@ def check_filtered_data(stock_trades_table):
             opens += 1
         if stock_trades_table.get_value(row, COLUMNS.close_trigger):
             closes += 1
-    assert closes == opens or closes == opens-1  # at most there is one unclosed trade
+    assert closes == opens or closes == opens-1, \
+        "opens and closes triggers are not matching, #open {}, #close {}".format(closes, opens)  # at most there is one unclosed trade
 
     # TODO add more checks
 

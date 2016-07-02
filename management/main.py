@@ -22,7 +22,7 @@ def main(trade_system):
     :param trade_system: TradeSystem instance as defined by the user input
     :return:
     """
-    path = "./data/qa/"
+    path = "./data/appy/"
     all_stocks = get_all_stocks(path)
     indicators = get_indicators(trade_system)
 
