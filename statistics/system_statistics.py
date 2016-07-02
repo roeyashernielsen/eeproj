@@ -49,7 +49,8 @@ def calculate_system_statistics(stock_data_table_dict, trade_system, start_date,
                                            [trade.get_profit_points() for trade in trades_list],
                                            [trade.get_profit_percentage() for trade in trades_list])
         stock_statistics.calculate_statistics()  # calculate each stock's statistics
-        stocks_statistics_list.extend([stock_statistics])  # add it to the output list
+        if not stock_statistics.is_empty():
+            stocks_statistics_list.extend([stock_statistics])  # add it to the output list
 
         # extend system stats vectors with the stock's vector
         system_statistics.durations_vector += stock_statistics.durations_vector
@@ -83,6 +84,7 @@ class StockStatistics:
         self.start_date = start_date
         self.end_date = end_date
         self.period = period
+        self.empty = False  # flag to indicates if no trades have been done (possible when there's only open trigger)
         # All statistics calculations are based on the next 3 vectors:
         self.durations_vector = durations_vector
         self.yields_points_vector = yields_points_vector
@@ -130,6 +132,7 @@ class StockStatistics:
         self.yields_percentages_vector = tuple(self.yields_percentages_vector)
         assert len(self.durations_vector) == len(self.yields_points_vector) == len(self.yields_percentages_vector)
         if len(self.durations_vector) == 0:  # no trade- probably received open trigger without close trigger
+            self.empty = True
             return
 
         self.profit_points_vector = [y for y in self.yields_points_vector if y > 0]
@@ -164,8 +167,10 @@ class StockStatistics:
 
         self.average_holding_period = average(self.durations_vector)
         self.stdev_holding_period = std(self.durations_vector)
-        self.efficiency = self.total_holding_period / self.period
+        self.efficiency = 1.0 * self.total_holding_period / self.period * 100.0
 
+    def is_empty(self):
+        return self.empty
 
     def to_dataframe(self):
         """ This class creates pandas DataFrame object containing the statistics for display"""
