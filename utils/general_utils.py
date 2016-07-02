@@ -54,5 +54,5 @@ def get_system_times(stock_data_table_dict):
     start_dates = [stock_data.head(1).Date.values for stock_data in stock_data_table_dict.values()]
     end_dates = [stock_data.tail(1).Date.values for stock_data in stock_data_table_dict.values()]
     periods = [len(stock_data) for stock_data in stock_data_table_dict.values()]
-    return min(start_dates), max(end_dates), max(periods)
+    return min(start_dates)[0], max(end_dates)[0], max(periods)
 
