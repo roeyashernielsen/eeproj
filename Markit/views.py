@@ -41,8 +41,7 @@ def graph(request):
 	if request.GET.get('show.graph'):
 		mondays = WeekdayLocator(MONDAY)  # major ticks on the mondays
 		alldays = DayLocator()  # minor ticks on the days
-		weekFormatter = DateFormatter('%b %d')  # e.g., Jan 12
-		dayFormatter = DateFormatter('%d')  # e.g., 12
+		yearFormatter = DateFormatter('%Y-%m')  # e.g., Jan 12
 		funcy = lambda x: date2num(datetime.strptime(x, "%Y-%m-%d"))
 
 		df = s.get(str(request.GET.get('stock_name')))
@@ -51,28 +50,31 @@ def graph(request):
 		df[['date']] = df['date'].map(funcy)
 
 		df2 = f.get(str(request.GET.get('stock_name')))
-		df2 = df2[['Date', 'Open', 'Close', 'High', 'Low']]
+		print(df2)
+		df2 = df2[['Date', 'Open', 'Close', 'High', 'Low']].head(2 * (len(df2) / 2))
+		print(df2)
 		df2.columns = ['date', 'open', 'close', 'high', 'low']
 		df2[['date']] = df2['date'].map(funcy)
 
-		fig, ax = plt.subplots(2,1)
+		fig, ax1 = plt.subplots()
 		fig.set_size_inches(18.5, 10.5)
 		fig.subplots_adjust(bottom=0.2)
-		# ax[0].xaxis.set_major_locator(mondays)
-		# ax[0].xaxis.set_minor_locator(alldays)
-		ax[0].xaxis.set_major_formatter(weekFormatter)
-		_candlestick(ax[0], [tuple(x) for x in df.values], width=0.6)
-		# ax[0].xaxis_date()
-		# ax[0].autoscale_view()
+		ax1.xaxis.set_major_locator(mondays)
+		ax1.xaxis.set_minor_locator(alldays)
+		ax1.xaxis.set_major_formatter(yearFormatter)
+		_candlestick(ax1, [tuple(x) for x in df.values], width=0.6)
+		ax1.xaxis_date()
+		ax1.autoscale_view()
 		plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
 
 		# ax[1].xaxis.set_major_locator(mondays)
 		# ax[1].xaxis.set_minor_locator(alldays)
-		ax[1].xaxis.set_major_formatter(weekFormatter)
-		_candlestick(ax[1], [tuple(x) for x in df2.values], width=0.6, colorup='g', colordown='g')
+		ax2 = ax1.twinx()
+		# ax2.xaxis.set_major_formatter(yearFormatter)
+		_candlestick(ax2, [tuple(x) for x in df2.values], width=0.6, colorup='g', colordown='b')
 		# ax[1].xaxis_date()
 		# ax[1].autoscale_view()
-		plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
+		# plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
 
 		canvas = FigureCanvas(fig)
 		response = HttpResponse(content_type='image/png')
