@@ -3,7 +3,7 @@
 {% block content %}
     <h1>Markit</h1>
 	<div id="form_container">
-		<form action="#" method="get">
+		<form action="#" method="get" id="12345">
             <div class="form_description">
 			    <H2>Markit</H2>
 			    <H3>Your Marker For Stocks Market</H3>
@@ -26,24 +26,9 @@
                         </span>
 		            </div>
 		        </li>
-
-                <li id="li_2" >
-		            <label class="description" for="element_2_1">Market </label>
-		            <div>
-		                <select class="element select medium" id="element_2_1" name="element_2_1">
-			                <option value="" selected="selected"></option>
-                                {% for market in markets %}
-                                    <option value="{{ market }}" >{{ market }}</option>
-                                {% endfor %}
-                            <option value="ALL">ALL</option>
-		                </select>
-                    </div>
-		        </li>
-
-
                 <ul id="open">
                 <h2>Open Rule</h2>
-                <h3 id="osc1">Start clause 1</h3>
+                <h3 id="osc1" style="margin-left: 25px;">Start clause 1</h3>
                 <ul id="oul1">
                 <p id="ost_1_1" style="margin-left: 50px;">Start term 1</p>
                 <li id="open_li_3_1_1"  style="margin-left: 50px;">
@@ -105,20 +90,205 @@
 		            </div>
 		        </li>
                 <p id="oet_1_1" style="margin-left: 50px;">End term 1</p>
-
-                 <li id="open_li_5_1" style="margin-left: 50px;">
-                    <button id="OR1" class="btn add-more-open-terms" type="button">OR</button>
-                 </li>
             </ul>
-                <h3 id="oec1">End clause 1</h3>
-                <li id="open_li_6">
-                    <button id="AND" class="btn add-more-open-clause" type="button">AND</button>
-                 </li>
+                <h3 style="margin-left: 25px;">OR</h3>
+            <ul id="oul2">
+                <p id="ost_1_1" style="margin-left: 50px;">Start term 2</p>
+                <li id="open_li_3_1_2"  style="margin-left: 50px;">
+		            <div>
+                        <span>
+                            <label class="description" for="oelement_3_1_1_2">Name</label>
+                            <select class="element select medium" id="oelement_3_1_1_2" name="oelement_3_1_1_2">
+                                <option value="" selected="selected"></option>
+                                {% for indicator in indicators %}
+                                    <option value="{{ indicator }}" >{{ indicator }}</option>
+                                {% endfor %}
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_3_2_1_2">Period </label>
+			                <input id="oelement_3_2_1_2" name="oelement_3_2_1_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_3_3_1_2">Shifting </label>
+			                <input id="oelement_3_3_1_2" name="oelement_3_3_1_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <li id="open_li_7_1_2" style="margin-left: 50px;">
+                    <label class="description" for="oelement_7_1_1_2">Relation </label>
+		            <div>
+		                <select class="element select medium" id="oelement_7_1_1_2" name="oelement_7_1_1_2">
+			                <option value="" selected="selected"></option>
+                                {% for relation in relations %}
+                                    <option value="{{ relation }}"
+                                    >{{ relation }}</option>
+                                {% endfor %}
+		                </select>
+                    </div>
+                </li>
+                <li id="open_li_4_1_2" style="margin-left: 50px;">
+		            <div>
+                        <span>
+                            <label class="description" for="oelement_4_1_1_2">Name</label>
+                            <select class="element select medium" id="oelement_4_1_1_2" name="oelement_4_1_1_2">
+                                <option value="" selected="selected"></option>
+                                {% for indicator in indicators %}
+                                    <option value={{ indicator }} >{{ indicator }}</option>
+                                {% endfor %}
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_4_2_1_2">Period </label>
+			                <input id="oelement_4_2_1_2" name="oelement_4_2_1_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_4_3_1_2">Shifting </label>
+			                <input id="oelement_4_3_1_2" name="oelement_4_3_1_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_4_4_1_2">Value</label>
+			                <input id="oelement_4_4_1_2" name="oelement_4_4_1_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <p id="oet_1_2" style="margin-left: 50px;">End term 2</p>
+            </ul>
+                <h3 id="oec1" style="margin-left: 25px;">End clause 1</h3>
+            </ul>
+            <h3>AND</h3>
+                <h3 id="osc2" style="margin-left: 25px;">Start clause 2</h3>
+                <ul id="oul1">
+                <p id="ost_2_1" style="margin-left: 50px;">Start term 1</p>
+                <li id="open_li_3_2_1"  style="margin-left: 50px;">
+		            <div>
+                        <span>
+                            <label class="description" for="oelement_3_1_2_1">Name</label>
+                            <select class="element select medium" id="oelement_3_1_2_1" name="oelement_3_1_2_1">
+                                <option value="" selected="selected"></option>
+                                {% for indicator in indicators %}
+                                    <option value="{{ indicator }}" >{{ indicator }}</option>
+                                {% endfor %}
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_3_2_2_1">Period </label>
+			                <input id="oelement_3_2_2_1" name="oelement_3_2_2_1" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_3_3_2_1">Shifting </label>
+			                <input id="oelement_3_3_2_1" name="oelement_3_3_2_1" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <li id="open_li_7_2_1" style="margin-left: 50px;">
+                    <label class="description" for="oelement_7_1_2_1">Relation </label>
+		            <div>
+		                <select class="element select medium" id="oelement_7_1_2_1" name="oelement_7_1_2_1">
+			                <option value="" selected="selected"></option>
+                                {% for relation in relations %}
+                                    <option value="{{ relation }}"
+                                    >{{ relation }}</option>
+                                {% endfor %}
+		                </select>
+                    </div>
+                </li>
+                <li id="open_li_4_2_1" style="margin-left: 50px;">
+		            <div>
+                        <span>
+                            <label class="description" for="oelement_4_1_2_1">Name</label>
+                            <select class="element select medium" id="oelement_4_1_2_1" name="oelement_4_1_2_1">
+                                <option value="" selected="selected"></option>
+                                {% for indicator in indicators %}
+                                    <option value={{ indicator }} >{{ indicator }}</option>
+                                {% endfor %}
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_4_2_2_1">Period </label>
+			                <input id="oelement_4_2_2_1" name="oelement_4_2_2_1" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_4_3_2_1">Shifting </label>
+			                <input id="oelement_4_3_2_1" name="oelement_4_3_2_1" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_4_4_2_1">Value</label>
+			                <input id="oelement_4_4_2_1" name="oelement_4_4_2_1" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <p id="oet_2_1" style="margin-left: 50px;">End term 1</p>
+            </ul>
+             <h3 style="margin-left: 25px;">OR</h3>
+            <ul id="oul2">
+                <p id="ost_2_2" style="margin-left: 50px;">Start term 2</p>
+                <li id="open_li_3_2_2"  style="margin-left: 50px;">
+		            <div>
+                        <span>
+                            <label class="description" for="oelement_3_1_2_2">Name</label>
+                            <select class="element select medium" id="oelement_3_1_2_2" name="oelement_3_1_2_2">
+                                <option value="" selected="selected"></option>
+                                {% for indicator in indicators %}
+                                    <option value="{{ indicator }}" >{{ indicator }}</option>
+                                {% endfor %}
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_3_2_2_2">Period </label>
+			                <input id="oelement_3_2_2_2" name="oelement_3_2_2_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_3_3_2_2">Shifting </label>
+			                <input id="oelement_3_3_2_2" name="oelement_3_3_2_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <li id="open_li_7_1_2" style="margin-left: 50px;">
+                    <label class="description" for="oelement_7_1_2_2">Relation </label>
+		            <div>
+		                <select class="element select medium" id="oelement_7_1_2_2" name="oelement_7_1_2_2">
+			                <option value="" selected="selected"></option>
+                                {% for relation in relations %}
+                                    <option value="{{ relation }}"
+                                    >{{ relation }}</option>
+                                {% endfor %}
+		                </select>
+                    </div>
+                </li>
+                <li id="open_li_4_2_2" style="margin-left: 50px;">
+		            <div>
+                        <span>
+                            <label class="description" for="oelement_4_1_2_2">Name</label>
+                            <select class="element select medium" id="oelement_4_1_2_2" name="oelement_4_1_2_2">
+                                <option value="" selected="selected"></option>
+                                {% for indicator in indicators %}
+                                    <option value={{ indicator }} >{{ indicator }}</option>
+                                {% endfor %}
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_4_2_2_2">Period </label>
+			                <input id="oelement_4_2_2_2" name="oelement_4_2_2_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_4_3_2_2">Shifting </label>
+			                <input id="oelement_4_3_2_2" name="oelement_4_3_2_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="oelement_4_4_2_2">Value</label>
+			                <input id="oelement_4_4_2_2" name="oelement_4_4_2_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <p id="oet_2_2" style="margin-left: 50px;">End term 2</p>
+            </ul>
+                <h3 id="oec2" style="margin-left: 25px;">End clause 2</h3>
             </ul>
 
             <ul id="close">
                 <h2>Close Rule</h2>
-                <h3 id="csc1">Start clause 1</h3>
+                <h3 id="csc1" style="margin-left: 25px;">Start clause 1</h3>
                 <ul id="cul1">
                 <p id="cst_1_1" style="margin-left: 50px;">Start term 1</p>
                 <li id="close_li_3_1_1"  style="margin-left: 50px;">
@@ -180,17 +350,202 @@
 		            </div>
 		        </li>
                 <p id="cet_1_1" style="margin-left: 50px;">End term 1</p>
+            <h3 style="margin-left: 25px;">OR</h3>
+            </ul>
+            <ul id="cul2">
+                <p id="cst_1_2" style="margin-left: 50px;">Start term 2</p>
+                <li id="close_li_3_1_2"  style="margin-left: 50px;">
+		            <div>
+                        <span>
+                            <label class="description" for="celement_3_1_1_2">Name</label>
+                            <select class="element select medium" id="celement_3_1_1_2" name="celement_3_1_1_2">
+                                <option value="" selected="selected"></option>
+                                {% for indicator in indicators %}
+                                    <option value="{{ indicator }}" >{{ indicator }}</option>
+                                {% endfor %}
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_3_2_1_2">Period </label>
+			                <input id="celement_3_2_1_2" name="celement_3_2_1_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_3_3_1_2">Shifting </label>
+			                <input id="celement_3_3_1_2" name="celement_3_3_1_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <li id="close_li_7_1_2" style="margin-left: 50px;">
+                    <label class="description" for="celement_7_1_1_2">Relation </label>
+		            <div>
+		                <select class="element select medium" id="celement_7_1_1_2" name="celement_7_1_1_2">
+			                <option value="" selected="selected"></option>
+                                {% for relation in relations %}
+                                    <option value="{{ relation }}"
+                                    >{{ relation }}</option>
+                                {% endfor %}
+		                </select>
+                    </div>
+                </li>
+                <li id="close_li_4_1_2" style="margin-left: 50px;">
+		            <div>
+                        <span>
+                            <label class="description" for="celement_4_1_1_2">Name</label>
+                            <select class="element select medium" id="celement_4_1_1_2" name="celement_4_1_1_2">
+                                <option value="" selected="selected"></option>
+                                {% for indicator in indicators %}
+                                    <option value={{ indicator }} >{{ indicator }}</option>
+                                {% endfor %}
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_4_2_1_2">Period </label>
+			                <input id="celement_4_2_1_2" name="celement_4_2_1_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_4_3_1_2">Shifting </label>
+			                <input id="celement_4_3_1_2" name="celement_4_3_1_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_4_4_1_2">Value</label>
+			                <input id="celement_4_4_1_2" name="celement_4_4_1_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <p id="cet_1_2" style="margin-left: 50px;">End term 2</p>
 
-                 <li id="close_li_5_1" style="margin-left: 50px;">
-                    <button id="OR1" class="btn add-more-close-terms" type="button">OR</button>
-                 </li>
             </ul>
-                <h3 id="cec1">End clause 1</h3>
-                <li id="close_li_6">
-                   <button id="AND" class="btn add-more-close-clause" type="button">AND</button>
-                 </li>
+                <h3 id="cec1" style="margin-left: 25px;">End clause 1</h3>
             </ul>
-			
+        <h3>AND</h3>
+        <h3 id="csc1" style="margin-left: 25px;">Start clause 2</h3>
+                <ul id="cul1">
+                <p id="cst_1_1" style="margin-left: 50px;">Start term 1</p>
+                <li id="close_li_3_2_1"  style="margin-left: 50px;">
+		            <div>
+                        <span>
+                            <label class="description" for="celement_3_1_2_1">Name</label>
+                            <select class="element select medium" id="celement_3_1_2_1" name="celement_3_1_2_1">
+                                <option value="" selected="selected"></option>
+                                {% for indicator in indicators %}
+                                    <option value="{{ indicator }}" >{{ indicator }}</option>
+                                {% endfor %}
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_3_2_2_1">Period </label>
+			                <input id="celement_3_2_2_1" name="celement_3_2_2_1" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_3_3_2_1">Shifting </label>
+			                <input id="celement_3_3_2_1" name="celement_3_3_2_1" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <li id="close_li_7_2_1" style="margin-left: 50px;">
+                    <label class="description" for="celement_7_1_2_1">Relation </label>
+		            <div>
+		                <select class="element select medium" id="celement_7_1_2_1" name="celement_7_1_2_1">
+			                <option value="" selected="selected"></option>
+                                {% for relation in relations %}
+                                    <option value="{{ relation }}"
+                                    >{{ relation }}</option>
+                                {% endfor %}
+		                </select>
+                    </div>
+                </li>
+                <li id="close_li_4_2_1" style="margin-left: 50px;">
+		            <div>
+                        <span>
+                            <label class="description" for="celement_4_1_2_1">Name</label>
+                            <select class="element select medium" id="celement_4_1_2_1" name="celement_4_1_2_1">
+                                <option value="" selected="selected"></option>
+                                {% for indicator in indicators %}
+                                    <option value={{ indicator }} >{{ indicator }}</option>
+                                {% endfor %}
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_4_2_2_1">Period </label>
+			                <input id="celement_4_2_2_1" name="celement_4_2_2_1" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_4_3_2_1">Shifting </label>
+			                <input id="celement_4_3_2_1" name="celement_4_3_2_1" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_4_4_2_1">Value</label>
+			                <input id="celement_4_4_2_1" name="celement_4_4_2_1" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <p id="cet_2_1" style="margin-left: 50px;">End term 1</p>
+            <h3 style="margin-left: 25px;">OR</h3>
+            </ul>
+            <ul id="cul2">
+                <p id="cst_2_2" style="margin-left: 50px;">Start term 2</p>
+                <li id="close_li_3_2_2"  style="margin-left: 50px;">
+		            <div>
+                        <span>
+                            <label class="description" for="celement_3_1_2_2">Name</label>
+                            <select class="element select medium" id="celement_3_1_2_2" name="celement_3_1_2_2">
+                                <option value="" selected="selected"></option>
+                                {% for indicator in indicators %}
+                                    <option value="{{ indicator }}" >{{ indicator }}</option>
+                                {% endfor %}
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_3_2_2_2">Period </label>
+			                <input id="celement_3_2_2_2" name="celement_3_2_2_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_3_3_2_2">Shifting </label>
+			                <input id="celement_3_3_2_2" name="celement_3_3_2_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <li id="close_li_7_2_2" style="margin-left: 50px;">
+                    <label class="description" for="celement_7_1_2_2">Relation </label>
+		            <div>
+		                <select class="element select medium" id="celement_7_1_2_2" name="celement_7_1_2_2">
+			                <option value="" selected="selected"></option>
+                                {% for relation in relations %}
+                                    <option value="{{ relation }}"
+                                    >{{ relation }}</option>
+                                {% endfor %}
+		                </select>
+                    </div>
+                </li>
+                <li id="close_li_4_2_2" style="margin-left: 50px;">
+		            <div>
+                        <span>
+                            <label class="description" for="celement_4_1_2_2">Name</label>
+                            <select class="element select medium" id="celement_4_1_2_2" name="celement_4_1_2_2">
+                                <option value="" selected="selected"></option>
+                                {% for indicator in indicators %}
+                                    <option value={{ indicator }} >{{ indicator }}</option>
+                                {% endfor %}
+		                    </select>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_4_2_2_2">Period </label>
+			                <input id="celement_4_2_2_2" name="celement_4_2_2_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_4_3_2_2">Shifting </label>
+			                <input id="celement_4_3_2_2" name="celement_4_3_2_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+                        <span>
+                            <label class="description" for="celement_4_4_2_2">Value</label>
+			                <input id="celement_4_4_2_2" name="celement_4_4_2_2" class="element text medium" type="text" maxlength="255" value=""/>
+                        </span>
+		            </div>
+		        </li>
+                <p id="cet_2_2" style="margin-left: 50px;">End term 2</p>
+            </ul>
+                <h3 id="cec2" style="margin-left: 25px;">End clause 2</h3>
+            </ul>
                 <li class="buttons">
                     <A target="_blank">
 {#				    <input id="saveForm" class="button_text" type="submit" name="submit" value="Submit" />#}
