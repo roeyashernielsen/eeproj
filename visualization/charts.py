@@ -114,7 +114,6 @@ data = csv_file_to_data_frame('./data/sample3')
 #print_candlesticks_chart(data)
 
 
-
 def graphData(stock, MA1, MA2):
     '''
         Use this to dynamically pull a stock:
