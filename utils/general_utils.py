@@ -1,4 +1,5 @@
 from pandas import DataFrame
+import pandas
 from utils.enums import STOCK_DATA_COLUMNS
 import os
 #from logbook import Logger
@@ -54,3 +55,10 @@ def get_system_times(stock_data_table_dict):
     periods = [len(stock_data) for stock_data in stock_data_table_dict.values()]
     return min(start_dates), max(end_dates), max(periods)
 
+
+def csv_to_dataframes_dict(dir):
+    stocks = {}
+    for csv_file in os.listdir(dir):
+        if csv_file.endswith(".csv"):
+            stocks[csv_file.rsplit('.', 1)[0]] = pandas.read_csv(dir + csv_file)
+    return stocks

@@ -73,6 +73,7 @@ def get_mock_technical_parameter():
     return TechnicalParameter(indicator, period, 0)
 
 
+# Depracated, use csv_to_dataframe in general_utils TODO delete after no one uses
 def get_all_stocks(path):
     stocks = {}
     for csv_file in os.listdir(path):

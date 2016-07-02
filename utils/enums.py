@@ -84,7 +84,7 @@ The next Enum class contains all the order relations between indicators.
 """
 RELATIONS = EnumDict(greater='GREATER', less='LESS', crossover='CROSSOVER', crossover_below='CROSSOVER_BELOW',
                      crossover_above='CROSSOVER_ABOVE')
-
+RULE_TYPE = EnumDict(open='OPEN', close='CLOSE')
 
 # TA-Lib technical indicators by groups
 INDICATORS_GROUPS = EnumDict(zip([k.lower().replace(' ', '_') for k in talib.get_function_groups().keys()],
