@@ -51,7 +51,6 @@ def get_system_times(stock_data_table_dict):
     :param stock_data_table_dict: dictionary of  symbol--> stock data table
     :return: tuple of (start_date, end_date, period)
     """
-    ipdb.set_trace()
     start_dates = [stock_data.head(1).Date.values for stock_data in stock_data_table_dict.values()]
     end_dates = [stock_data.tail(1).Date.values for stock_data in stock_data_table_dict.values()]
     periods = [len(stock_data) for stock_data in stock_data_table_dict.values()]

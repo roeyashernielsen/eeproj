@@ -11,6 +11,8 @@ from collections import OrderedDict
 from visualization.stats_tables import *
 from utils import general_utils
 
+import ipdb;
+
 start_date = None
 end_date = None
 trading_days = 0
@@ -20,17 +22,18 @@ def main(trade_system):
     :param trade_system: TradeSystem instance as defined by the user input
     :return:
     """
-    path = "./data/long_run/"
+    path = "./data/qa/"
     all_stocks = get_all_stocks(path)
     indicators = get_indicators(trade_system)
 
-    start_date, end_date, trade_days = general_utils.get_system_times(all_stocks)
+    global start_date, end_date, trading_days
+    start_date, end_date, trading_days = general_utils.get_system_times(all_stocks)
 
     # processing stages
     # extend stock tables with the required technical parameters
     extended = dict((symbol, evaluate_technical_parameters(stock, indicators)) for symbol, stock in all_stocks.items())
     # filter stock tables to reveal the trades
-    filtered = dict((symbol, filter_stock_data(trade_system, symbol,  stock)) for symbol, stock in extended.items())
+    filtered = dict((symbol, filter_stock_data(trade_system, symbol, stock)) for symbol, stock in extended.items())
 
     # statistics stage
     stats_dict = get_stat_dict(all_stocks, filtered)

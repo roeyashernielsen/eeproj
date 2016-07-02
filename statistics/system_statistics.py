@@ -126,6 +126,7 @@ class StockStatistics:
         It should be called once, only after all the data were collected into those vectors (basically this should be
         done on the class creation).
         """
+        # TODO all the points values (meaning $) are not valid since it is not normalize to stock price
         # first make the vector immutable
         self.durations_vector = tuple(self.durations_vector)
         self.yields_points_vector = tuple(self.yields_points_vector)
