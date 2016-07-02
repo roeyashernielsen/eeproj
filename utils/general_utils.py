@@ -1,6 +1,9 @@
 from pandas import DataFrame
 from utils.enums import STOCK_DATA_COLUMNS
 import os
+
+import ipdb
+
 #from logbook import Logger
 """
 file to put all the general utils in it
@@ -48,9 +51,9 @@ def get_system_times(stock_data_table_dict):
     :param stock_data_table_dict: dictionary of  symbol--> stock data table
     :return: tuple of (start_date, end_date, period)
     """
-
-    start_dates = [stock_data.head(0).Date.values for stock_data in stock_data_table_dict.values()]
-    end_dates = [stock_data.tail(0).Date.values for stock_data in stock_data_table_dict.values()]
+    ipdb.set_trace()
+    start_dates = [stock_data.head(1).Date.values for stock_data in stock_data_table_dict.values()]
+    end_dates = [stock_data.tail(1).Date.values for stock_data in stock_data_table_dict.values()]
     periods = [len(stock_data) for stock_data in stock_data_table_dict.values()]
     return min(start_dates), max(end_dates), max(periods)
 
