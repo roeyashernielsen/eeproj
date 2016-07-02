@@ -202,7 +202,10 @@ def _get_relevant_stock_data_sections(technical_param, stock_data, index):
     """
     wanted_day_index = index - technical_param.get_shifting()  # retrieve the row index
     wanted_day_param = technical_param.get_title()  # retrieve the column index
-    wanted_day_value = stock_data.get_value(wanted_day_index, wanted_day_param)
+    try:
+        wanted_day_value = stock_data.get_value(wanted_day_index, wanted_day_param)
+    except KeyError:  # out of bounds
+        wanted_day_value = None
     try:
         previous_day_value = stock_data.get_value(wanted_day_index-1, wanted_day_param)
     except KeyError:  # out of bounds
