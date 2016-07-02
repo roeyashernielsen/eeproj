@@ -34,6 +34,10 @@ rsi10 = TechnicalParameter(IND.rsi, timeperiod=10)
 rsi10_s2 = TechnicalParameter(IND.rsi, timeperiod=10, shifting=2)
 rsi21 = TechnicalParameter(IND.rsi, timeperiod=21)
 ema4 = TechnicalParameter(IND.ema, timeperiod=4)
+ema2 = TechnicalParameter(IND.ema, timeperiod=2)
+ema80 = TechnicalParameter(IND.ema, timeperiod=80)
+ema100 = TechnicalParameter(IND.ema, timeperiod=100)
+ma1 = TechnicalParameter(IND.ma, timeperiod=1)
 ema15 = TechnicalParameter(IND.ema, timeperiod=15)
 const25 = TechnicalParameter(NV.numeric_value, value=25)
 const5 = TechnicalParameter(NV.numeric_value, value=5)
@@ -65,10 +69,9 @@ def run_flow(sample_data, trade_system, parameters):
     filtered = filter_stock_data(trade_system, 'sample', copy(extended))
     return filtered, extended,
 
-def run_full_flow(dir):
+def run_full_flow(dir, trade_system, parameters):
     all_stocks = get_all_stocks(dir)
-    fil, ext = run_flow(sample_data, trade_definer_1()[0], trade_definer_1()[1])
-    trade_system = trade_definer_1()[0]
+    fil, ext = run_flow(sample_data, trade_system, parameters)
     stocks = get_all_stocks(dir)
     indicators = get_indicators(trade_system)
     extended = dict((symbol, evaluate_technical_parameters(stock, indicators)) for symbol, stock in stocks.items())
@@ -81,10 +84,10 @@ def run_full_flow(dir):
 
 def trade_definer_1():
     # technical parameters in use
-    used_parameters = [rsi21, adx4]
+    used_parameters = [rsi21, ma1]
     # system definer
     open_term = Term(rsi21, RELATIONS.greater, const5)
-    close_term = Term(adx4, RELATIONS.less, const25)
+    close_term = Term(ma1, RELATIONS.less, const25)
     open_clause = Clause(open_term)
     close_clause = Clause(close_term)
     open_rule = Rule(open_clause)
@@ -97,8 +100,22 @@ def trade_definer_2():
     # technical parameters in use
     used_parameters = [rsi21, adx4, rsi10]
     # system definer
-    open_term = Term(adx4, RELATIONS.crossover_above, rsi10)
+    open_term = Term(ma1, RELATIONS.crossover_above, rsi10)
     close_term = Term(adx4, RELATIONS.crossover_below, rsi10)
+    open_clause = Clause(open_term)
+    close_clause = Clause(close_term)
+    open_rule = Rule(open_clause)
+    close_rule = Rule(close_clause)
+    trade_system = TradeSystem('tester', open_rule, close_rule, TRADE_DIRECTIONS.long)
+
+    return trade_system, used_parameters
+
+def trade_definer_3():
+    # technical parameters in use
+    used_parameters = [ema100, ema80, ema2]
+    # system definer
+    open_term = Term(ema100, RELATIONS.crossover_below, ema2)
+    close_term = Term(ema100, RELATIONS.crossover_below, ema80)
     open_clause = Clause(open_term)
     close_clause = Clause(close_term)
     open_rule = Rule(open_clause)
@@ -122,7 +139,7 @@ def run_main():
 if __name__ == "__main__":
     #test_calculate_technical_indicator(sample_data)
     #manual_tester()
-    run_full_flow('./data/long_run/symbols/')
+    run_full_flow('./data/few_symbols/', trade_definer_3()[0], trade_definer_3()[1])
     #run_main()
 
 
