@@ -12,10 +12,9 @@ This file defines the tables attributes that summarize the statistics tables tha
 full_statistics = OrderedDict([('name', 'Name'), ('start_date', 'Start Date'), ('end_date', 'End Date'), ('period', 'Term (# days)'),
                                ('trades', 'Total Number of Trades'), ('winning_trades', '# of Winning Trades'), ('losing_trades', '# of Losing Trades'),
                                ('average_yield_percentages', 'Average Profit (%)'), ('stdev_yield_percentages', 'stdev'),
-                               ('average_yield_points', 'Average Profit ($)'), ('stdev_yield_points', 'stdev'),
-                               ('profit_loss_ratio_percentages', 'Profit Loss Ratio (%)'), ('profit_loss_ratio_points', 'Profit Loss Ratio ($)'),
-                               ('max_profit_percentages', 'Max Profit (%)'), ('max_profit_points', 'Max Profit ($)'),
-                               ('max_loss_percentages', 'Max Loss (%)'), ('max_loss_points', 'Max Loss ($)'),
+                               ('profit_loss_ratio_percentages', 'Profit Loss Ratio (%)'),
+                               ('max_profit_percentages', 'Max Profit (%)'),
+                               ('max_loss_percentages', 'Max Loss (%)'),
                                ('total_holding_period', 'Total Holding Period'),
                                ('average_holding_period', 'Average Holding Period (per trade)'),
                                ('efficiency', '% Time of Open Position')])
@@ -31,10 +30,8 @@ performances = OrderedDict([('trades', 'Total Number of Trades'), ('winning_trad
                             ('profit_loss_ratio_points', 'Profit Loss Ratio ($)')])
 
 averages_and_bounds = OrderedDict([('average_yield_percentages', 'Average Profit (%)'), ('stdev_yield_percentages', 'stdev'),
-                                   ('average_yield_points', 'Average Profit ($)'), ('stdev_yield_points', 'stdev'),
                                    ('average_holding_period', 'Average Holding Period (per trade)'), ('stdev_holding_period', 'stdev'),
-                                   ('max_profit_percentages', 'Max Profit (%)'), ('max_profit_points', 'Max Profit ($)'),
-                                   ('max_loss_percentages', 'Max Loss (%)'), ('max_loss_points', 'Max Loss ($)')])
+                                   ('max_profit_percentages', 'Max Profit (%)'), ('max_loss_percentages', 'Max Loss (%)'),])
 
 
 
