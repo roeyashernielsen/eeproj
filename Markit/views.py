@@ -98,7 +98,7 @@ def form(request):
 	if request.GET.get('send.form'):
 		name = str(request.GET.get('element_1_1'))
 		direction = enums.get_enum_value(enums.TRADE_DIRECTIONS, str(request.GET.get('element_1_2')))
-		market = enums.get_enum_value(enums.MARKETS, str(request.GET.get('element_2_1')))
+		# market = enums.get_enum_value(enums.MARKETS, str(request.GET.get('element_2_1')))
 
 		ts_dic = dict(zip(request.GET.keys(), request.GET.values()))
 		open_dict = separate_dict_to_clauses(dict((k, v) for k, v in ts_dic.items() if k.startswith('o')))
@@ -125,7 +125,9 @@ def separate_dict_to_clauses(dic):
 	for i in range(int(len(dic)/8)):
 		j = i+1
 		regexp = re.compile(r'element_[347]_[0-9]_' + str(j) + '_[0-9]')
-		res.append(dict((k, v) for k, v in dic.items() if regexp.search(k) is not None))
+		r = dict((k, v) for k, v in dic.items() if regexp.search(k) is not None)
+		if r:
+			res.append(r)
 
 	return res
 
@@ -142,6 +144,10 @@ def separate_dict_to_terms(dic):
 
 def build_term(dic):
 	sdic = sorted(dic)
+
+	if dic.get(sdic[0]) == "" or dic.get(sdic[3]) == "":
+		return None
+
 	if dic.get(sdic[2]) == "":
 		tp1 = TechnicalParameter(name=enums.get_enum_value(enums.TECHNICAL_PARAMETER, dic.get(sdic[0])), timeperiod=int(dic.get(sdic[1])))
 	else:
@@ -166,13 +172,17 @@ def return_valid_terms(terms):
 				res.append(term)
 	return res
 
+
 def build_rule(dic):
 	clauses = []
 	for clause in dic:
 		terms_dict = separate_dict_to_terms(clause)
 		terms = []
 		for term in terms_dict:
-			terms.append(build_term(term))
-		clauses.append(Clause(*terms))
+			t = build_term(term)
+			if t is not None:
+				terms.append(t)
+		if terms:
+			clauses.append(Clause(*terms))
 
 	return Rule(*clauses)

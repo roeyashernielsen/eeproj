@@ -70,7 +70,7 @@ SUPPORTED_INDICATORS = EnumDict(adx='ADX', aroonosc='AROONOSC', atr='ATR', ema='
                                 sma='SMA', wma='WMA')
 
 # The parameters that received from the puller
-RAW_PARAMETERS = EnumDict(open='Open', high='High', low='Low', close='Close', volume='Volume', adj_close='Adj Close')
+RAW_PARAMETERS = EnumDict(open='Open', high='High', low='Low', close='Close', volume='Volume')
 # parameters that are added to the raw stock data table
 _STOCK_DATA_ADDED_COLUMNS = EnumDict(open_trigger='OPEN_TRIGGER', close_trigger='CLOSE_TRIGGER')
 STOCK_DATA_COLUMNS = EnumDict(date='Date') + RAW_PARAMETERS + _STOCK_DATA_ADDED_COLUMNS + SUPPORTED_INDICATORS
