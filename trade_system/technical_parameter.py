@@ -41,7 +41,7 @@ class TechnicalParameter:
         return self.raw
 
     def is_numeric_value(self):
-        return bool(self.value)
+        return self.name == enums.NUMERIC_VALUE.numeric_value
 
     def get_numeric_value(self):
         if self.is_numeric_value():
