@@ -7,6 +7,7 @@ It uses the statistic calculations of each trade in trading period of stock to r
 based on those, it derives the statistics of the whole trading system.
 """
 
+#TODO redesign! bad design- all the lists and other shit...
 
 def calculate_system_statistics(stock_data_table_dict, trade_system, start_date, end_date, period):
     """
@@ -38,8 +39,7 @@ def calculate_system_statistics(stock_data_table_dict, trade_system, start_date,
                                       stock_end_date, stock_period)})
 
     stocks_statistics_list = []
-    system_statistics = SystemStatistics(system_name, start_date, end_date, period, [], [],
-                                         [])  # init with empty vectors
+    system_statistics = SystemStatistics(system_name, start_date, end_date, period, [], [], [], [])  # init with empty vectors
     # iterate over all stocks create StockStatistics objects
 
     for stock in system_trades:
@@ -47,7 +47,8 @@ def calculate_system_statistics(stock_data_table_dict, trade_system, start_date,
         stock_statistics = StockStatistics(stock, start, end, period,
                                            [trade.get_duration() for trade in trades_list],
                                            [trade.get_profit_points() for trade in trades_list],
-                                           [trade.get_profit_percentage() for trade in trades_list])
+                                           [trade.get_profit_percentage() for trade in trades_list],
+                                           trades_list)
         stock_statistics.calculate_statistics()  # calculate each stock's statistics
         if not stock_statistics.is_empty():
             stocks_statistics_list.extend([stock_statistics])  # add it to the output list
@@ -56,6 +57,7 @@ def calculate_system_statistics(stock_data_table_dict, trade_system, start_date,
         system_statistics.durations_vector += stock_statistics.durations_vector
         system_statistics.yields_points_vector += stock_statistics.yields_points_vector
         system_statistics.yields_percentages_vector += stock_statistics.yields_percentages_vector
+        system_statistics.trades += trades_list
     system_statistics.calculate_statistics()  # finally calculate the system stats, based on the concatenated vectors of all stocks
 
     return system_statistics, stocks_statistics_list
@@ -80,11 +82,12 @@ class StockStatistics:
     """
 
     def __init__(self, symbol, start_date, end_date, period, durations_vector, yields_points_vector,
-                 yields_percentages_vector):
+                 yields_percentages_vector, trade_list):
         self.name = symbol  # the symbol of the stock
         self.start_date = start_date
         self.end_date = end_date
         self.period = period
+        self.trades = trade_list
         self.empty = False  # flag to indicates if no trades have been done (possible when there's only open trigger)
         # All statistics calculations are based on the next 3 vectors:
         self.durations_vector = durations_vector
