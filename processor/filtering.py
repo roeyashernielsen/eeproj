@@ -74,7 +74,7 @@ def _mark_trigger_lines(trade_system, symbol, stock_data):
             if is_stop_loss_reached(current_price, entering_price, trade_system.get_stop_loss(), trade_system.get_direction()) or \
                     is_stop_loss_reached(current_price, previous_price, trade_system.get_moving_stop_loss(), trade_system.get_direction()):
                 #log.info("Trade reached stop-loss point, setting close trigger. symbol: {}, date: {}".format(symbol, date))
-                stock_data.set_value(row, COLUMNS.close_trigger, True)
+                stock_data.set_value(row+1, COLUMNS.close_trigger, True)
                 entering_price = None
 
         for rule in [trade_system.get_close_rule(), trade_system.get_open_rule()]:  # must be at this order- check closing before opening
