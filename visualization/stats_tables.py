@@ -33,6 +33,11 @@ averages_and_bounds = OrderedDict([('average_yield_percentages', 'Average Profit
                                    ('average_holding_period', 'Average Holding Period (per trade)'), ('stdev_holding_period', 'stdev'),
                                    ('max_profit_percentages', 'Max Profit (%)'), ('max_loss_percentages', 'Max Loss (%)'),])
 
+# This table is for the trades list of every stock history, the fields are of class Trade
+stock_trades_list = OrderedDict([('opening_day', 'Opening Date'), ('closing_day', 'Closing Date'),
+                                 ('open_price', 'Opening Price'), ('close_price', 'Closing Price'),
+                                 ('profit_percentages', 'Profit (%)'), ('duration', 'Trade Duration')])
+
 
 
 
