@@ -1,7 +1,6 @@
 from .trades_statistics import calculate_trades_statistics
 from numpy import std, average
 
-
 """
 This file liable for the statistics calculation of the trading system.
 It uses the statistic calculations of each trade in trading period of stock to retrieve the stock statistics, and
@@ -39,13 +38,16 @@ def calculate_system_statistics(stock_data_table_dict, trade_system, start_date,
                                       stock_end_date, stock_period)})
 
     stocks_statistics_list = []
-    system_statistics = SystemStatistics(system_name, start_date, end_date, period, [], [], []) # init with empty vectors
+    system_statistics = SystemStatistics(system_name, start_date, end_date, period, [], [],
+                                         [])  # init with empty vectors
     # iterate over all stocks create StockStatistics objects
 
     for stock in system_trades:
         trades_list, start, end, period = system_trades.get(stock)
-        stock_statistics = StockStatistics(stock, start, end, period, trades_list)
-
+        stock_statistics = StockStatistics(stock, start, end, period,
+                                           [trade.get_duration() for trade in trades_list],
+                                           [trade.get_profit_points() for trade in trades_list],
+                                           [trade.get_profit_percentage() for trade in trades_list])
         stock_statistics.calculate_statistics()  # calculate each stock's statistics
         if not stock_statistics.is_empty():
             stocks_statistics_list.extend([stock_statistics])  # add it to the output list
@@ -76,19 +78,19 @@ class StockStatistics:
     + average days of holding per trade
 
     """
-    def __init__(self, symbol, start_date, end_date, period, trades_list):
 
+    def __init__(self, symbol, start_date, end_date, period, durations_vector, yields_points_vector,
+                 yields_percentages_vector):
         self.name = symbol  # the symbol of the stock
         self.start_date = start_date
         self.end_date = end_date
         self.period = period
         self.empty = False  # flag to indicates if no trades have been done (possible when there's only open trigger)
-        self.trades = trades_list
         # All statistics calculations are based on the next 3 vectors:
-        self.durations_vector = [trade.get_duration() for trade in trades_list]
-        self.yields_points_vector = [trade.get_profit_points() for trade in trades_list],
-        self.yields_percentages_vector = [trade.get_profit_percentage() for trade in trades_list]
-        
+        self.durations_vector = durations_vector
+        self.yields_points_vector = yields_points_vector
+        self.yields_percentages_vector = yields_percentages_vector
+
         # Derived vectors (order 0 statistics)
         self.profit_points_vector = []
         self.profit_percentages_vector = []
@@ -168,9 +170,6 @@ class StockStatistics:
         self.average_holding_period = average(self.durations_vector)
         self.stdev_holding_period = std(self.durations_vector)
         self.efficiency = 1.0 * self.total_holding_period / self.period * 100.0
-
-    def get_trades(self):
-        return self.trades
 
     def is_empty(self):
         return self.empty
