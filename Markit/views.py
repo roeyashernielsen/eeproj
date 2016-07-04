@@ -98,6 +98,13 @@ def form(request):
 	if request.GET.get('send.form'):
 		name = str(request.GET.get('element_1_1'))
 		direction = enums.get_enum_value(enums.TRADE_DIRECTIONS, str(request.GET.get('element_1_2')))
+		stop_loss = None
+		m_stop_loss = None
+		if request.GET.get('element_1_3') is not None and str(request.GET.get('element_1_3')) != "":
+			stop_loss = float(request.GET.get('element_1_3'))
+		if request.GET.get('element_1_4') is not None and str(request.GET.get('element_1_4')) != "":
+			m_stop_loss = float(request.GET.get('element_1_4'))
+
 		# market = enums.get_enum_value(enums.MARKETS, str(request.GET.get('element_2_1')))
 
 		ts_dic = dict(zip(request.GET.keys(), request.GET.values()))
@@ -105,7 +112,7 @@ def form(request):
 		close_dict = separate_dict_to_clauses(dict((k, v) for k, v in ts_dic.items() if k.startswith('c')))
 		open_rule = build_rule(open_dict)
 		close_rule = build_rule(close_dict)
-		trade_system = TradeSystem(name, open_rule, close_rule, direction)
+		trade_system = TradeSystem(name, open_rule, close_rule, direction, stop_loss=stop_loss, moving_stop_loss=m_stop_loss)
 		s, f, stock_list, stocks_stat_df, sts_stat_df = main(trade_system)
 		return render(request, 'Markit/results.html', {
 			'df': sts_stat_df.to_html,
