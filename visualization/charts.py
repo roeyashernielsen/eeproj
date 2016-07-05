@@ -20,266 +20,143 @@ from utils.general_utils import csv_file_to_data_frame
 
 matplotlib.rcParams.update({'font.size': 9})
 
-eachStock = 'EBAY', 'TSLA', 'AAPL'
+# list of indicators that are drawn on the price chart (beside the candles). The alternative is to draw in a separate plot.
+ON_GRAPH_INDICATORS = ['EMA', 'MA', 'SMA']
 
+# mapping between the number of outer indicators (those that printed alongside the chart) to plots heights.
+# heights[0], heights[1] = candles chart height, indicators plot height.
+subplot_heights_mapping = {0:(100,0), 1:(80,20), 2:(70,15), 3:(70,10), 4:(60,10), 5:(50,10)}
 
+height, width = 0, 0
+date = []
+start_point = 0
 
-def rsiFunc(prices, n=14):
-    deltas = np.diff(prices)
-    seed = deltas[:n + 1]
-    up = seed[seed >= 0].sum() / n
-    down = -seed[seed < 0].sum() / n
-    rs = up / down
-    rsi = np.zeros_like(prices)
-    rsi[:n] = 100. - 100. / (1. + rs)
+def draw_candlestick_chart(stock_data_table, **indicators):
+    """
 
-    for i in range(n, len(prices)):
-        delta = deltas[i - 1]  # cause the diff is 1 shorter
+    :param stock_data_table:
+    :param indicators: dictionary of: indicator --> values (pandas series)
+     indicator is of format: NAME(period), e.g EMA(50) is EMA with time period of 50
+    :return:
+    """
 
-        if delta > 0:
-            upval = delta
-            downval = 0.
+    # calculate plots measure, by the amount of final plots
+    global height, width
+    height = subplot_heights_mapping[0]  # the first place is also the maximum
+    width = height * 1.6
+    outer_plots = [ind for ind in indicators if ind.split('(') not in ON_GRAPH_INDICATORS]
+    main_chart_height = subplot_heights_mapping.get(min(len(outer_plots),5))[0]
+    outer_plot_height = subplot_heights_mapping.get(min(len(outer_plots), 5))[1]
+
+    # retrieve raw data
+    global date
+    date = stock_data_table.Date.apply(mdates.datestr2num).values
+    openp = stock_data_table.Open.values
+    highp = stock_data_table.High.values
+    lowp = stock_data_table.Low.values
+    closep = stock_data_table.Close.values
+    volume = stock_data_table.Volume.values
+
+    # arrange raw date
+    timeline = []
+    for i in xrange(len(date)):
+        appendLine = date[i], openp[i], closep[i], highp[i], lowp[i], volume[i]
+        timeline.append(appendLine)
+
+    # create the main figure (candle stick chart)
+    figure = plt.figure(facecolor='#07000d')
+    ax1 = plt.subplot2grid((height, width), (0, 0), rowspan=main_chart_height, colspan=width, axisbg='#07000d')
+    candlestick_ochl(ax1, timeline, width=.6, colorup='#53c156', colordown='#ff1717')  # plot the candle stick chart
+
+    # figure design and specifications
+    ax1.grid(True, color='w')
+    ax1.xaxis.set_major_locator(mticker.MaxNLocator(10))
+    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    ax1.yaxis.label.set_color("w")
+    ax1.spines['bottom'].set_color("#5998ff")
+    ax1.spines['top'].set_color("#5998ff")
+    ax1.spines['left'].set_color("#5998ff")
+    ax1.spines['right'].set_color("#5998ff")
+    ax1.tick_params(axis='y', colors='w')
+    plt.gca().yaxis.set_major_locator(mticker.MaxNLocator(prune='upper'))
+    ax1.tick_params(axis='x', colors='w')
+    plt.ylabel('Stock price and Volume')
+
+    global start_point
+    start_point = 0  # TODO change or delete if it can stay 0
+    # plot volumes
+    vol_min = 0
+    ax1_vol = ax1.twinx()
+    ax1_vol.fill_between(date[-start_point:], vol_min, volume[-start_point:], facecolor='#00ffe8', alpha=.4)
+    ax1_vol.axes.yaxis.set_ticklabels([])
+    ax1_vol.grid(False)
+    # set volume bar measures
+    ax1_vol.set_ylim(0, 3 * volume.max())
+    ax1_vol.spines['bottom'].set_color("#5998ff")
+    ax1_vol.spines['top'].set_color("#5998ff")
+    ax1_vol.spines['left'].set_color("#5998ff")
+    ax1_vol.spines['right'].set_color("#5998ff")
+    ax1_vol.tick_params(axis='x', colors='w')
+    ax1_vol.tick_params(axis='y', colors='w')
+
+    # plot indicators
+    y_loc = main_chart_height  # the first y-loc is right after the main chart
+    for indicator in indicators:
+        if indicator not in outer_plots:
+            draw_indicator_on_chart(figure, indicator, indicators.get(indicator).values, ax1)
         else:
-            upval = 0.
-            downval = -delta
+            draw_indicator_below_chart(figure, indicator, indicators.get(indicator).values, ax1, y_loc)
+            y_loc += outer_plot_height
 
-        up = (up * (n - 1) + upval) / n
-        down = (down * (n - 1) + downval) / n
+    # mark triggers # TODO
+    ax1.annotate('Big news!', (date[50], Av1[50]),
+                 xytext=(0.8, 0.9), textcoords='axes fraction',
+                 arrowprops=dict(facecolor='white', shrink=0.05),
+                 fontsize=10, color='w',
+                 horizontalalignment='right', verticalalignment='bottom')
 
-        rs = up / down
-        rsi[i] = 100. - 100. / (1. + rs)
-
-    return rsi
-
-
-def movingaverage(values, window):
-    weigths = np.repeat(1.0, window) / window
-    smas = np.convolve(values, weigths, 'valid')
-    return smas  # as a numpy array
-
-
-def ExpMovingAverage(values, window):
-    weights = np.exp(np.linspace(-1., 0., window))
-    weights /= weights.sum()
-    a = np.convolve(values, weights, mode='full')[:len(values)]
-    a[:window] = a[window]
-    return a
-
-
-def computeMACD(x, slow=26, fast=12):
-    """
-    compute the MACD (Moving Average Convergence/Divergence) using a fast and slow exponential moving avg'
-    return value is emaslow, emafast, macd which are len(x) arrays
-    """
-    emaslow = ExpMovingAverage(x, slow)
-    emafast = ExpMovingAverage(x, fast)
-    return emaslow, emafast, emafast - emaslow
-
-
-def print_candlesticks_chart(stock_data_table):
-    """
-
-    """
-    date = stock_data_table.Date
-    openp = stock_data_table.Open
-    highp = stock_data_table.High
-    lowp = stock_data_table.Low
-    closep = stock_data_table.Close
-    volume = stock_data_table.Volume
-    # TODO convert dates
-    # date, closep, highp, lowp, openp, volume = np.loadtxt(stockFile, delimiter=',', unpack=True,
-    #                                                       converters={0: mdates.strpdate2num('%Y%m%d')})
-
-    start_point = 0 # TODO set by max indincator
-    x = 0
-    y = len(date)
-    newAr = []  # will use for the candlestick chart
-    while x < y:
-        appendLine = date[x], openp[x], closep[x], highp[x], lowp[x], volume[x]
-        newAr.append(appendLine)
-        x += 1
-
-    start_point = len(date[start_point - 1:])  # begin the len counting from the valid values of the indicators
-    fig = plt.figure(facecolor='#07000d')
-    ax1 = plt.subplot2grid((6, 4), (1, 0), rowspan=4, colspan=4, axisbg='#07000d')
-    candlestick_ochl(ax1, newAr[-start_point:], width=.6, colorup='#53c156', colordown='#ff1717')  # plot the candle stick chart
-
-    # final adjustments
+    # final adjusments
     plt.subplots_adjust(left=.09, bottom=.14, right=.94, top=.95, wspace=.20, hspace=0)
     plt.show()
-    fig.savefig('chart.png', facecolor=fig.get_facecolor())
+    figure.savefig('mine.png', facecolor=figure.get_facecolor())
 
 
-data = csv_file_to_data_frame('./data/sample3')
-#print_candlesticks_chart(data)
+def draw_indicator_on_chart(chart, label, values, axis):
+    global height, width, date, start_point
+    color = '#e1edf9'  # TODO chose random colors or iterate over few
+    axis.plot(date[-start_point:], values[-start_point:], color, label=label, linewidth=1)
+    ma_leg = plt.legend(loc=9, ncol=2, prop={'size': 7}, fancybox=True, borderaxespad=0.)
+    ma_leg.get_frame().set_alpha(0.4)
+    text_ed = pylab.gca().get_legend().get_texts()
+    pylab.setp(text_ed[0:5], color='w')
 
 
-def graphData(stock, MA1, MA2):
-    '''
-        Use this to dynamically pull a stock:
-    '''
-    try:
-        print 'Currently Pulling', stock
-        print str(datetime.datetime.fromtimestamp(int(time.time())).strftime('%Y-%m-%d %H:%M:%S'))
-        urlToVisit = 'http://chartapi.finance.yahoo.com/instrument/1.0/' + stock + '/chartdata;type=quote;range=10y/csv'
-        stockFile = []
-        try:
-            sourceCode = urllib2.urlopen(urlToVisit).read()
-            splitSource = sourceCode.split('\n')
-            for eachLine in splitSource:
-                splitLine = eachLine.split(',')
-                if len(splitLine) == 6:
-                    if 'values' not in eachLine:
-                        stockFile.append(eachLine)
-        except Exception, e:
-            print str(e), 'failed to organize pulled data.'
-    except Exception, e:
-        print str(e), 'failed to pull pricing data'
+def draw_indicator_below_chart(chart, label, values, axis, row_loc):
+    # TODO add support in multi plots indicators (as MACD)
+    global height, width, date, start_point
+    ax0 = plt.subplot2grid((height, width), (row_loc, 0), sharex=axis, rowspan=1, colspan=4, axisbg='#07000d')
+    color = '#c1f9f7'
+    pos_color = '#386d13'
+    neg_color = '#8f2020'
 
-    try:
-        import ipdb;
-        ipdb.set_trace()
-        # each is numpy arrays, date is converted
-        date, closep, highp, lowp, openp, volume = np.loadtxt(stockFile, delimiter=',', unpack=True,
-                                                              converters={0: mdates.strpdate2num('%Y%m%d')})
-        cdate, closep, highp, lowp, openp, volume = np.loadtxt(stockFile, delimiter=',', unpack=True)
-
-        x = 0
-        y = len(date)
-        newAr = []  # will use for the candlestick chart
-        while x < y:
-            appendLine = date[x], openp[x], closep[x], highp[x], lowp[x], volume[x]
-            newAr.append(appendLine)
-            x += 1
-
-        Av1 = movingaverage(closep, MA1)  # numpy Array, shorter
-        Av2 = movingaverage(closep, MA2)
-
-        SP = len(date[MA2 - 1:])  # begin the len counting from the valid values of the indicators
-
-        fig = plt.figure(facecolor='#07000d')
-
-        ax1 = plt.subplot2grid((6, 4), (1, 0), rowspan=4, colspan=4, axisbg='#07000d')
-        candlestick_ochl(ax1, newAr[-SP:], width=.6, colorup='#53c156', colordown='#ff1717')  # plot the candle stick chart
-
-        Label1 = str(MA1) + ' SMA'
-        Label2 = str(MA2) + ' SMA'
-
-        # Plotting the tracking indicators (on the graph)
-        # putting Av1, 2 on the main chart
-        ax1.plot(date[-SP:], Av1[-SP:], '#e1edf9', label=Label1, linewidth=1.5)
-        ax1.plot(date[-SP:], Av2[-SP:], '#4ee6fd', label=Label2, linewidth=1.5)
-
-        ax1.grid(True, color='w')
-        ax1.xaxis.set_major_locator(mticker.MaxNLocator(10))
-        ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-        ax1.yaxis.label.set_color("w")
-        ax1.spines['bottom'].set_color("#5998ff")
-        ax1.spines['top'].set_color("#5998ff")
-        ax1.spines['left'].set_color("#5998ff")
-        ax1.spines['right'].set_color("#5998ff")
-        ax1.tick_params(axis='y', colors='w')
-        plt.gca().yaxis.set_major_locator(mticker.MaxNLocator(prune='upper'))
-        ax1.tick_params(axis='x', colors='w')
-        plt.ylabel('Stock price and Volume')
-
-        maLeg = plt.legend(loc=9, ncol=2, prop={'size': 7},
-                           fancybox=True, borderaxespad=0.)
-        maLeg.get_frame().set_alpha(0.4)
-        textEd = pylab.gca().get_legend().get_texts()
-        pylab.setp(textEd[0:5], color='w')
+    ax0.plot(date[start_point:], values[start_point:], color, linewidth=1.5)
+    ax0.axhline(70, color=neg_color)
+    ax0.axhline(30, color=pos_color)
+    ax0.fill_between(date[-start_point:], values[-start_point:], 70, where=(values[-start_point:] >= 70), facecolor=neg_color, edgecolor=neg_color,
+                     alpha=0.5)
+    ax0.fill_between(date[-start_point:], values[-start_point:], 30, where=(values[-start_point:] <= 30), facecolor=pos_color, edgecolor=pos_color,
+                     alpha=0.5)
+    ax0.set_yticks([30, 70])
+    ax0.yaxis.label.set_color("w")
+    ax0.spines['bottom'].set_color("#5998ff")
+    ax0.spines['top'].set_color("#5998ff")
+    ax0.spines['left'].set_color("#5998ff")
+    ax0.spines['right'].set_color("#5998ff")
+    ax0.tick_params(axis='y', colors='w')
+    ax0.tick_params(axis='x', colors='w')
+    plt.ylabel(label)
 
 
-        # Ploting RSI on the upper part
-        ax0 = plt.subplot2grid((6, 4), (0, 0), sharex=ax1, rowspan=1, colspan=4, axisbg='#07000d')
-        rsi = rsiFunc(closep)   # numpy data array, shown at the upper part of the graph
-        import ipdb; ipdb.set_trace()
-        rsiCol = '#c1f9f7'
-        posCol = '#386d13'
-        negCol = '#8f2020'
-
-        ax0.plot(date[-SP:], rsi[-SP:], rsiCol, linewidth=1.5)
-        ax0.axhline(70, color=negCol)
-        ax0.axhline(30, color=posCol)
-        ax0.fill_between(date[-SP:], rsi[-SP:], 70, where=(rsi[-SP:] >= 70), facecolor=negCol, edgecolor=negCol,
-                         alpha=0.5)
-        ax0.fill_between(date[-SP:], rsi[-SP:], 30, where=(rsi[-SP:] <= 30), facecolor=posCol, edgecolor=posCol,
-                         alpha=0.5)
-        ax0.set_yticks([30, 70])
-        ax0.yaxis.label.set_color("w")
-        ax0.spines['bottom'].set_color("#5998ff")
-        ax0.spines['top'].set_color("#5998ff")
-        ax0.spines['left'].set_color("#5998ff")
-        ax0.spines['right'].set_color("#5998ff")
-        ax0.tick_params(axis='y', colors='w')
-        ax0.tick_params(axis='x', colors='w')
-        plt.ylabel('RSI')
-
-
-        # Ploting volume on the candlestick chart
-        volumeMin = 0
-        ax1v = ax1.twinx()
-        ax1v.fill_between(date[-SP:], volumeMin, volume[-SP:], facecolor='#00ffe8', alpha=.4)
-        ax1v.axes.yaxis.set_ticklabels([])
-        ax1v.grid(False)
-
-        ###Edit this to 3, so it's a bit larger
-        ax1v.set_ylim(0, 3 * volume.max())
-        ax1v.spines['bottom'].set_color("#5998ff")
-        ax1v.spines['top'].set_color("#5998ff")
-        ax1v.spines['left'].set_color("#5998ff")
-        ax1v.spines['right'].set_color("#5998ff")
-        ax1v.tick_params(axis='x', colors='w')
-        ax1v.tick_params(axis='y', colors='w')
-
-        # Ploting MACD under the candlestick chart
-        ax2 = plt.subplot2grid((6, 4), (5, 0), sharex=ax1, rowspan=1, colspan=4, axisbg='#07000d')
-        fillcolor = '#00ffe8'
-        nslow = 26
-        nfast = 12
-        nema = 9
-        emaslow, emafast, macd = computeMACD(closep)
-        ema9 = ExpMovingAverage(macd, nema)
-        ax2.plot(date[-SP:], macd[-SP:], color='#4ee6fd', lw=2)
-        ax2.plot(date[-SP:], ema9[-SP:], color='#e1edf9', lw=1)
-        ax2.fill_between(date[-SP:], macd[-SP:] - ema9[-SP:], 0, alpha=0.5, facecolor=fillcolor, edgecolor=fillcolor)
-
-        plt.gca().yaxis.set_major_locator(mticker.MaxNLocator(prune='upper'))
-        ax2.spines['bottom'].set_color("#5998ff")
-        ax2.spines['top'].set_color("#5998ff")
-        ax2.spines['left'].set_color("#5998ff")
-        ax2.spines['right'].set_color("#5998ff")
-        ax2.tick_params(axis='x', colors='w')
-        ax2.tick_params(axis='y', colors='w')
-        plt.ylabel('MACD', color='w')
-        ax2.yaxis.set_major_locator(mticker.MaxNLocator(nbins=5, prune='upper'))
-        for label in ax2.xaxis.get_ticklabels():
-            label.set_rotation(45)
-
-        plt.suptitle(stock.upper(), color='w')
-
-        plt.setp(ax0.get_xticklabels(), visible=False)
-        plt.setp(ax1.get_xticklabels(), visible=False)
-
-        # Mark trigger
-        ax1.annotate('Big news!', (date[510], Av1[510]),
-                     xytext=(0.8, 0.9), textcoords='axes fraction',
-                     arrowprops=dict(facecolor='white', shrink=0.05),
-                     fontsize=10, color='w',
-                     horizontalalignment='right', verticalalignment='bottom')
-
-        # final adjustments
-        plt.subplots_adjust(left=.09, bottom=.14, right=.94, top=.95, wspace=.20, hspace=0)
-        plt.show()
-        fig.savefig('example.png', facecolor=fig.get_facecolor())
-
-    except Exception, e:
-        print 'main loop', str(e)
-
-
-#while True:
- #   stock = raw_input('Stock to plot: ')
-  #  graphData(stock, 10, 50)
-
-graphData('ZION', 10, 50)
+if __name__ == '__main__':
+    draw_candlestick_chart(csv_file_to_data_frame('./data/sample3'))
 
