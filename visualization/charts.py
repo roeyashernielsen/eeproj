@@ -1,21 +1,12 @@
-import matplotlib
-
 """
 Plot the candle stick charts with all the additional data (technical parameters plots)
 """
-
-# THIS VERSION IS FOR PYTHON 2 #
-import urllib2
-import time
-import datetime
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import matplotlib.dates as mdates
 from matplotlib.finance import candlestick_ochl
 import matplotlib
 import pylab
-import ipdb
 from utils.general_utils import csv_file_to_data_frame
 
 matplotlib.rcParams.update({'font.size': 9})
@@ -30,6 +21,8 @@ subplot_heights_mapping = {0:(100,0), 1:(80,20), 2:(70,15), 3:(70,10), 4:(60,10)
 height, width = 0, 0
 date = []
 start_point = 0
+
+chart_path = 'sample_chart.png'
 
 def draw_candlestick_chart(symbol, stock_data_table, open_triggers, close_triggers, **indicators):
     """
@@ -120,7 +113,7 @@ def draw_candlestick_chart(symbol, stock_data_table, open_triggers, close_trigge
     # final adjusments
     plt.subplots_adjust(left=.09, bottom=.14, right=.94, top=.95, wspace=.20, hspace=0)
     plt.show()
-    figure.savefig('mine.png', facecolor=figure.get_facecolor())
+    figure.savefig(chart_path, facecolor=figure.get_facecolor())
 
 
 
