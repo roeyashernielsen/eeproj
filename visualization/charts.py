@@ -31,10 +31,12 @@ height, width = 0, 0
 date = []
 start_point = 0
 
-def draw_candlestick_chart(stock_data_table, **indicators):
+def draw_candlestick_chart(symbol, stock_data_table, open_triggers, close_triggers, **indicators):
     """
-
-    :param stock_data_table:
+    :param symbol: the symbol of the stock
+    :param stock_data_table: pandas Dataframe table contains raw data column
+    :param open_triggers, close_triggers: pandas series contains the index of the date which will be marked.
+    e.g. if open_trigger[3]=20 then date[20] will be mark
     :param indicators: dictionary of: indicator --> values (pandas series)
      indicator is of format: NAME(period), e.g EMA(50) is EMA with time period of 50
     :return:
@@ -42,8 +44,8 @@ def draw_candlestick_chart(stock_data_table, **indicators):
 
     # calculate plots measure, by the amount of final plots
     global height, width
-    height = subplot_heights_mapping[0]  # the first place is also the maximum
-    width = height * 1.6
+    height = subplot_heights_mapping[0][0]  # the first place is also the maximum
+    width = int(height * 1.6)
     outer_plots = [ind for ind in indicators if ind.split('(') not in ON_GRAPH_INDICATORS]
     main_chart_height = subplot_heights_mapping.get(min(len(outer_plots),5))[0]
     outer_plot_height = subplot_heights_mapping.get(min(len(outer_plots), 5))[1]
@@ -81,6 +83,7 @@ def draw_candlestick_chart(stock_data_table, **indicators):
     plt.gca().yaxis.set_major_locator(mticker.MaxNLocator(prune='upper'))
     ax1.tick_params(axis='x', colors='w')
     plt.ylabel('Stock price and Volume')
+    plt.suptitle(symbol.upper(), color='silver')
 
     global start_point
     start_point = 0  # TODO change or delete if it can stay 0
@@ -109,16 +112,30 @@ def draw_candlestick_chart(stock_data_table, **indicators):
             y_loc += outer_plot_height
 
     # mark triggers # TODO
-    ax1.annotate('Big news!', (date[50], Av1[50]),
-                 xytext=(0.8, 0.9), textcoords='axes fraction',
-                 arrowprops=dict(facecolor='white', shrink=0.05),
-                 fontsize=10, color='w',
-                 horizontalalignment='right', verticalalignment='bottom')
+    for trigger in open_triggers:
+        mark_trigger(ax1, date[trigger], date[trigger] * 1.1, 'OPEN')
+    for trigger in close_triggers:
+        mark_trigger(ax1, date[trigger], date[trigger] * 0.9, 'CLOSE')
 
     # final adjusments
     plt.subplots_adjust(left=.09, bottom=.14, right=.94, top=.95, wspace=.20, hspace=0)
     plt.show()
     figure.savefig('mine.png', facecolor=figure.get_facecolor())
+
+
+
+def mark_trigger(axis, x_loc, y_loc, trigger):
+    # TODO adjust arrows, colors, and wrtie single lamnda function
+    if trigger == 'OPEN':
+        axis.annotate('open', (x_loc, y_loc), xytext=(0.8, 0.9), textcoords='axes fraction',
+                      arrowprops=dict(facecolor='blue', shrink=0.05),
+                      fontsize=10, color='w',
+                      horizontalalignment='right', verticalalignment='bottom')
+    if trigger == 'CLOSE':
+        axis.annotate('open', (x_loc, y_loc), xytext=(0.8, 0.9), textcoords='axes fraction',
+                      arrowprops=dict(facecolor='white', shrink=0.05),
+                      fontsize=10, color='w',
+                      horizontalalignment='right', verticalalignment='bottom')
 
 
 def draw_indicator_on_chart(chart, label, values, axis):
@@ -158,5 +175,5 @@ def draw_indicator_below_chart(chart, label, values, axis, row_loc):
 
 
 if __name__ == '__main__':
-    draw_candlestick_chart(csv_file_to_data_frame('./data/sample3'))
+    draw_candlestick_chart('MYGRAPH', csv_file_to_data_frame('./data/sample3'), [], [])
 
