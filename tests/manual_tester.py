@@ -18,6 +18,8 @@ from management.main import main
 from utils.general_utils import get_system_times
 
 import ipdb
+from utils import general_utils
+from visualization import charts
 
 StreamHandler(sys.stdout).push_application()
 log = Logger(__name__)
@@ -86,6 +88,18 @@ def run_full_flow(dir, trade_system, parameters):
     stats = calculate_system_statistics(stats_dict, trade_system, start, end, period)
     set_trace()
 
+def test_charts_printing(dir, trade_system):
+    all_stocks = get_all_stocks(dir)
+    parameters = general_utils.get_indicators(trade_system)
+    fil, ext = run_flow(sample_data, trade_system, parameters)
+    stocks = get_all_stocks(dir)
+    indicators = get_indicators(trade_system)
+    extended = dict((symbol, evaluate_technical_parameters(stock, indicators)) for symbol, stock in stocks.items())
+    for symbol, table in extended.iteritems():
+        charts.draw_candlestick_chart(symbol, table, trade_system)
+
+
+
 
 def trade_definer_1():
     # technical parameters in use
@@ -131,6 +145,25 @@ def trade_definer_3():
 
     return trade_system, used_parameters
 
+def trade_definer_4():
+    # technical parameters in use
+    used_parameters = [ema10, ema80, ema20, const0]
+    # system definer
+    open_terms = []
+    #open_term = Term(*open_terms)
+    close_term = Term(rsi10, RELATIONS.greater, const0)
+    open_clauses = [Clause(Term(rsi21, RELATIONS.crossover_above, rsi10)),
+                    Clause(Term(rsi21, RELATIONS.crossover_below, adx4))]
+    close_clause = Clause(close_term)
+    open_rule = Rule(*open_clauses)
+    close_rule = Rule(close_clause)
+    trade_system = TradeSystem('tester', open_rule, close_rule, TRADE_DIRECTIONS.long)
+
+    return trade_system, used_parameters
+
+
+
+
 def trade_definer_and():
     used_parameters = [ema10, ema20, const5]
     open_rule = Rule(Clause(*[Term(ema20, RELATIONS.greater, ema10),
@@ -165,7 +198,8 @@ def run_main():
 if __name__ == "__main__":
     #test_calculate_technical_indicator(sample_data)
     #manual_tester()
-    run_full_flow('./data/few_symbols/', trade_definer_or()[0], trade_definer_or()[1])
+    #run_full_flow('./data/few_symbols/', trade_definer_or()[0], trade_definer_or()[1])
+    test_charts_printing('./data/few_symbols/', trade_definer_4()[0])
     #run_main()
 
 
