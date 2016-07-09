@@ -1,5 +1,5 @@
 import os
-import pandas as pd
+
 from trade_system.rule import *
 from trade_system.term import *
 from processor.calculate_technical_parameters import *
@@ -23,8 +23,8 @@ def main(trade_system):
     :return:
     """
     path = "./data/appy/"
-    all_stocks = get_all_stocks(path)
-    indicators = get_indicators(trade_system)
+    all_stocks = general_utils.get_all_stocks(path)
+    indicators = general_utils.get_indicators(trade_system)
 
     global start_date, end_date, trading_days
     start_date, end_date, trading_days = general_utils.get_system_times(all_stocks)
@@ -36,7 +36,7 @@ def main(trade_system):
     filtered = dict((symbol, filter_stock_data(trade_system, symbol, stock)) for symbol, stock in extended.items())
 
     # statistics stage
-    stats_dict = get_stat_dict(all_stocks, filtered)
+    stats_dict = general_utils.get_stat_dict(all_stocks, filtered)
     stats = calculate_system_statistics(stats_dict, trade_system, start_date, end_date, trading_days)
 
     # data to show by UI
@@ -75,79 +75,6 @@ def get_mock_technical_parameter():
     period = random.randint(10, 50)
     return TechnicalParameter(indicator, period, 0)
 
-
-def get_all_stocks(path):
-    stocks = {}
-    for csv_file in os.listdir(path):
-        if csv_file.endswith(".csv"):
-            stocks[csv_file.rsplit('.', 1)[0]] = pd.read_csv(path + csv_file)
-    return stocks
-
-
-def get_indicators(trade_system):
-    indicators = []
-    terms = []
-    clauses = trade_system.get_open_rule().get_clauses() + trade_system.get_close_rule().get_clauses()
-
-    for clause in clauses:
-        for term in clause.get_terms():
-            terms.append(term)
-
-    for term in terms:
-        tp1 = term.get_technical_parameter_1()
-        tp2 = term.get_technical_parameter_2()
-        if tp1.is_technical_indicator():
-            indicators.append(tp1)
-        if tp2.is_technical_indicator():
-            indicators.append(tp2)
-    return remove_duplicate_indicators(indicators)
-
-
-def indicator_equality(indicator1, indicator2):
-    if indicator1.get_name == indicator2.get_name:
-        if indicator1.get_timeperiod == indicator2.get_timeperiod:
-            return True
-    return False
-
-
-def remove_duplicate_indicators(indicators):
-    """
-    The function get list of indicators and return list of indicators without any duplicate items.
-    The equality of items set by indicator_equality function
-    :param indicators: list of indicators
-    :return: list without duplicate indicators
-    """
-    res = []
-    for indicator1 in indicators:
-        flag = True
-        for indicator2 in res:
-            if indicator_equality(indicator1, indicator2):
-                flag = False
-        if flag:
-            res.append(indicator1)
-    return res
-
-
-def get_stat_dict(full, filtered):
-    res = {}
-    for k in filtered.keys():
-        if len(filtered.get(k)):
-            l = len(full.get(k))
-            res[k] = (filtered.get(k), full.get(k).iloc[0, 0], full.get(k).iloc[l - 1, 0], l)
-    return res
-
-
-def list_to_dataframe(field_dict, obj_list):
-
-    list_row = []
-    for obj in obj_list:
-        row = {}
-        for field, col in field_dict.items():
-            if hasattr(obj, field):
-                row[col] = getattr(obj, field)
-        list_row.append(row)
-
-    return pd.DataFrame(list_row, columns=(field_dict.values()))
 
 if __name__ == "__main__":
     sys.exit(main())
