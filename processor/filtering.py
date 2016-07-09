@@ -90,7 +90,7 @@ def _mark_trigger_lines(trade_system, symbol, stock_data):
                     else:
                         stock_data.set_value(row+1, COLUMNS.close_trigger, close_trigger)
                         entering_price = None
-                        log.debug("Close trigger was marked for {} at {}".format(symbol, date))
+                        #log.debug("Close trigger was marked for {} at {}".format(symbol, date))
 
             # check open position triggers
             if rule is trade_system.get_open_rule():
@@ -105,7 +105,7 @@ def _mark_trigger_lines(trade_system, symbol, stock_data):
                         stock_data.set_value(row + 1, COLUMNS.open_trigger, open_trigger)
                         entering_price = stock_data.get_value(row + 1, COLUMNS.open) if row + 1 < len(
                             stock_data) else None
-                        log.debug("Open trigger was marked for {} at {}".format(symbol, date))
+                        #log.debug("Open trigger was marked for {} at {}".format(symbol, date))
 
         # check for open and close triggers on the same day
         #if stock_data.get_value(row, COLUMNS.open_trigger) and stock_data.get_value(row, COLUMNS.close_trigger):
