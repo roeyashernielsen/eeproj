@@ -7,8 +7,10 @@ import matplotlib.dates as mdates
 from matplotlib.finance import candlestick_ochl
 import matplotlib
 import pylab
-from utils.general_utils import csv_file_to_data_frame
+from utils.general_utils import csv_file_to_data_frame, get_indicators
+from utils import general_utils
 
+import ipdb
 matplotlib.rcParams.update({'font.size': 9})
 
 # list of indicators that are drawn on the price chart (beside the candles). The alternative is to draw in a separate plot.
@@ -22,15 +24,34 @@ height, width = 0, 0
 date = []
 start_point = 0
 
-chart_path = 'sample_chart.png'
+chart_dir = './charts'
 
-def draw_candlestick_chart(symbol, stock_data_table, open_triggers, close_triggers, **indicators):
+
+def draw_candlestick_chart(symbol, stock_data_table, trade_system):
+    """
+    This function retrieve the data from the stock table and trade system, to send to the function that does the draws.
+    Basically it's a wrapper (adapter) to allow linkage between the application level to the drawing function.
+    """
+    labeled= lambda(indicator): indicator.get_name() + '(' + str(indicator.get_timeperiod()) + ')'
+    indicators = dict([(labeled(ind), stock_data_table[ind.get_title()]) for ind in get_indicators(trade_system)])
+    #open_triggers = stock_data_table.OPEN_TRIGGER
+    #close_triggers = stock_data_table.CLOSE_TRIGGER
+
+    _draw_candlestick_chart(symbol, stock_data_table, indicators=indicators)
+
+
+
+# for TESTING remove finally
+from draft import rsiFunc, movingaverage
+
+
+def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_triggers=None, indicators=None):
     """
     :param symbol: the symbol of the stock
     :param stock_data_table: pandas Dataframe table contains raw data column
     :param open_triggers, close_triggers: pandas series contains the index of the date which will be marked.
     e.g. if open_trigger[3]=20 then date[20] will be mark
-    :param indicators: dictionary of: indicator --> values (pandas series)
+    :param indicators: dictionary of: indicator(key) --> values(value), values are pandas series
      indicator is of format: NAME(period), e.g EMA(50) is EMA with time period of 50
     :return:
     """
@@ -39,8 +60,9 @@ def draw_candlestick_chart(symbol, stock_data_table, open_triggers, close_trigge
     global height, width
     height = subplot_heights_mapping[0][0]  # the first place is also the maximum
     width = int(height * 1.6)
-    outer_plots = [ind for ind in indicators if ind.split('(') not in ON_GRAPH_INDICATORS]
-    main_chart_height = subplot_heights_mapping.get(min(len(outer_plots),5))[0]
+    outer_plots = [ind for ind in indicators.keys() if ind.split('(')[0] not in ON_GRAPH_INDICATORS]
+    inner_plots = [ind for ind in indicators.keys() if ind.split('(')[0] in ON_GRAPH_INDICATORS]
+    main_chart_height = subplot_heights_mapping.get(min(len(outer_plots), 5))[0]
     outer_plot_height = subplot_heights_mapping.get(min(len(outer_plots), 5))[1]
 
     # retrieve raw data
@@ -51,6 +73,11 @@ def draw_candlestick_chart(symbol, stock_data_table, open_triggers, close_trigge
     lowp = stock_data_table.Low.values
     closep = stock_data_table.Close.values
     volume = stock_data_table.Volume.values
+
+    # TODO remove
+    rsi = rsiFunc(closep)  # numpy data array, shown at the upper part of the graph
+    Av1 = movingaverage(closep, 11)  # numpy Array, shorter
+    Av2 = movingaverage(closep, 22)
 
     # arrange raw date
     timeline = []
@@ -80,6 +107,15 @@ def draw_candlestick_chart(symbol, stock_data_table, open_triggers, close_trigge
 
     global start_point
     start_point = 0  # TODO change or delete if it can stay 0
+
+    # plot indicators
+    for indicator in inner_plots:  # must draw the on chart plots first
+            draw_indicator_on_chart(ax1, indicator, indicators.get(indicator).values)
+    y_loc = main_chart_height  # the first y-loc is right after the main chart
+    for indicator in outer_plots:
+            draw_indicator_below_chart(ax1, indicator, indicators.get(indicator).values, y_loc)
+            y_loc += outer_plot_height
+
     # plot volumes
     vol_min = 0
     ax1_vol = ax1.twinx()
@@ -95,25 +131,18 @@ def draw_candlestick_chart(symbol, stock_data_table, open_triggers, close_trigge
     ax1_vol.tick_params(axis='x', colors='w')
     ax1_vol.tick_params(axis='y', colors='w')
 
-    # plot indicators
-    y_loc = main_chart_height  # the first y-loc is right after the main chart
-    for indicator in indicators:
-        if indicator not in outer_plots:
-            draw_indicator_on_chart(figure, indicator, indicators.get(indicator).values, ax1)
-        else:
-            draw_indicator_below_chart(figure, indicator, indicators.get(indicator).values, ax1, y_loc)
-            y_loc += outer_plot_height
-
     # mark triggers # TODO
-    for trigger in open_triggers:
-        mark_trigger(ax1, date[trigger], date[trigger] * 1.1, 'OPEN')
-    for trigger in close_triggers:
-        mark_trigger(ax1, date[trigger], date[trigger] * 0.9, 'CLOSE')
+    if open_triggers:
+        [mark_trigger(ax1, date[trigger], date[trigger] * 1.1, 'OPEN') for trigger in open_triggers]
+    if close_triggers:
+        [mark_trigger(ax1, date[trigger], date[trigger] * 1.1, 'CLOSE') for trigger in close_triggers]
 
     # final adjusments
     plt.subplots_adjust(left=.09, bottom=.14, right=.94, top=.95, wspace=.20, hspace=0)
     plt.show()
-    figure.savefig(chart_path, facecolor=figure.get_facecolor())
+    file_name = general_utils.make_filepath(chart_dir, symbol, 'png')
+    figure.savefig(file_name, facecolor=figure.get_facecolor())
+    print ("Chart of symbol {} was saved".format(symbol))
 
 
 
@@ -131,19 +160,21 @@ def mark_trigger(axis, x_loc, y_loc, trigger):
                       horizontalalignment='right', verticalalignment='bottom')
 
 
-def draw_indicator_on_chart(chart, label, values, axis):
+def draw_indicator_on_chart(subplot, label, values):
     global height, width, date, start_point
     color = '#e1edf9'  # TODO chose random colors or iterate over few
-    axis.plot(date[-start_point:], values[-start_point:], color, label=label, linewidth=1)
+    #color = '#e1ed' +
+    subplot.plot(date[-start_point:], values[-start_point:], color, label=label, linewidth=1)
     ma_leg = plt.legend(loc=9, ncol=2, prop={'size': 7}, fancybox=True, borderaxespad=0.)
     ma_leg.get_frame().set_alpha(0.4)
     text_ed = pylab.gca().get_legend().get_texts()
     pylab.setp(text_ed[0:5], color='w')
 
 
-def draw_indicator_below_chart(chart, label, values, axis, row_loc):
+def draw_indicator_below_chart(axis, label, values, row_loc):
     # TODO add support in multi plots indicators (as MACD)
     global height, width, date, start_point
+    ipdb.set_trace()
     ax0 = plt.subplot2grid((height, width), (row_loc, 0), sharex=axis, rowspan=1, colspan=4, axisbg='#07000d')
     color = '#c1f9f7'
     pos_color = '#386d13'
@@ -166,7 +197,7 @@ def draw_indicator_below_chart(chart, label, values, axis, row_loc):
     ax0.tick_params(axis='x', colors='w')
     plt.ylabel(label)
 
-
+#TODO remove
 if __name__ == '__main__':
-    draw_candlestick_chart('MYGRAPH', csv_file_to_data_frame('./data/sample3'), [], [])
+    draw_candlestick_chart('MYGRAPH', csv_file_to_data_frame('./data/sample3'), [100], [3])
 
