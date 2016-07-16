@@ -11,6 +11,7 @@ from utils.general_utils import csv_file_to_data_frame, get_indicators
 from utils import general_utils
 
 import ipdb
+
 matplotlib.rcParams.update({'font.size': 9})
 
 # list of indicators that are drawn on the price chart (beside the candles). The alternative is to draw in a separate plot.
@@ -40,9 +41,6 @@ def draw_candlestick_chart(symbol, stock_data_table, trade_system):
     _draw_candlestick_chart(symbol, stock_data_table, indicators=indicators)
 
 
-
-# for TESTING remove finally
-from draft import rsiFunc, movingaverage
 
 
 def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_triggers=None, indicators=None):
@@ -74,10 +72,6 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
     closep = stock_data_table.Close.values
     volume = stock_data_table.Volume.values
 
-    # TODO remove
-    rsi = rsiFunc(closep)  # numpy data array, shown at the upper part of the graph
-    Av1 = movingaverage(closep, 11)  # numpy Array, shorter
-    Av2 = movingaverage(closep, 22)
 
     # arrange raw date
     timeline = []
@@ -109,11 +103,11 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
     start_point = 0  # TODO change or delete if it can stay 0
 
     # plot indicators
-    for indicator in inner_plots:  # must draw the on chart plots first
-            draw_indicator_on_chart(ax1, indicator, indicators.get(indicator).values)
+    # for indicator in inner_plots:  # must draw the on chart plots first
+    #         draw_indicator_on_chart(ax1, indicator, indicators.get(indicator).values)
     y_loc = main_chart_height  # the first y-loc is right after the main chart
     for indicator in outer_plots:
-            draw_indicator_below_chart(ax1, indicator, indicators.get(indicator).values, y_loc)
+            draw_indicator_below_chart(ax1, indicator, indicators.get(indicator).values, y_loc, figure, symbol)
             y_loc += outer_plot_height
 
     # plot volumes
@@ -144,6 +138,14 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
     figure.savefig(file_name, facecolor=figure.get_facecolor())
     print ("Chart of symbol {} was saved".format(symbol))
 
+i=0
+def snapshot(name, figure):
+   global i
+   print "snapshot {}".format(i)
+   file_name = general_utils.make_filepath(chart_dir, name+str(i), 'png')
+   figure.savefig(file_name, facecolor=figure.get_facecolor())
+   i += 1
+
 
 
 def mark_trigger(axis, x_loc, y_loc, trigger):
@@ -171,14 +173,16 @@ def draw_indicator_on_chart(subplot, label, values):
     pylab.setp(text_ed[0:5], color='w')
 
 
-def draw_indicator_below_chart(axis, label, values, row_loc):
+def draw_indicator_below_chart(axis, label, values, row_loc, figure, symbol):
+    snapshot(symbol, figure)
     # TODO add support in multi plots indicators (as MACD)
     global height, width, date, start_point
-    ipdb.set_trace()
     ax0 = plt.subplot2grid((height, width), (row_loc, 0), sharex=axis, rowspan=1, colspan=4, axisbg='#07000d')
     color = '#c1f9f7'
     pos_color = '#386d13'
     neg_color = '#8f2020'
+    snapshot(symbol, figure)
+    ipdb.set_trace()
 
     ax0.plot(date[start_point:], values[start_point:], color, linewidth=1.5)
     ax0.axhline(70, color=neg_color)
@@ -187,6 +191,7 @@ def draw_indicator_below_chart(axis, label, values, row_loc):
                      alpha=0.5)
     ax0.fill_between(date[-start_point:], values[-start_point:], 30, where=(values[-start_point:] <= 30), facecolor=pos_color, edgecolor=pos_color,
                      alpha=0.5)
+    snapshot(symbol, figure)
     ax0.set_yticks([30, 70])
     ax0.yaxis.label.set_color("w")
     ax0.spines['bottom'].set_color("#5998ff")
@@ -196,6 +201,7 @@ def draw_indicator_below_chart(axis, label, values, row_loc):
     ax0.tick_params(axis='y', colors='w')
     ax0.tick_params(axis='x', colors='w')
     plt.ylabel(label)
+    snapshot(symbol, figure)
 
 #TODO remove
 if __name__ == '__main__':

@@ -90,7 +90,7 @@ def extend_stock_table(stock_data, new_columns, column_name, technical_indicator
         return
     # sanity checks
     log.warn("stock data and the additional vector length are different") if len(stock_data) != len(new_columns) else None
-    log.warn("column {} already exist in stock data".format(column_name)) if stock_data.get(column_name) is not None else None
+    #log.warn("column {} already exist in stock data".format(column_name)) if stock_data.get(column_name) is not None else None
     stock_data[column_name] = new_columns
     return stock_data
 

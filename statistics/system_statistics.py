@@ -166,7 +166,7 @@ class StockStatistics:
 
         # calculate second order statistics
         self.profit_loss_ratio_percentages = sum(self.profit_percentages_vector) / sum(self.loss_percentages_vector)
-        self.profit_loss_ratio_points = sum(self.profit_points_vector) / sum(self.loss_points_vector)
+        self.profit_loss_ratio_points = abs(sum(self.profit_points_vector) / sum(self.loss_points_vector))
         self.max_profit_points = max(self.yields_points_vector)
         self.max_loss_points = min(self.yields_points_vector)
         self.max_profit_percentages = max(self.yields_percentages_vector)

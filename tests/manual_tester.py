@@ -153,7 +153,7 @@ def trade_definer_4():
     #open_term = Term(*open_terms)
     close_term = Term(rsi10, RELATIONS.greater, const0)
     open_clauses = [Clause(Term(rsi21, RELATIONS.crossover_above, rsi10)),
-                    Clause(Term(rsi21, RELATIONS.crossover_below, adx4))]
+                    Clause(Term(rsi21, RELATIONS.crossover_below, ema10))]
     close_clause = Clause(close_term)
     open_rule = Rule(*open_clauses)
     close_rule = Rule(close_clause)
@@ -199,7 +199,7 @@ if __name__ == "__main__":
     #test_calculate_technical_indicator(sample_data)
     #manual_tester()
     #run_full_flow('./data/few_symbols/', trade_definer_or()[0], trade_definer_or()[1])
-    test_charts_printing('./data/few_symbols/', trade_definer_4()[0])
+    test_charts_printing('./data/appy/', trade_definer_4()[0])
     #run_main()
 
 

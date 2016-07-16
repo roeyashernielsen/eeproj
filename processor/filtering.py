@@ -28,7 +28,6 @@ def filter_stock_data(trade_system, symbol, stock_data):
     """
     type_checking(TradeSystem, trade_system)
     type_checking(DataFrame, stock_data)
-    print "Filter stock data for {}".format(symbol)
     # add columns to mark whether the line applies the trade system rules or not, by trigger type. Initialized to False
     stock_data[COLUMNS.open_trigger] = Series(False, index=stock_data.index)
     stock_data[COLUMNS.close_trigger] = Series(False, index=stock_data.index)
@@ -36,7 +35,7 @@ def filter_stock_data(trade_system, symbol, stock_data):
     _mark_trigger_lines(trade_system, symbol, stock_data)
 
     filtered_stock_data = _remove_untriggered_lines(stock_data)
-
+    print "Filter stock data for {}, got {}".format(symbol, len(filtered_stock_data))
     return filtered_stock_data
 
 
