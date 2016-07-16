@@ -103,12 +103,16 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
     start_point = 0  # TODO change or delete if it can stay 0
 
     # plot indicators
-    # for indicator in inner_plots:  # must draw the on chart plots first
-    #         draw_indicator_on_chart(ax1, indicator, indicators.get(indicator).values)
+    for indicator in inner_plots:  # must draw the on chart plots first
+            draw_indicator_on_chart(ax1, indicator, indicators.get(indicator).values)
     y_loc = main_chart_height  # the first y-loc is right after the main chart
     for indicator in outer_plots:
-            draw_indicator_below_chart(ax1, indicator, indicators.get(indicator).values, y_loc, figure, symbol)
+            axis = draw_indicator_below_chart(ax1, indicator, indicators.get(indicator).values, y_loc, outer_plot_height, figure, symbol)
             y_loc += outer_plot_height
+    # rotate labels on the axis of the last (lowest) chart
+    for label in axis.xaxis.get_ticklabels():
+        label.set_rotation(45)
+        label.set_size(7)
 
     # plot volumes
     vol_min = 0
@@ -133,6 +137,14 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
 
     # final adjusments
     plt.subplots_adjust(left=.09, bottom=.14, right=.94, top=.95, wspace=.20, hspace=0)
+    # config the date labels at the bottom of the chart
+    if not outer_plots:  # use the main chart date labels
+        for label in ax1.xaxis.get_ticklabels():
+            label.set_rotation(45)
+            label.set_size(7)
+    else:
+        for label in ax1.xaxis.get_ticklabels():
+            label.set_size(0)  # inelegant way to remove dates labels
     plt.show()
     file_name = general_utils.make_filepath(chart_dir, symbol, 'png')
     figure.savefig(file_name, facecolor=figure.get_facecolor())
@@ -173,16 +185,13 @@ def draw_indicator_on_chart(subplot, label, values):
     pylab.setp(text_ed[0:5], color='w')
 
 
-def draw_indicator_below_chart(axis, label, values, row_loc, figure, symbol):
-    snapshot(symbol, figure)
+def draw_indicator_below_chart(axis, label, values, row_loc, row_span, figure, symbol):
     # TODO add support in multi plots indicators (as MACD)
     global height, width, date, start_point
-    ax0 = plt.subplot2grid((height, width), (row_loc, 0), sharex=axis, rowspan=1, colspan=4, axisbg='#07000d')
+    ax0 = plt.subplot2grid((height, width), (row_loc, 0), sharex=axis, rowspan=row_span, colspan=width, axisbg='#07000d')
     color = '#c1f9f7'
     pos_color = '#386d13'
     neg_color = '#8f2020'
-    snapshot(symbol, figure)
-    ipdb.set_trace()
 
     ax0.plot(date[start_point:], values[start_point:], color, linewidth=1.5)
     ax0.axhline(70, color=neg_color)
@@ -191,7 +200,6 @@ def draw_indicator_below_chart(axis, label, values, row_loc, figure, symbol):
                      alpha=0.5)
     ax0.fill_between(date[-start_point:], values[-start_point:], 30, where=(values[-start_point:] <= 30), facecolor=pos_color, edgecolor=pos_color,
                      alpha=0.5)
-    snapshot(symbol, figure)
     ax0.set_yticks([30, 70])
     ax0.yaxis.label.set_color("w")
     ax0.spines['bottom'].set_color("#5998ff")
@@ -201,7 +209,10 @@ def draw_indicator_below_chart(axis, label, values, row_loc, figure, symbol):
     ax0.tick_params(axis='y', colors='w')
     ax0.tick_params(axis='x', colors='w')
     plt.ylabel(label)
-    snapshot(symbol, figure)
+    for label in ax0.xaxis.get_ticklabels():
+        label.set_size(0)  # inelegant way to remove this label
+    return ax0
+
 
 #TODO remove
 if __name__ == '__main__':
