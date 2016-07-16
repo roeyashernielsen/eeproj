@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import matplotlib.dates as mdates
-from matplotlib.finance import candlestick
+from matplotlib.finance import candlestick2_ochl as candlestick
 import matplotlib
 import pylab
 
@@ -207,7 +207,7 @@ def graphData(stock, MA1, MA2):
 
         plt.subplots_adjust(left=.09, bottom=.14, right=.94, top=.95, wspace=.20, hspace=0)
         plt.show()
-        fig.savefig('example.png', facecolor=fig.get_facecolor())
+        fig.savefig('./charts/draft.png', facecolor=fig.get_facecolor())
 
     except Exception, e:
         print 'main loop', str(e)

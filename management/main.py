@@ -36,7 +36,7 @@ def main(trade_system):
     filtered = dict((symbol, filter_stock_data(trade_system, symbol, stock)) for symbol, stock in extended.items())
 
     # statistics stage
-    stats_dict = general_utils.get_stat_dict(all_stocks, filtered)
+    stats_dict = general_utils.get_stat_dict(all_stocks, filtered[0])
     stats = calculate_system_statistics(stats_dict, trade_system, start_date, end_date, trading_days)
 
     # data to show by UI

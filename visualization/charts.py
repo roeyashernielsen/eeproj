@@ -35,6 +35,8 @@ def draw_candlestick_chart(symbol, stock_data_table, trade_system):
     """
     labeled= lambda(indicator): indicator.get_name() + '(' + str(indicator.get_timeperiod()) + ')'
     indicators = dict([(labeled(ind), stock_data_table[ind.get_title()]) for ind in get_indicators(trade_system)])
+    #close_triggers = stock_data_table.filter(stock_data_table.CLOSE_TRIGGER, lambda x: bool(x))
+    #open_triggers = stock_data_table.filter(stock_data_table.OPEN_TRIGGER, lambda x: bool(x))
     #open_triggers = stock_data_table.OPEN_TRIGGER
     #close_triggers = stock_data_table.CLOSE_TRIGGER
 
@@ -130,6 +132,7 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
     ax1_vol.tick_params(axis='y', colors='w')
 
     # mark triggers # TODO
+    ipdb.set_trace()
     if open_triggers:
         [mark_trigger(ax1, date[trigger], date[trigger] * 1.1, 'OPEN') for trigger in open_triggers]
     if close_triggers:

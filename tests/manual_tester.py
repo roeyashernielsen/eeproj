@@ -84,7 +84,7 @@ def run_full_flow(dir, trade_system, parameters):
     extended = dict((symbol, evaluate_technical_parameters(stock, indicators)) for symbol, stock in stocks.items())
     filtered = dict((symbol, filter_stock_data(trade_system, symbol, stock)) for symbol, stock in extended.items())
     start, end, period = get_system_times(all_stocks)
-    stats_dict = get_stat_dict(stocks, filtered)
+    stats_dict = get_stat_dict(stocks, filtered[0])
     stats = calculate_system_statistics(stats_dict, trade_system, start, end, period)
     set_trace()
 
@@ -95,8 +95,9 @@ def test_charts_printing(dir, trade_system):
     stocks = get_all_stocks(dir)
     indicators = get_indicators(trade_system)
     extended = dict((symbol, evaluate_technical_parameters(stock, indicators)) for symbol, stock in stocks.items())
-    for symbol, table in extended.iteritems():
-        charts.draw_candlestick_chart(symbol, table, trade_system)
+    filtered = dict((symbol, filter_stock_data(trade_system, symbol, stock)) for symbol, stock in extended.items())
+    for symbol, tables in filtered.iteritems():
+        charts.draw_candlestick_chart(symbol, tables[1], trade_system)
 
 
 

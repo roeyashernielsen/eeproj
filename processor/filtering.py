@@ -24,7 +24,8 @@ def filter_stock_data(trade_system, symbol, stock_data):
     :param trade_system: TradeSystem object- define the trade system uses for filtering
     :param symbol: stock's symbol
     :param stock_data: DataFrame table, contains the stock's indicator values
-    :return: shrunk stock data table, contains the rows marked by trade triggers
+    :return: tuple of: shrunk stock data table, contains the rows marked by trade triggers @ index 0
+                       full stock data table, contains all the rows- also those with no triggers @ index 1
     """
     type_checking(TradeSystem, trade_system)
     type_checking(DataFrame, stock_data)
@@ -34,9 +35,9 @@ def filter_stock_data(trade_system, symbol, stock_data):
 
     _mark_trigger_lines(trade_system, symbol, stock_data)
 
-    filtered_stock_data = _remove_untriggered_lines(stock_data)
+    filtered_stock_data = _remove_untriggered_lines(stock_data.copy())
     print "Filter stock data for {}, got {}".format(symbol, len(filtered_stock_data))
-    return filtered_stock_data
+    return filtered_stock_data, stock_data
 
 
 def _remove_untriggered_lines(stock_data):
