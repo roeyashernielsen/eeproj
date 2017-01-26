@@ -35,14 +35,9 @@ def draw_candlestick_chart(symbol, stock_data_table, trade_system):
     """
     labeled= lambda(indicator): indicator.get_name() + '(' + str(indicator.get_timeperiod()) + ')'
     indicators = dict([(labeled(ind), stock_data_table[ind.get_title()]) for ind in get_indicators(trade_system)])
-    #close_triggers = stock_data_table.filter(stock_data_table.CLOSE_TRIGGER, lambda x: bool(x))
-    #open_triggers = stock_data_table.filter(stock_data_table.OPEN_TRIGGER, lambda x: bool(x))
-    #open_triggers = stock_data_table.OPEN_TRIGGER
-    #close_triggers = stock_data_table.CLOSE_TRIGGER
-
-    _draw_candlestick_chart(symbol, stock_data_table, indicators=indicators)
-
-
+    close_triggers = stock_data_table.CLOSE_TRIGGER[stock_data_table.CLOSE_TRIGGER].index.values
+    open_triggers = stock_data_table.OPEN_TRIGGER[stock_data_table.OPEN_TRIGGER].index.values
+    _draw_candlestick_chart(symbol, stock_data_table, close_triggers, open_triggers, indicators=indicators)
 
 
 def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_triggers=None, indicators=None):
@@ -80,7 +75,7 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
     for i in xrange(len(date)):
         appendLine = date[i], openp[i], closep[i], highp[i], lowp[i], volume[i]
         timeline.append(appendLine)
-
+    # TODO change colors and use variables for this
     # create the main figure (candle stick chart)
     figure = plt.figure(facecolor='#07000d')
     ax1 = plt.subplot2grid((height, width), (0, 0), rowspan=main_chart_height, colspan=width, axisbg='#07000d')
@@ -131,14 +126,13 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
     ax1_vol.tick_params(axis='x', colors='w')
     ax1_vol.tick_params(axis='y', colors='w')
 
-    # mark triggers # TODO
-    ipdb.set_trace()
-    if open_triggers:
-        [mark_trigger(ax1, date[trigger], date[trigger] * 1.1, 'OPEN') for trigger in open_triggers]
-    if close_triggers:
-        [mark_trigger(ax1, date[trigger], date[trigger] * 1.1, 'CLOSE') for trigger in close_triggers]
+    # mark open and close triggers
+    if open_triggers.any():
+        [mark_trigger(ax1, date[trigger], lowp[trigger], 'OPEN', figure) for trigger in open_triggers]
+    if close_triggers.any():
+        [mark_trigger(ax1, date[trigger], highp[trigger], 'CLOSE', figure) for trigger in close_triggers]
 
-    # final adjusments
+    # final adjustments
     plt.subplots_adjust(left=.09, bottom=.14, right=.94, top=.95, wspace=.20, hspace=0)
     # config the date labels at the bottom of the chart
     if not outer_plots:  # use the main chart date labels
@@ -149,37 +143,35 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
         for label in ax1.xaxis.get_ticklabels():
             label.set_size(0)  # inelegant way to remove dates labels
     plt.show()
+    # save plot file as picture
     file_name = general_utils.make_filepath(chart_dir, symbol, 'png')
     figure.savefig(file_name, facecolor=figure.get_facecolor())
     print ("Chart of symbol {} was saved".format(symbol))
 
-i=0
+
+i = 0
+
+
 def snapshot(name, figure):
-   global i
-   print "snapshot {}".format(i)
-   file_name = general_utils.make_filepath(chart_dir, name+str(i), 'png')
-   figure.savefig(file_name, facecolor=figure.get_facecolor())
-   i += 1
+    global i
+    print "snapshot {}".format(i)
+    file_name = general_utils.make_filepath(chart_dir, name+str(i), 'png')
+    figure.savefig(file_name, facecolor=figure.get_facecolor())
+    i += 1
 
 
-
-def mark_trigger(axis, x_loc, y_loc, trigger):
-    # TODO adjust arrows, colors, and wrtie single lamnda function
+def mark_trigger(axis, x_loc, y_loc, trigger, figure):
     if trigger == 'OPEN':
-        axis.annotate('open', (x_loc, y_loc), xytext=(0.8, 0.9), textcoords='axes fraction',
-                      arrowprops=dict(facecolor='blue', shrink=0.05),
-                      fontsize=10, color='w',
-                      horizontalalignment='right', verticalalignment='bottom')
+        axis.annotate('open', xy=(x_loc, y_loc), xycoords='data', xytext=(0, -25), textcoords='offset points',
+                      arrowprops=dict(facecolor='green', arrowstyle='simple'), fontsize=6, color='w', horizontalalignment='center', verticalalignment='bottom')
     if trigger == 'CLOSE':
-        axis.annotate('open', (x_loc, y_loc), xytext=(0.8, 0.9), textcoords='axes fraction',
-                      arrowprops=dict(facecolor='white', shrink=0.05),
-                      fontsize=10, color='w',
-                      horizontalalignment='right', verticalalignment='bottom')
+        axis.annotate('close', xy=(x_loc, y_loc), xycoords='data', xytext=(0, 25), textcoords='offset points',
+                      arrowprops=dict(facecolor='red', arrowstyle='simple'), fontsize=6, color='w', horizontalalignment='center', verticalalignment='top')
 
 
 def draw_indicator_on_chart(subplot, label, values):
     global height, width, date, start_point
-    color = '#e1edf9'  # TODO chose random colors or iterate over few
+    color = '#e1edf9'  # TODO choose random colors or iterate over few
     #color = '#e1ed' +
     subplot.plot(date[-start_point:], values[-start_point:], color, label=label, linewidth=1)
     ma_leg = plt.legend(loc=9, ncol=2, prop={'size': 7}, fancybox=True, borderaxespad=0.)
@@ -189,7 +181,7 @@ def draw_indicator_on_chart(subplot, label, values):
 
 
 def draw_indicator_below_chart(axis, label, values, row_loc, row_span, figure, symbol):
-    # TODO add support in multi plots indicators (as MACD)
+    # TODO test support in multi plots indicators (as MACD)
     global height, width, date, start_point
     ax0 = plt.subplot2grid((height, width), (row_loc, 0), sharex=axis, rowspan=row_span, colspan=width, axisbg='#07000d')
     color = '#c1f9f7'
@@ -215,9 +207,4 @@ def draw_indicator_below_chart(axis, label, values, row_loc, row_span, figure, s
     for label in ax0.xaxis.get_ticklabels():
         label.set_size(0)  # inelegant way to remove this label
     return ax0
-
-
-#TODO remove
-if __name__ == '__main__':
-    draw_candlestick_chart('MYGRAPH', csv_file_to_data_frame('./data/sample3'), [100], [3])
 
