@@ -173,6 +173,21 @@ def trade_definer_and():
     trade_system = TradeSystem('and', open_rule, close_rule, TRADE_DIRECTIONS.long)
     return trade_system, used_parameters
 
+def emas_trade_system():
+    ema8 = TechnicalParameter(IND.ema, timeperiod=8)
+    ema8_minus1 = TechnicalParameter(IND.ema, timeperiod=8, timeshifting=1)
+    ema8_minus2 = TechnicalParameter(IND.ema, timeperiod=8, timeshifting=2)
+    ema20= TechnicalParameter(IND.ema, timeperiod=20)
+    used_paramteres = [ema8, ema20]
+    term1 = Term(ema8, RELATIONS.greater, ema8_minus1)  # ema8 is uptrending (positive slope)
+    term2 = Term(ema8_minus1, RELATIONS.greater, ema8_minus2)
+    term3 = Term(ema8, RELATIONS.greater, ema20)  # ema20 > ema8
+    term4 = Term(ema8, RELATIONS.less, ema20)
+    open_rule = Rule(Clause(*[term3]))
+    close_rule = Rule(Clause(*[term4]))
+    trade_system = TradeSystem('EMAS', open_rule, close_rule, TRADE_DIRECTIONS.long)
+    return trade_system
+
 
 def trade_definer_or():
     used_parameters = [ema10, ema20, const5]
