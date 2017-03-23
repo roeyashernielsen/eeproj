@@ -10,7 +10,7 @@ from statistics.system_statistics import *
 from collections import OrderedDict
 from visualization.stats_tables import *
 from utils import general_utils
-import tests.manual_tester
+#import tests.manual_tester
 import ipdb;
 import timeit
 
