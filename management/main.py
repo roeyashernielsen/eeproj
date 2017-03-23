@@ -83,4 +83,4 @@ def get_mock_technical_parameter():
     return TechnicalParameter(indicator, period, 0)
 
 if __name__ == "__main__":
-    sys.exit(main(tests.manual_tester.emas_trade_system()))
+    pass
