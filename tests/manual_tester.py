@@ -30,7 +30,7 @@ The goals is to test the interface, and the correctness of the results.
 Testing the functions in calculate_technical_parameter.py
 """
 
-sample_file = './tests/sample_file.csv'
+sample_file = '/Users/roeya/Desktop/stock/test/ADM.csv'
 sample_data = gu.csv_file_to_data_frame(sample_file)
 
 # Hard coded technical indicators
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     #test_calculate_technical_indicator(sample_data)
     #manual_tester()
     #run_full_flow('./data/few_symbols/', trade_definer_or()[0], trade_definer_or()[1])
-    test_charts_printing('./data/appy/', trade_definer_4()[0])
+    test_charts_printing('/Users/roeya/Desktop/stock/test/', trade_definer_4()[0])
     #run_main()
 
 

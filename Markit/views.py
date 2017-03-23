@@ -9,10 +9,12 @@ import pandas as pd
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from django.http import HttpResponse, HttpResponseRedirect
+from visualization import charts
 import re
 s = ""
 f = ""
 stocks_stat_df = ""
+trade_system = ""
 
 
 def index(request):
@@ -37,7 +39,7 @@ def graph(request):
 	from matplotlib.finance import _candlestick
 	import pandas as pd
 
-	global s,f,stocks_stat_df
+	global s, f, stocks_stat_df, trade_system
 	if request.GET.get('show.graph'):
 		mondays = WeekdayLocator(MONDAY)  # major ticks on the mondays
 		alldays = DayLocator()  # minor ticks on the days
@@ -55,6 +57,8 @@ def graph(request):
 		print(df2)
 		df2.columns = ['date', 'open', 'close', 'high', 'low']
 		df2[['date']] = df2['date'].map(funcy)
+
+		# figu = charts.draw_candlestick_chart("bal",df,trade_system)
 
 		fig, ax1 = plt.subplots()
 		fig.set_size_inches(18.5, 10.5)
@@ -94,7 +98,7 @@ def graph(request):
 
 
 def form(request):
-	global s,f,stocks_stat_df
+	global s,f,stocks_stat_df,trade_system
 	if request.GET.get('send.form'):
 		name = str(request.GET.get('element_1_1'))
 		direction = enums.get_enum_value(enums.TRADE_DIRECTIONS, str(request.GET.get('element_1_2')))

@@ -142,11 +142,14 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
     else:
         for label in ax1.xaxis.get_ticklabels():
             label.set_size(0)  # inelegant way to remove dates labels
-    plt.show()
-    # save plot file as picture
-    file_name = general_utils.make_filepath(chart_dir, symbol, 'png')
-    figure.savefig(file_name, facecolor=figure.get_facecolor())
-    print ("Chart of symbol {} was saved".format(symbol))
+
+    return plt.figimage()
+    # plt.show()
+    #
+    # # save plot file as picture
+    # file_name = general_utils.make_filepath(chart_dir, symbol, 'png')
+    # figure.savefig(file_name, facecolor=figure.get_facecolor())
+    # print ("Chart of symbol {} was saved".format(symbol))
 
 
 i = 0
