@@ -39,7 +39,11 @@ def main(trade_system):
     print ("Elpased time for Extension process is: {}".format(end_time - start_time))
     # filter stock tables to reveal the trades
     start_time = timeit.default_timer()
-    filtered_shrunk = dict((symbol, filter_stock_data(trade_system, symbol, stock)[0]) for symbol, stock in extended.items())
+
+    filtered = dict((symbol, filter_stock_data(trade_system, symbol, stock)) for symbol, stock in extended.items())
+    filtered_shrunk = dict((symbol, filtered[0]) for symbol, filtered in filtered.iteritems())
+    filtered_full = dict((symbol, filtered[1]) for symbol, filtered in filtered.iteritems())
+
     end_time = timeit.default_timer()
     print ("Elpased time for Filtering process is: {}".format(end_time - start_time))
 
