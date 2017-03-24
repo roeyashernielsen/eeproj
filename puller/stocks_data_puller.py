@@ -18,7 +18,7 @@ def pull_stocks_data(retries=3, start_date=None, end_date=None):
     symbols = get_stocks_symbols(write_to_files=False)
     log.notice("Starting to pull stocks data")
     end_date = datetime.today() if end_date is None else end_date
-    start_date = end_date - timedelta(365*10)  # take 10 years backwards
+    start_date = end_date - timedelta(365*2)  # take 10 years backwards
 
     for retry in range(retries):
         for symbol in symbols:

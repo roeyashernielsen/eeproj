@@ -1,9 +1,11 @@
 from pandas import DataFrame
 from utils.enums import STOCK_DATA_COLUMNS
 import os
+import shutil
 
 import ipdb
 import pandas
+import random
 
 #from logbook import Logger
 """
@@ -144,3 +146,24 @@ def list_to_dataframe(field_dict, obj_list):
         list_row.append(row)
 
     return pandas.DataFrame(list_row, columns=(field_dict.values()))
+
+
+def copy_subset_of_files_to_dir(ammount, dir):
+    target = dir + "subset"
+    files = [file for file in os.listdir(dir) if os.path.isfile(os.path.join(dir, file))]
+    if not os.path.exists(target):
+        os.makedirs(target)
+    samples = set()
+    while len(samples) <= ammount:
+        index = random.randint(0, len(files))
+        if index not in samples:
+            if (os.path.isfile(dir + files[index]) and os.path.isfile("./data/demo_current/symbols/" + files[index])):
+                shutil.copy2(dir + files[index], "./data/subset_past/")
+                shutil.copy2("./data/demo_current/symbols/" + files[index], "./data/subset_present/")
+                samples.add(index)
+                print files[index] + "was added"
+
+
+
+if __name__ == '__main__':
+    copy_subset_of_files_to_dir(202,"./data/demo_past/symbols/")

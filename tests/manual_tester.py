@@ -204,8 +204,8 @@ def manual_tester():
     sys, params = trade_definer_1()
     fil, ext = run_flow(sample_data, sys, params)
 
-def run_main():
-    main(trade_definer_1())
+#def run_main():
+ #   main(trade_definer_1())
 
 
 
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     #test_calculate_technical_indicator(sample_data)
     #manual_tester()
     #run_full_flow('./data/few_symbols/', trade_definer_or()[0], trade_definer_or()[1])
-    test_charts_printing('./data/appy/', trade_definer_4()[0])
+    test_charts_printing('./data/sam/', trade_definer_4()[0])
     #run_main()
 
 
