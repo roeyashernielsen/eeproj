@@ -48,7 +48,7 @@ def main(trade_system):
     print ("Elpased time for Filtering process is: {}".format(end_time - start_time))
 
     # statistics stage
-    stats_dict = general_utils.get_stat_dict(all_stocks, filtered_shrunk)
+    stats_dict = general_utils.get_stat_dict(filtered_shrunk)
     stats = calculate_system_statistics(stats_dict, trade_system, start_date, end_date, trading_days)
 
     # data to show by UI
