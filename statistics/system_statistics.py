@@ -1,5 +1,6 @@
 from .trades_statistics import calculate_trades_statistics
 from numpy import std, average
+import numpy
 
 """
 This file liable for the statistics calculation of the trading system.
@@ -165,8 +166,10 @@ class StockStatistics:
         self.losing_trades = len(self.loss_points_vector)
 
         # calculate second order statistics
-        self.profit_loss_ratio_percentages = sum(self.profit_percentages_vector) / sum(self.loss_percentages_vector)
-        self.profit_loss_ratio_points = abs(sum(self.profit_points_vector) / sum(self.loss_points_vector))
+        self.profit_loss_ratio_percentages = sum(self.profit_percentages_vector) / sum(self.loss_percentages_vector) \
+            if sum(self.profit_percentages_vector) != 0 and sum(self.loss_percentages_vector) != 0 else "--"
+        self.profit_loss_ratio_points = abs(sum(self.profit_points_vector) / sum(self.loss_points_vector)) \
+            if sum(self.profit_points_vector) != 0 and sum(self.loss_points_vector) != 0 else "--"
         self.max_profit_points = max(self.yields_points_vector)
         self.max_loss_points = min(self.yields_points_vector)
         self.max_profit_percentages = max(self.yields_percentages_vector)
