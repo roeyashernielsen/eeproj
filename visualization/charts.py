@@ -144,6 +144,7 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
             label.set_size(0)  # inelegant way to remove dates labels
 
     # plt.show()
+    plt.close()
     return figure
     #
     # # save plot file as picture
