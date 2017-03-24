@@ -30,7 +30,7 @@ The goals is to test the interface, and the correctness of the results.
 Testing the functions in calculate_technical_parameter.py
 """
 
-sample_file = './tests/sample_file.csv'
+sample_file = '/Users/roeya/Desktop/stock/test/ADM.csv'
 sample_data = gu.csv_file_to_data_frame(sample_file)
 
 # Hard coded technical indicators

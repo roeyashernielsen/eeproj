@@ -37,7 +37,7 @@ def draw_candlestick_chart(symbol, stock_data_table, trade_system):
     indicators = dict([(labeled(ind), stock_data_table[ind.get_title()]) for ind in get_indicators(trade_system)])
     close_triggers = stock_data_table.CLOSE_TRIGGER[stock_data_table.CLOSE_TRIGGER].index.values
     open_triggers = stock_data_table.OPEN_TRIGGER[stock_data_table.OPEN_TRIGGER].index.values
-    _draw_candlestick_chart(symbol, stock_data_table, close_triggers, open_triggers, indicators=indicators)
+    return _draw_candlestick_chart(symbol, stock_data_table, close_triggers, open_triggers, indicators=indicators)
 
 
 def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_triggers=None, indicators=None):
@@ -142,11 +142,15 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
     else:
         for label in ax1.xaxis.get_ticklabels():
             label.set_size(0)  # inelegant way to remove dates labels
-    plt.show()
-    # save plot file as picture
-    file_name = general_utils.make_filepath(chart_dir, symbol, 'png')
-    figure.savefig(file_name, facecolor=figure.get_facecolor())
-    print ("Chart of symbol {} was saved".format(symbol))
+
+    # plt.show()
+    plt.close()
+    return figure
+    #
+    # # save plot file as picture
+    # file_name = general_utils.make_filepath(chart_dir, symbol, 'png')
+    # figure.savefig(file_name, facecolor=figure.get_facecolor())
+    # print ("Chart of symbol {} was saved".format(symbol))
 
 
 i = 0

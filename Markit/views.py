@@ -9,10 +9,13 @@ import pandas as pd
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 from django.http import HttpResponse, HttpResponseRedirect
+from visualization import charts
 import re
-s = ""
-f = ""
+all_stocks = ""
+filtered_full =""
+filtered_shrunk = ""
 stocks_stat_df = ""
+trade_system = ""
 
 
 def index(request):
@@ -37,45 +40,11 @@ def graph(request):
 	from matplotlib.finance import _candlestick
 	import pandas as pd
 
-	global s,f,stocks_stat_df
+	global all_stocks,filtered_full,filtered_shrunk,stocks_stat_df,trade_system
 	if request.GET.get('show.graph'):
-		mondays = WeekdayLocator(MONDAY)  # major ticks on the mondays
-		alldays = DayLocator()  # minor ticks on the days
-		yearFormatter = DateFormatter('%Y-%m')  # e.g., Jan 12
-		funcy = lambda x: date2num(datetime.strptime(x, "%Y-%m-%d"))
-
-		df = s.get(str(request.GET.get('stock_name')))
-		df = df[['Date', 'Open', 'Close', 'High', 'Low']]
-		df.columns = ['date', 'open', 'close', 'high', 'low']
-		df[['date']] = df['date'].map(funcy)
-
-		df2 = f.get(str(request.GET.get('stock_name')))
-		print(df2)
-		df2 = df2[['Date', 'Open', 'Close', 'High', 'Low']].head(2 * (len(df2) / 2))
-		print(df2)
-		df2.columns = ['date', 'open', 'close', 'high', 'low']
-		df2[['date']] = df2['date'].map(funcy)
-
-		fig, ax1 = plt.subplots()
-		fig.set_size_inches(18.5, 10.5)
-		fig.subplots_adjust(bottom=0.2)
-		ax1.xaxis.set_major_locator(mondays)
-		ax1.xaxis.set_minor_locator(alldays)
-		ax1.xaxis.set_major_formatter(yearFormatter)
-		_candlestick(ax1, [tuple(x) for x in df.values], width=0.6)
-		ax1.xaxis_date()
-		ax1.autoscale_view()
-		plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
-
-		# ax[1].xaxis.set_major_locator(mondays)
-		# ax[1].xaxis.set_minor_locator(alldays)
-		ax2 = ax1.twinx()
-		# ax2.xaxis.set_major_formatter(yearFormatter)
-		_candlestick(ax2, [tuple(x) for x in df2.values], width=0.6, colorup='g', colordown='b')
-		# ax[1].xaxis_date()
-		# ax[1].autoscale_view()
-		# plt.setp(plt.gca().get_xticklabels(), rotation=45, horizontalalignment='right')
-
+		symbol = str(request.GET.get('stock_name'))
+		df3 = filtered_full.get(symbol)
+		fig = charts.draw_candlestick_chart(symbol,df3,trade_system)
 		canvas = FigureCanvas(fig)
 		response = HttpResponse(content_type='image/png')
 		canvas.print_png(response)
@@ -94,7 +63,7 @@ def graph(request):
 
 
 def form(request):
-	global s,f,stocks_stat_df
+	global all_stocks,filtered_full,filtered_shrunk,stocks_stat_df,trade_system
 	if request.GET.get('send.form'):
 		name = str(request.GET.get('element_1_1'))
 		direction = enums.get_enum_value(enums.TRADE_DIRECTIONS, str(request.GET.get('element_1_2')))
@@ -113,7 +82,7 @@ def form(request):
 		open_rule = build_rule(open_dict)
 		close_rule = build_rule(close_dict)
 		trade_system = TradeSystem(name, open_rule, close_rule, direction, stop_loss=stop_loss, moving_stop_loss=m_stop_loss)
-		s, f, stock_list, stocks_stat_df, sts_stat_df = main(trade_system)
+		all_stocks, filtered_shrunk, filtered_full, stock_list, stocks_stat_df, sts_stat_df = main(trade_system)
 		return render(request, 'Markit/results.html', {
 			'df': sts_stat_df.to_html,
 			'stock_list': stock_list

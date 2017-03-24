@@ -23,7 +23,7 @@ def main(trade_system):
     :param trade_system: TradeSystem instance as defined by the user input
     :return:
     """
-    path = "./data/bench_short/"
+    path = "/Users/roeya/Desktop/stock/test/"
     all_stocks = general_utils.get_all_stocks(path)
     indicators = general_utils.get_indicators(trade_system)
 
@@ -35,6 +35,7 @@ def main(trade_system):
     start_time = timeit.default_timer()
     extended = dict((symbol, evaluate_technical_parameters(stock, indicators)) for symbol, stock in all_stocks.items())
     end_time = timeit.default_timer()
+
     print ("Elpased time for Extension process is: {}".format(end_time - start_time))
     # filter stock tables to reveal the trades
     start_time = timeit.default_timer()
@@ -53,7 +54,7 @@ def main(trade_system):
     # data to show by UI
     active_stocks = [s.name for s in stats[1]]
     stocks_stats_df = dict((s.name, (list_to_dataframe(general_details, [s]), list_to_dataframe(performances, [s]), list_to_dataframe(averages_and_bounds, [s]))) for s in stats[1])
-    return all_stocks, filtered_shrunk, active_stocks, stocks_stats_df, list_to_dataframe(full_statistics, [stats[0]] + stats[1])
+    return all_stocks, filtered_shrunk, filtered_full, active_stocks, stocks_stats_df, list_to_dataframe(full_statistics, [stats[0]] + stats[1])
 
 
 
