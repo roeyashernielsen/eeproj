@@ -2,10 +2,11 @@ from pandas import DataFrame
 from utils.enums import STOCK_DATA_COLUMNS
 import os
 import shutil
-
+from datetime import datetime
 import ipdb
 import pandas
 import random
+import numpy
 
 #from logbook import Logger
 """
@@ -129,9 +130,15 @@ def remove_duplicate_indicators(indicators):
 def get_stat_dict(full, filtered):
     res = {}
     for k in filtered.keys():
-        if len(filtered.get(k)):
-            l = len(full.get(k))
-            res[k] = (filtered.get(k), full.get(k).iloc[0, 0], full.get(k).iloc[l - 1, 0], l)
+        filtered_table = filtered.get(k)
+        l = len(filtered_table)
+        if l:
+            start = filtered_table.iloc[0, 0]
+            end = filtered_table.iloc[l - 1, 0]
+            start_date = datetime.strptime(start, "%Y-%m-%d")
+            end_date = datetime.strptime(end, "%Y-%m-%d")
+            term = numpy.busday_count(start_date, end_date)
+            res[k] = (filtered_table, start_date, end_date, term)
     return res
 
 
