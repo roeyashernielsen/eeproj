@@ -37,7 +37,7 @@ def draw_candlestick_chart(symbol, stock_data_table, trade_system):
     indicators = dict([(labeled(ind), stock_data_table[ind.get_title()]) for ind in get_indicators(trade_system)])
     close_triggers = stock_data_table.CLOSE_TRIGGER[stock_data_table.CLOSE_TRIGGER].index.values
     open_triggers = stock_data_table.OPEN_TRIGGER[stock_data_table.OPEN_TRIGGER].index.values
-    _draw_candlestick_chart(symbol, stock_data_table, close_triggers, open_triggers, indicators=indicators)
+    return _draw_candlestick_chart(symbol, stock_data_table, close_triggers, open_triggers, indicators=indicators)
 
 
 def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_triggers=None, indicators=None):
@@ -101,15 +101,15 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
 
     # plot indicators
     for indicator in inner_plots:  # must draw the on chart plots first
-            draw_indicator_on_chart(ax1, indicator, indicators.get(indicator).values)
+        draw_indicator_on_chart(ax1, indicator, indicators.get(indicator).values)
     y_loc = main_chart_height  # the first y-loc is right after the main chart
     for indicator in outer_plots:
-            axis = draw_indicator_below_chart(ax1, indicator, indicators.get(indicator).values, y_loc, outer_plot_height, figure, symbol)
-            y_loc += outer_plot_height
-    # rotate labels on the axis of the last (lowest) chart
-    for label in axis.xaxis.get_ticklabels():
-        label.set_rotation(45)
-        label.set_size(7)
+        axis = draw_indicator_below_chart(ax1, indicator, indicators.get(indicator).values, y_loc, outer_plot_height, figure, symbol)
+        y_loc += outer_plot_height
+        # rotate labels on the axis of the last (lowest) chart
+        for label in axis.xaxis.get_ticklabels():
+            label.set_rotation(45)
+            label.set_size(7)
 
     # plot volumes
     vol_min = 0
@@ -143,8 +143,8 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
         for label in ax1.xaxis.get_ticklabels():
             label.set_size(0)  # inelegant way to remove dates labels
 
-    return plt.figimage()
     # plt.show()
+    return figure
     #
     # # save plot file as picture
     # file_name = general_utils.make_filepath(chart_dir, symbol, 'png')
