@@ -15,8 +15,8 @@ full_statistics = OrderedDict([('name', 'Name'), ('start_date', 'Start Date'), (
                                ('profit_loss_ratio_percentages', 'Profit Loss Ratio (%)'),
                                ('max_profit_percentages', 'Max Profit (%)'),
                                ('max_loss_percentages', 'Max Loss (%)'),
-                               ('total_holding_period', 'Total Holding Period'),
-                               ('average_holding_period', 'Accumulate Holding Period (per trade)'),
+                               ('total_holding_period', 'Accumulating Holding Period'),
+                               ('average_holding_period', 'Average Holding Period (per trade)'),
                                ('efficiency', '% Time of Open Position')])
 
 
