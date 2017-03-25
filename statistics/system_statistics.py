@@ -117,11 +117,8 @@ class StockStatistics:
         self.max_profit_percentages = 0.0  # the most profitable trade (%)
         self.max_loss_percentages = 0.0  # the most losing trade (%)
         self.average_yield_points = 0.0
-        self.stdev_yield_points = 0.0
         self.average_yield_percentages = 0.0
-        self.stdev_yield_percentages = 0.0
         self.average_holding_period = 0.0
-        self.stdev_holding_period = 0.0
         self.efficiency = 0.0  # % of time of open position
 
     def extend_vectors(self, trade_list, durations_vector_ext, yields_points_vector_ext, yields_percentages_vector_ext):
@@ -172,12 +169,9 @@ class StockStatistics:
         self.max_profit_percentages = max(self.yields_percentages_vector)
         self.max_loss_percentages = min(self.yields_percentages_vector)
         self.average_yield_points = average(self.yields_points_vector)
-        self.stdev_yield_points = std(self.yields_points_vector)
         self.average_yield_percentages = average(self.yields_percentages_vector)
-        self.stdev_yield_percentages = std(self.yields_percentages_vector)
 
         self.average_holding_period = average(self.durations_vector)
-        self.stdev_holding_period = std(self.durations_vector)
         self.efficiency = 1.0 * self.total_holding_period / self.period * 100.0
 
     def is_empty(self):
