@@ -9,10 +9,17 @@ import matplotlib
 import pylab
 from utils.general_utils import csv_file_to_data_frame, get_indicators
 from utils import general_utils
+from itertools import cycle
 
-import ipdb
 
-matplotlib.rcParams.update({'font.size': 9})
+matplotlib.rcParams.update({'font.size': 21})
+
+height, width = 0, 0
+date = []
+start_point = 0
+labels_size = 18
+trigger_size = 14
+chart_dir = './charts'
 
 # list of indicators that are drawn on the price chart (beside the candles). The alternative is to draw in a separate plot.
 ON_GRAPH_INDICATORS = ['EMA', 'MA', 'SMA']
@@ -21,11 +28,6 @@ ON_GRAPH_INDICATORS = ['EMA', 'MA', 'SMA']
 # heights[0], heights[1] = candles chart height, indicators plot height.
 subplot_heights_mapping = {0:(100,0), 1:(80,20), 2:(70,15), 3:(70,10), 4:(60,10), 5:(50,10)}
 
-height, width = 0, 0
-date = []
-start_point = 0
-
-chart_dir = './charts'
 
 
 def draw_candlestick_chart(symbol, stock_data_table, trade_system):
@@ -77,14 +79,15 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
         timeline.append(appendLine)
     # TODO change colors and use variables for this
     # create the main figure (candle stick chart)
-    figure = plt.figure(facecolor='#07000d')
+    figure = plt.figure(facecolor='#07000d', figsize=(24, 14))
     ax1 = plt.subplot2grid((height, width), (0, 0), rowspan=main_chart_height, colspan=width, axisbg='#07000d')
-    candlestick_ochl(ax1, timeline, width=.6, colorup='#53c156', colordown='#ff1717')  # plot the candle stick chart
+    candlestick_ochl(ax1, timeline, width=.3, colorup='#53c156', colordown='#ff1717')  # plot the candle stick chart
 
     # figure design and specifications
     ax1.grid(True, color='w')
     ax1.xaxis.set_major_locator(mticker.MaxNLocator(10))
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    ax1.yaxis.label.set_fontsize(labels_size)
     ax1.yaxis.label.set_color("w")
     ax1.spines['bottom'].set_color("#5998ff")
     ax1.spines['top'].set_color("#5998ff")
@@ -143,7 +146,8 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
         for label in ax1.xaxis.get_ticklabels():
             label.set_size(0)  # inelegant way to remove dates labels
 
-    # plt.show()
+
+    # plt.show()  # shows up the graph -  doesn't work in web GUI
     plt.close()
     return figure
     #
@@ -166,22 +170,23 @@ def snapshot(name, figure):
 
 def mark_trigger(axis, x_loc, y_loc, trigger, figure):
     if trigger == 'OPEN':
-        axis.annotate('open', xy=(x_loc, y_loc), xycoords='data', xytext=(0, -25), textcoords='offset points',
-                      arrowprops=dict(facecolor='green', arrowstyle='simple'), fontsize=6, color='w', horizontalalignment='center', verticalalignment='bottom')
+        axis.annotate('open', xy=(x_loc, y_loc), xycoords='data', xytext=(0, -80), textcoords='offset points',
+                      arrowprops=dict(facecolor='green', arrowstyle='simple'), fontsize=trigger_size, color='w', horizontalalignment='center', verticalalignment='bottom')
     if trigger == 'CLOSE':
-        axis.annotate('close', xy=(x_loc, y_loc), xycoords='data', xytext=(0, 25), textcoords='offset points',
-                      arrowprops=dict(facecolor='red', arrowstyle='simple'), fontsize=6, color='w', horizontalalignment='center', verticalalignment='top')
+        axis.annotate('close', xy=(x_loc, y_loc), xycoords='data', xytext=(0, 80), textcoords='offset points',
+                      arrowprops=dict(facecolor='red', arrowstyle='simple'), fontsize=trigger_size, color='w', horizontalalignment='center', verticalalignment='top')
 
 
+cyclic_color = cycle('bmcyrgw').next
 def draw_indicator_on_chart(subplot, label, values):
     global height, width, date, start_point
-    color = '#e1edf9'  # TODO choose random colors or iterate over few
-    #color = '#e1ed' +
-    subplot.plot(date[-start_point:], values[-start_point:], color, label=label, linewidth=1)
-    ma_leg = plt.legend(loc=9, ncol=2, prop={'size': 7}, fancybox=True, borderaxespad=0.)
+    #color = '#e1edf9'
+    subplot.plot(date[-start_point:], values[-start_point:], color=cyclic_color(), label=label, linewidth=1)
+    ma_leg = plt.legend(loc=9, ncol=2, prop={'size': 13}, fancybox=True, borderaxespad=0.)
     ma_leg.get_frame().set_alpha(0.4)
     text_ed = pylab.gca().get_legend().get_texts()
     pylab.setp(text_ed[0:5], color='w')
+
 
 
 def draw_indicator_below_chart(axis, label, values, row_loc, row_span, figure, symbol):
