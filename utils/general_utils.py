@@ -147,23 +147,22 @@ def list_to_dataframe(field_dict, obj_list):
 
     return pandas.DataFrame(list_row, columns=(field_dict.values()))
 
-
-def copy_subset_of_files_to_dir(ammount, dir):
-    target = dir + "subset"
-    files = [file for file in os.listdir(dir) if os.path.isfile(os.path.join(dir, file))]
-    if not os.path.exists(target):
-        os.makedirs(target)
+# make a subset of 'ammount' random files from dir1 and dir2
+def copy_subset_of_files_to_dir(ammount, dir1, dir2):
+    target1 = dir1 + "../subset/"
+    target2 = dir2 + "../subset/"
+    os.makedirs(target1) if not os.path.exists(target1) else None
+    os.makedirs(target2) if not os.path.exists(target2) else None
+    files = [file for file in os.listdir(dir1) if os.path.isfile(os.path.join(dir1, file))]
     samples = set()
     while len(samples) <= ammount:
         index = random.randint(0, len(files))
         if index not in samples:
-            if (os.path.isfile(dir + files[index]) and os.path.isfile("./data/demo_current/symbols/" + files[index])):
-                shutil.copy2(dir + files[index], "./data/subset_past/")
-                shutil.copy2("./data/demo_current/symbols/" + files[index], "./data/subset_present/")
+            if (os.path.isfile(dir1 + files[index]) and os.path.isfile(dir2 + files[index])):  # the file is in both dirs
+                shutil.copy2(dir1 + files[index], target1)
+                shutil.copy2(dir2 + files[index], target2)
                 samples.add(index)
                 print files[index] + "was added"
 
-
-
 if __name__ == '__main__':
-    copy_subset_of_files_to_dir(202,"./data/demo_past/symbols/")
+    copy_subset_of_files_to_dir(59, "./data/past/symbols/", "./data/present/symbols/")
