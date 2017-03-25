@@ -10,7 +10,7 @@ import pylab
 from utils.general_utils import csv_file_to_data_frame, get_indicators
 from utils import general_utils
 from itertools import cycle
-
+from utils.enums import TRADE_DIRECTIONS
 
 matplotlib.rcParams.update({'font.size': 21})
 
@@ -39,10 +39,10 @@ def draw_candlestick_chart(symbol, stock_data_table, trade_system):
     indicators = dict([(labeled(ind), stock_data_table[ind.get_title()]) for ind in get_indicators(trade_system)])
     close_triggers = stock_data_table.CLOSE_TRIGGER[stock_data_table.CLOSE_TRIGGER].index.values
     open_triggers = stock_data_table.OPEN_TRIGGER[stock_data_table.OPEN_TRIGGER].index.values
-    return _draw_candlestick_chart(symbol, stock_data_table, close_triggers, open_triggers, indicators=indicators)
+    direction = trade_system.get_direction()
+    return _draw_candlestick_chart(symbol, stock_data_table, open_triggers, close_triggers, indicators, direction)
 
-
-def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_triggers=None, indicators=None):
+def _draw_candlestick_chart(symbol, stock_data_table, open_triggers, close_triggers, indicators, direction):
     """
     :param symbol: the symbol of the stock
     :param stock_data_table: pandas Dataframe table contains raw data column
@@ -130,10 +130,11 @@ def _draw_candlestick_chart(symbol, stock_data_table, open_triggers=None, close_
     ax1_vol.tick_params(axis='y', colors='w')
 
     # mark open and close triggers
+    orientation = -1 if direction == TRADE_DIRECTIONS.long else +1  # relative to open triggers
     if open_triggers.any():
-        [mark_trigger(ax1, date[trigger], lowp[trigger], 'OPEN', figure) for trigger in open_triggers]
+        [mark_trigger(ax1, date[trigger], lowp[trigger], 'OPEN', orientation) for trigger in open_triggers]
     if close_triggers.any():
-        [mark_trigger(ax1, date[trigger], highp[trigger], 'CLOSE', figure) for trigger in close_triggers]
+        [mark_trigger(ax1, date[trigger], highp[trigger], 'CLOSE', orientation) for trigger in close_triggers]
 
     # final adjustments
     plt.subplots_adjust(left=.09, bottom=.14, right=.94, top=.95, wspace=.20, hspace=0)
@@ -168,12 +169,13 @@ def snapshot(name, figure):
     i += 1
 
 
-def mark_trigger(axis, x_loc, y_loc, trigger, figure):
+def mark_trigger(axis, x_loc, y_loc, trigger, orientation):
+    text_pos = 80
     if trigger == 'OPEN':
-        axis.annotate('open', xy=(x_loc, y_loc), xycoords='data', xytext=(0, -80), textcoords='offset points',
+        axis.annotate('open', xy=(x_loc, y_loc), xycoords='data', xytext=(0, text_pos * +orientation), textcoords='offset points',
                       arrowprops=dict(facecolor='green', arrowstyle='simple'), fontsize=trigger_size, color='w', horizontalalignment='center', verticalalignment='bottom')
     if trigger == 'CLOSE':
-        axis.annotate('close', xy=(x_loc, y_loc), xycoords='data', xytext=(0, 80), textcoords='offset points',
+        axis.annotate('close', xy=(x_loc, y_loc), xycoords='data', xytext=(0, text_pos * -orientation), textcoords='offset points',
                       arrowprops=dict(facecolor='red', arrowstyle='simple'), fontsize=trigger_size, color='w', horizontalalignment='center', verticalalignment='top')
 
 
