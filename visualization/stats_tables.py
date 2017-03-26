@@ -12,7 +12,6 @@ This file defines the tables attributes that summarize the statistics tables tha
 full_statistics = OrderedDict([('name', 'Name'), ('start_date', 'Start Date'), ('end_date', 'End Date'), ('period', 'Term (# days)'),
                                ('trades', 'Total Number of Trades'), ('winning_trades', '# of Winning Trades'), ('losing_trades', '# of Losing Trades'),
                                ('average_yield_percentages', 'Average Profit (%)'),
-                               ('profit_loss_ratio_percentages', 'Profit Loss Ratio (%)'),
                                ('max_profit_percentages', 'Max Profit (%)'),
                                ('max_loss_percentages', 'Max Loss (%)'),
                                ('total_holding_period', 'Accumulating Holding Period'),
@@ -26,8 +25,7 @@ general_details = OrderedDict([('name', 'Name'), ('start_date', 'Start Date'), (
                                ('efficiency', '% Time of Open Position')])
 
 performances = OrderedDict([('trades', 'Total Number of Trades'), ('winning_trades', '# of Winning Trades'),
-                            ('losing_trades', '# of Losing Trades'), ('profit_loss_ratio_percentages', 'Profit Loss Ratio (%)'),
-                            ('profit_loss_ratio_points', 'Profit Loss Ratio ($)')])
+                            ('losing_trades', '# of Losing Trades')])
 
 averages_and_bounds = OrderedDict([('average_yield_percentages', 'Average Profit (%)'),
                                    ('average_holding_period', 'Accumulate Holding Period (per trade)'),
