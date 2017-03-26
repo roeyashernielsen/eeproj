@@ -215,8 +215,9 @@ if __name__ == "__main__":
     #test_calculate_technical_indicator(sample_data)
     #manual_tester()
     #run_full_flow('./data/few_symbols/', trade_definer_or()[0], trade_definer_or()[1])
-    test_charts_printing('./data/sam/', trade_definer_4()[0])
+    ##test_charts_printing('./data/sam/', trade_definer_4()[0])
     #run_main()
+    pass
 
 
 
