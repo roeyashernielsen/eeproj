@@ -30,7 +30,7 @@ The goals is to test the interface, and the correctness of the results.
 Testing the functions in calculate_technical_parameter.py
 """
 
-sample_file = '/Users/roeya/Desktop/stock/test/ADM.csv'
+sample_file = './data/sam/sample.csv'
 sample_data = gu.csv_file_to_data_frame(sample_file)
 
 # Hard coded technical indicators
@@ -86,7 +86,6 @@ def run_full_flow(dir, trade_system, parameters):
     start, end, period = get_system_times(all_stocks)
     stats_dict = get_stat_dict(stocks, filtered[0])
     stats = calculate_system_statistics(stats_dict, trade_system, start, end, period)
-    set_trace()
 
 def test_charts_printing(dir, trade_system):
     all_stocks = get_all_stocks(dir)
