@@ -70,7 +70,7 @@ def get_technical_parameters(trade_system):
 
 
 def get_all_stocks(path):
-    pandas.options.display.float_format = '${:,.2f}'.format
+    pandas.options.display.float_format = '{:,.2f}'.format
     stocks = {}
     for csv_file in os.listdir(path):
         if csv_file.endswith(".csv"):
