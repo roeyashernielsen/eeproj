@@ -163,7 +163,7 @@ class StockStatistics:
         self.losing_trades = len(self.loss_points_vector)
 
         # calculate second order statistics
-        self.profit_loss_ratio_percentages = sum(self.profit_percentages_vector) / sum(self.loss_percentages_vector) \
+        self.profit_loss_ratio_percentages = abs(sum(self.profit_percentages_vector) / sum(self.loss_percentages_vector)) \
             if sum(self.profit_percentages_vector) != 0 and sum(self.loss_percentages_vector) != 0 else "--"
         self.profit_loss_ratio_points = abs(sum(self.profit_points_vector) / sum(self.loss_points_vector)) \
             if sum(self.profit_points_vector) != 0 and sum(self.loss_points_vector) != 0 else "--"
